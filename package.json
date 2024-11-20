@@ -1,6 +1,6 @@
 {
   "name": "infocus",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "private": true,
   "husky": {
     "hooks": {
@@ -14,7 +14,7 @@
     "lint": "next lint",
     "prepare": "husky",
     "commit": "cz",
-    "release": "standard-version"
+    "release": "commit-and-tag-version"
   },
   "dependencies": {
     "@emotion/cache": "^11.13.5",
@@ -36,7 +36,6 @@
     "react": "19.0.0-rc-66855b96-20241106",
     "react-dom": "19.0.0-rc-66855b96-20241106",
     "server-only": "^0.0.1",
-    "standard-version": "^9.5.0",
     "superjson": "^2.2.1",
     "zod": "^3.23.8"
   },
@@ -45,6 +44,7 @@
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "commitizen": "^4.3.1",
+    "commit-and-tag-version": "^12.5.0",
     "cz-conventional-changelog": "^3.3.0",
     "eslint": "^8",
     "eslint-config-next": "15.0.3",
