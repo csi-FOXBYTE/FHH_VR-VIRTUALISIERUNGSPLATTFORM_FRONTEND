@@ -60,7 +60,7 @@ export function TRPCProvider(
         httpBatchLink({
           transformer: SuperJSON,
           url: getUrl(),
-          headers(opts) {
+          headers() {
             return {};
           },
         }),

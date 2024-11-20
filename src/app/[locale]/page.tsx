@@ -19,6 +19,7 @@ export default function Home() {
     <>
       <h1>{t("LandingPage.title")}</h1>
       {t("LandingPage.message")} {session?.user?.email} <br />
+      {data?.payload}
       <Button onClick={() => signOut()}>{t("LandingPage.sign-out")}</Button>
     </>
   );

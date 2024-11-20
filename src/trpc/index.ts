@@ -3,7 +3,6 @@ import { TRPCError, initTRPC } from "@trpc/server";
 import { getServerSession } from "next-auth";
 import { cache } from "react";
 import SuperJSON from "superjson";
-import { FetchCreateContextFnOptions } from "@trpc/server/adapters/fetch";
 
 export const { createCallerFactory, router, procedure } = initTRPC
   .context<typeof createTRPCContext>()
@@ -12,7 +11,7 @@ export const { createCallerFactory, router, procedure } = initTRPC
   });
 
 export const createTRPCContext = cache(
-  async (opts: FetchCreateContextFnOptions) => {
+  async () => {
     const session = await getServerSession(authOptions);
 
     return {

@@ -10,24 +10,29 @@
 
 ## Setup dev environment
 
+Please follow the following chapters in order to setup your dev environment.
+
 ### [PNPM](https://pnpm.io/motivation)
 
-* Install nvm via the Symantec Management console. (If already installed skip to the next step)   
-![Install nvm symantec management console](./resources/install-nvm.png)
+1. Install nvm via the Symantec Management console. (If already installed skip to the next step)  
+  ![Install nvm symantec management console](./resources/install-nvm.png)
 
-* Install/Switch Node version 20.x.x   
-![Install / switch node version symantec management console](./resources/switch-node-version.png)
+2. Install/Switch Node version 20.x.x  
+  ![Install / switch node version symantec management console](./resources/switch-node-version.png)
 
-* !!!IMPORTANT!!! Restart Computer
+3. !!!IMPORTANT!!! Restart Computer
 
-* Check node install by entering node -v, it should return v20.x.x
+4. Check node install by entering node -v, it should return v20.x.x
 
-* Install pnpm via 
-> npm i -g pnpm
+5. Install pnpm via
+  > npm i -g pnpm
 
 ### [Docker](https://www.docker.com/)
 
+1. It's super simple just install docker.
 
+
+2. After installation run ```pnpm dev``` to spinup the required docker containers (this will also start the frontend).
 
 ### [Keycloak](https://www.keycloak.org/)
 
@@ -43,7 +48,7 @@ Since we cannot use the Mercedes Benz PingID locally we resort to using another 
 
 ![alt text](./resources/keycloak-create-realm-button.png)
 
-5. Fill in the following name: ```MB - Infocus``` (it's important that it uses this exact form).
+5. Fill in the following name: `MB - Infocus` (it's important that it uses this exact form).
 
 ![alt text](./resources/keycloak-create-realm.png)
 
@@ -75,25 +80,27 @@ KEYCLOAK_SECRET=<your-pasted-secret-key>
 KEYCLOAK_ISSUER=http://localhost:8080/realms/MB%20-%20Infocus
 ```
 
+13. The last important step is that you have to create a user in keycloak (don't forget to set a password as well).
 
 ### Build process
 
 To be determined.
 
-## Techstack
+## Conventions
 
-* Comm - [tRPC](https://trpc.io/docs)
+### Commits
 
-* ORM - [Prisma](https://www.prisma.io/docs/orm)
+## Base Techstack
 
-* Internationalization - [next-intl](https://next-intl-docs.vercel.app/docs/usage)
+- Communication - [tRPC](https://trpc.io/docs)
 
-* UI-Framework - [MUI](https://mui.com/material-ui/all-components/)
+- ORM - [Prisma](https://www.prisma.io/docs/orm)
 
-* Validation - [zod](https://zod.dev/?id=basic-usage)
+- Internationalization - [next-intl](https://next-intl-docs.vercel.app/docs/usage)
 
-Zod is used for input validation of tRPC 
+- UI-Framework - [MUI](https://mui.com/material-ui/all-components/)
 
+- Validation - [zod](https://zod.dev/?id=basic-usage)
 
 ### Todo's
 
