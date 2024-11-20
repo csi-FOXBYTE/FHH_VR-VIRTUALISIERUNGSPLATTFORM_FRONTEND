@@ -4,7 +4,7 @@
 
 ## About
 
-Infocus is a project management platform developed for Mercedes Benz to streamline the organization of building-related data. Designed to optimize the efficiency and transparency of construction processes, Infocus brings together all relevant project information into a unified digital environment. It draws inspiration from Lean Construction Management practices, similar to tools like Lindner's Lean Construction platform, allowing for a structured, collaborative approach to managing tasks and workflows. With Infocus, stakeholders can visualize project progress in real time, enhance coordination, and ultimately improve decision-making throughout the entire lifecycle of a construction project.
+**Infocus** is a project management platform developed for Mercedes Benz to streamline the organization of building-related data. Designed to optimize the efficiency and transparency of construction processes, Infocus brings together all relevant project information into a unified digital environment. It draws inspiration from Lean Construction Management practices, similar to tools like Lindner's Lean Construction platform, allowing for a structured, collaborative approach to managing tasks and workflows. With Infocus, stakeholders can visualize project progress in real time, enhance coordination, and ultimately improve decision-making throughout the entire lifecycle of a construction project.
 
 [[_TOC_]]
 
@@ -12,9 +12,22 @@ Infocus is a project management platform developed for Mercedes Benz to streamli
 
 ### [PNPM](https://pnpm.io/motivation)
 
+* Install nvm via the Symantec Management console. (If already installed skip to the next step)   
+![Install nvm symantec management console](./resources/install-nvm.png)
 
+* Install/Switch Node version 20.x.x   
+![Install / switch node version symantec management console](./resources/switch-node-version.png)
+
+* !!!IMPORTANT!!! Restart Computer
+
+* Check node install by entering node -v, it should return v20.x.x
+
+* Install pnpm via 
+> npm i -g pnpm
 
 ### [Docker](https://www.docker.com/)
+
+
 
 ### [Keycloak](https://www.keycloak.org/)
 
@@ -61,6 +74,26 @@ KEYCLOAK_ID=infocus
 KEYCLOAK_SECRET=<your-pasted-secret-key>
 KEYCLOAK_ISSUER=http://localhost:8080/realms/MB%20-%20Infocus
 ```
+
+
+### Build process
+
+To be determined.
+
+## Techstack
+
+* Comm - [tRPC](https://trpc.io/docs)
+
+* ORM - [Prisma](https://www.prisma.io/docs/orm)
+
+* Internationalization - [next-intl](https://next-intl-docs.vercel.app/docs/usage)
+
+* UI-Framework - [MUI](https://mui.com/material-ui/all-components/)
+
+* Validation - [zod](https://zod.dev/?id=basic-usage)
+
+Zod is used for input validation of tRPC 
+
 
 ### Todo's
 

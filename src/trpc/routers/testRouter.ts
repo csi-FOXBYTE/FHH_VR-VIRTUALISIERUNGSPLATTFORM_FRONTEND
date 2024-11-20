@@ -9,6 +9,9 @@ const testRouter = router({
     await new Promise((resolve) => setTimeout(resolve, 1000));
     return { long: "request" };
   }),
+  halloWelt: protectedProcedure.query(async opts => {
+    return "Hallo Welt";
+  })
 });
 
 export default testRouter;
