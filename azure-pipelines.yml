@@ -1,5 +1,8 @@
 ---
-trigger: none
+pr:
+  branches:
+    include:
+      - release
 pr:
   branches:
     include:
