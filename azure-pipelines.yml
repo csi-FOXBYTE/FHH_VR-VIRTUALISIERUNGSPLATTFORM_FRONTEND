@@ -27,7 +27,7 @@ jobs:
 
           git config --global user.name "$env:BUILD_REQUESTEDFOR"
 
-          $commitMessage = "$(Build.SourceVersionMessage)"
+          $commitMessage = "$(Build.SourceVersionMessage) [skip ci]"
 
           git fetch --all
 
