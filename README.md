@@ -35,7 +35,7 @@ Please follow the following chapters in order to setup your dev environment.
 2. Install/Switch Node version 20.x.x  
   ![Install / switch node version symantec management console](./resources/switch-node-version.png)
 
-3. !!!IMPORTANT!!! Restart Computer
+3. !!!VERY IMPORTANT!!! Restart Computer
 
 4. Check node install by entering node -v, it should return v20.x.x
 
