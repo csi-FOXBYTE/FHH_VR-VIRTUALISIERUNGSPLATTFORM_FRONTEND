@@ -1,32 +1,31 @@
+import { authOptions } from "@/auth/authOptions";
+import { routing } from "@/i18n/routing";
+import { getServerSession } from "next-auth";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
-import { notFound } from "next/navigation";
-import { routing } from "@/i18n/routing";
+import { notFound, redirect } from "next/navigation";
 import Providers from "@/appProviders";
-import { getServerSession } from "next-auth";
-import { Roboto } from "next/font/google";
-
-const roboto = Roboto({
-  weight: ["300", "400", "500", "700"],
-  subsets: ["latin"],
-  display: "swap",
-  variable: "--font-roboto",
-});
+import { NuqsAdapter } from "nuqs/adapters/next/app";
+import "@mercedes-benz/typeface-mb-corpo-a/index.css";
+import "@mercedes-benz/typeface-mb-corpo-s/index.css";
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
 }
 
-export default async function LocaleLayout({
+export default async function RootLayout({
   children,
   params,
-}: {
+}: Readonly<{
   children: React.ReactNode;
   params: Promise<{ locale: string }>;
-}) {
+}>) {
+  const session = await getServerSession(authOptions);
+
+  if (!session) return redirect("/api/auth/signin"); // Always redirect when no session is present, user needs to be authenticated at all times!
+
   const { locale } = await params;
 
-  // Ensure that the incoming `locale` is valid
   if (!routing.locales.includes(locale as "en")) {
     notFound();
   }
@@ -35,16 +34,20 @@ export default async function LocaleLayout({
   // side is the easiest way to get started
   const messages = await getMessages();
 
-  const session = await getServerSession();
-
   return (
     <html lang={locale}>
       <head>
         <link rel="icon" href="/favicon_mobile_196x196.png" sizes="any" />
       </head>
-      <body className={roboto.variable}>
+      <body
+        style={{ minHeight: "100vh", width: "100vw", display: "flex", flexDirection: "column" }}
+      >
         <NextIntlClientProvider messages={messages}>
-          <Providers session={session}>{children}</Providers>
+          <NuqsAdapter>
+            <Providers locale={locale} session={session}>
+              {children}
+            </Providers>
+          </NuqsAdapter>
         </NextIntlClientProvider>
       </body>
     </html>
