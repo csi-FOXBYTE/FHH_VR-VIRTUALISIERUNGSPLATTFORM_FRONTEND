@@ -1,7 +1,10 @@
 {
-    "LandingPage": {
-        "title": "Hallo Welt!",
-        "message": "Angemeldet als",
-        "sign-out": "Abmelden"
-    }
+  "LandingPage": {
+    "title": "Hallo Welt!",
+    "message": "Angemeldet als",
+    "sign-out": "Abmelden"
+  },
+  "ProjectPage": {
+    "projects": "Projekte"
+  }
 }

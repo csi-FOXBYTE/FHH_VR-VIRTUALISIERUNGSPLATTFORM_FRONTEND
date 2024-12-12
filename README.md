@@ -111,7 +111,7 @@ In the following you can see a small overview of the folder structure of the inf
 infocus
 ├── prisma/
 │   └── schema.prisma -> modify this to change the datastructure
-├── messages -> inside here all the translations reside
+├── messages -> inside here are all the translations
 ├── resources -> this folder is only used for readme resources
 └── src/
     ├── app/
@@ -144,6 +144,11 @@ infocus
 
 TODO
 
+---
+
+# Release
+
+To trigger a new release do a pull request to the ```release``` branch. After completion merge the release branch into the master branch.
 ---
 
 # Conventions

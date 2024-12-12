@@ -3,6 +3,8 @@ import { TRPCError, initTRPC } from "@trpc/server";
 import { getServerSession } from "next-auth";
 import { cache } from "react";
 import SuperJSON from "superjson";
+import prisma from "@/server/prisma";
+import { createOTelPlugin } from "./otelMiddleware";
 
 export const { createCallerFactory, router, procedure } = initTRPC
   .context<typeof createTRPCContext>()
@@ -10,25 +12,28 @@ export const { createCallerFactory, router, procedure } = initTRPC
     transformer: SuperJSON,
   });
 
-export const createTRPCContext = cache(
-  async () => {
-    const session = await getServerSession(authOptions);
+export const createTRPCContext = cache(async () => {
+  const session = await getServerSession(authOptions);
 
-    return {
-      session,
-    };
-  }
-);
-
-export const protectedProcedure = procedure.use(async ({ next, ctx }) => {
-  const session = ctx.session;
-
-  if (!session) throw new TRPCError({ code: "UNAUTHORIZED" }); // Only authenticated users are allowed!
-
-  return next({
-    ctx: {
-      ...ctx,
-      session: session,
-    },
-  });
+  return {
+    session,
+  };
 });
+
+const otelPlugin = createOTelPlugin();
+
+export const protectedProcedure = procedure
+  .use(async ({ next, ctx }) => {
+    const session = ctx.session;
+
+    if (!session) throw new TRPCError({ code: "UNAUTHORIZED" }); // Only authenticated users are allowed!
+
+    return next({
+      ctx: {
+        ...ctx,
+        session: session,
+      ***REMOVED***prisma,
+      },
+    });
+  })
+  .unstable_concat(otelPlugin.pluginProc);
