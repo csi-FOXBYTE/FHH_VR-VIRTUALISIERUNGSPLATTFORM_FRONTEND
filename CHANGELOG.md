@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [commit-and-tag-version](https://github.com/absolute-version/commit-and-tag-version) for commit guidelines.
 
+## 0.1.5 (2024-12-12)
+
+## 0.1.4 (2024-12-12)
+
+## 0.1.3 (2024-11-21)
+
+
+### CI
+
+* updated azure-pipelines.yml ([9b70c54](https://dev.azure.com///commit/9b70c5432362c9452002fcc755a96b0cd0f1ea31))
+
 ## 0.1.2 (2024-11-21)
 
 ## [0.1.1](https://dev.azure.com///compare/v0.1.0...v0.1.1) (2024-11-20)
