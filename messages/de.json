@@ -1,10 +1,9 @@
 {
-  "LandingPage": {
-    "title": "Hallo Welt!",
-    "message": "Angemeldet als",
-    "sign-out": "Abmelden"
-  },
-  "ProjectPage": {
-    "projects": "Projekte"
+  "routes": {
+    "/": {
+      "sites": "Standorte",
+      "projects": "Projekte"
+    },
+    "/projects": {}
   }
 }
