@@ -8,6 +8,7 @@ import { createOTelPlugin } from "./otelMiddleware";
 import eventBus from "@/server/events";
 import { UserService } from "../services/userService";
 import type { GeneratedPermissions } from "../auth/roles";
+import { ProjectService } from "../services/projectService";
 
 export const { createCallerFactory, router, procedure } = initTRPC
   .context<typeof createTRPCContext>()
@@ -35,7 +36,7 @@ export const createTRPCContext = cache(async () => {
 
 const otelPlugin = createOTelPlugin();
 
-export function protectedProcedure(requiredRoles: GeneratedPermissions[] = []) {
+export function protectedProcedure(requiredPermissions: GeneratedPermissions[] = []) {
   return procedure
     .use(async ({ next, ctx }) => {
       const session = ctx.session;
@@ -43,6 +44,7 @@ export function protectedProcedure(requiredRoles: GeneratedPermissions[] = []) {
       if (!session) throw new TRPCError({ code: "UNAUTHORIZED" }); // Only authenticated users are allowed!
 
       let _userService: UserService | null = null;
+      let _projectService: ProjectService | null = null;
 
       return next({
         ctx: {
@@ -52,6 +54,10 @@ export function protectedProcedure(requiredRoles: GeneratedPermissions[] = []) {
             get user() {
               _userService ??= new UserService(prisma, eventBus, session);
               return _userService;
+            },
+            get project() {
+              _projectService ??= new ProjectService(prisma, eventBus, session);
+              return _projectService;
             },
           },
           storage: null,
