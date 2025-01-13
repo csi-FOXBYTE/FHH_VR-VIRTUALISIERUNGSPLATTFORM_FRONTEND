@@ -17,7 +17,27 @@
       "cardsButtonText": "Open",
       "cardsHeader": "Your options",
       "subTitle": "Nice that you're here!",
-      "title": "Hello, {userName}!"
+      "title": "Hello, {userName}!",
+      "tabbar1": "Project details",
+      "tabbar2": "Requirements",
+      "tabbar3": "Goals",
+      "tabbar4": "Participant"
+    },
+    "/project/details": {
+      "Accordion1Title": "Info",
+      "Accordion2Title": "Time and financial planning",
+      "Accordion3Title": "Additional information (optional)",
+      "FormikBuilding": "Building",
+      "FormikContactUser": "Contact person/user",
+      "FormikDepartmentUser": "User department",
+      "FormikEtage": "floor",
+      "FormikProjectCategory": "Project category",
+      "FormikProjectLeader": "Project manager",
+      "FormikProjectName": "Project name",
+      "FormikRoom": "Space",
+      "FormikStatus": "Status",
+      "FormikTestBenchNumber": "Test stand no.",
+      "title": "Project details"
     }
   }
 }

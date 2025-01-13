@@ -5,6 +5,22 @@
       "projects": "Projekte"
     },
     "/projects": {},
+    "/project/details": {
+      "title": "Projekt Details",
+      "Accordion1Title": "Info",
+      "Accordion2Title": "Zeit- und Finanzplanung",
+      "Accordion3Title": "Zusatz-Informationen (optional)",
+      "FormikProjectName": "Projektname",
+      "FormikBuilding": "Gebäude",
+      "FormikEtage": "Etage",
+      "FormikRoom": "Raum",
+      "FormikProjectCategory": "Projekt-Kategorie",
+      "FormikStatus": "Status",
+      "FormikContactUser": "Ansprechspartner/Nutzer",
+      "FormikDepartmentUser": "Abteilung Nutzer",
+      "FormikProjectLeader": "Projektleiter",
+      "FormikTestBenchNumber": "Prüfstand-Nr."
+    },
     "/project": {
       "title": "Hallo, {userName}!",
       "subTitle": "Schön, dass du da bist!",
@@ -17,7 +33,11 @@
       "card3Title": "Platzhalter",
       "card3Text": "Kurzbeschreibung",
       "card4Title": "Platzhalter",
-      "card4Text": "Kurzbeschreibung"
+      "card4Text": "Kurzbeschreibung",
+      "tabbar1": "Projekt Details",
+      "tabbar2": "Anforderungen",
+      "tabbar3": "Ziele",
+      "tabbar4": "Beteiligten"
     }
   }
 }
