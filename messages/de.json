@@ -46,6 +46,26 @@
       "column3": "Kategorie",
       "column4": "Erstellt am",
       "addButton": "Anforderung hinzufügen"
+    },
+    "/common": {
+      "saveButton": "Speichern",
+      "cancelButton": "Abbrechen",
+      "deleteButton": "Löschen",
+      "editButton": "Bearbeiten",
+      "addButton": "Hinzufügen",
+      "backButton": "Zurück",
+      "refreshButton": "Daten aktualisieren"
     }
+  },
+  "requirementDialog": {
+    "cancel": "Abbrechen",
+    "save": "Speichern",
+    "createdAt": "Erstellt am",
+    "techRequirement": "Technische Anforderung",
+    "orgRequirement": "Organisatorische Anforderung",
+    "category": "Kategorie",
+    "assignedTo": "Zugewiesen an",
+    "requirementText": "Anforderung",
+    "title": "Anforderung hinzufügen"
   }
 }

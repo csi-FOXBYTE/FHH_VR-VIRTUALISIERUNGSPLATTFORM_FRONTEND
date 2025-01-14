@@ -9,5 +9,5 @@ export default async function ProjectOverviewPage({
   const locale = await getLocale();
   const { projectId } = await params;
 
-  return redirect({ href: `/projects/${projectId}/details`, locale });
+  return redirect({ href: `/projects/${projectId}/requirements`, locale });
 }

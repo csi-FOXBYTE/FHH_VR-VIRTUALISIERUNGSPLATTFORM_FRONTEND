@@ -1,19 +1,38 @@
 "use client";
 
 import { trpc } from "@/server/trpc/client";
-import { Button, Grid2, Typography } from "@mui/material";
+import {
+  Box,
+  Button,
+  ButtonGroup,
+  Grid2,
+  styled,
+  Typography,
+} from "@mui/material";
 import { DataGrid, GridPaginationModel, GridSortModel } from "@mui/x-data-grid";
 import { keepPreviousData } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import { useParams } from "next/navigation";
 import { parseAsFloat, parseAsJson, parseAsString, useQueryState } from "nuqs";
-import { useCallback, useMemo } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { z } from "zod";
-import { SettingsOutlined } from "@mui/icons-material";
+import { Add, Refresh, SettingsOutlined } from "@mui/icons-material";
+import CreateRequirementDialog from "@/components/project/CreateRequirementDialog";
+
+const StyledBox = styled(Box)({
+  display: "flex",
+  alignContent: "center",
+  alignItems: "center",
+  justifyContent: "flex-start",
+  height: "100%",
+});
+
 export default function Requirements() {
   const { projectId } = useParams();
 
   const t = useTranslations();
+
+  const [createModalOpened, setCreateModalOpened] = useState(false);
 
   // #region Pagination
 
@@ -43,6 +62,7 @@ export default function Requirements() {
     "sortOrder",
     parseAsJson(z.enum(["asc", "desc"]).optional().parse)
   );
+
   const [sortBy, setSortyBy] = useQueryState(
     "sortBy",
     parseAsString.withDefault("")
@@ -84,62 +104,102 @@ export default function Requirements() {
   // #endregion
 
   return (
-    <>
-      <Typography variant="h1">
-        {t("routes./project/requirements.title")}
-      </Typography>
+    <StyledBox>
       <Grid2
         container
         flexDirection="column"
         flexGrow="1"
+        flexShrink="1"
         flexWrap="nowrap"
         overflow="hidden"
-        marginTop={2}
+        paddingTop={2}
         spacing={2}
+        size="grow"
+        height={"100%"}
       >
-        <DataGrid
-          rows={project?.requirements ?? []}
-          getRowId={(row) => row.id}
-          paginationMode="server"
-          paginationModel={paginationModel}
-          pagination
-          filterMode="server"
-          sortingMode="server"
-          pageSizeOptions={[25, 50, 100]}
-          onPaginationModelChange={handlePaginationModelChange}
-          onSortModelChange={handleSortModelChange}
-          sortModel={sortModel}
-          loading={isProjectsPending}
-          rowCount={project?.requirements.length ?? 0}
-          columns={[
-            {
-              field: "title",
-              headerName: t("routes./project/requirements.column1"),
-              flex: 1,
-            },
-            {
-              field: "responsibleUser",
-              headerName: t("routes./project/requirements.column2"),
-              flex: 1,
-            },
-            {
-              field: "category",
-              headerName: t("routes./project/requirements.column3"),
-              flex: 1,
-            },
-            {
-              field: "assignedDate",
-              headerName: t("routes./project/requirements.column4"),
-              flex: 1,
-            },
-            {
-              field: "settings",
-              renderHeader: () => <SettingsOutlined />,
-              renderCell: () => <Button>...</Button>,
-            },
-          ]}
+        <Grid2
+          container
+          spacing={2}
+          flexDirection="row"
+          alignItems="center"
+          justifyContent="space-between"
+        >
+          <Typography variant="h1">
+            {t("routes./project/requirements.title")}
+          </Typography>
+          <ButtonGroup>
+            <Button
+              variant="text"
+              startIcon={<Refresh />}
+              sx={{
+                justifyContent: "center",
+                marginRight: "16px",
+              }}
+            >
+              {t("routes./common.refreshButton")}
+            </Button>
+            <Button
+              onClick={() => setCreateModalOpened(true)}
+              variant="contained"
+              startIcon={<Add />}
+              sx={{
+                justifyContent: "center",
+              }}
+            >
+              {t("routes./project/requirements.addButton")}
+            </Button>
+          </ButtonGroup>
+        </Grid2>
+
+        <Grid2 size="grow">
+          <DataGrid
+            rows={project?.requirements ?? []}
+            getRowId={(row) => row.id}
+            paginationMode="server"
+            paginationModel={paginationModel}
+            pagination
+            filterMode="server"
+            sortingMode="server"
+            pageSizeOptions={[25, 50, 100]}
+            onPaginationModelChange={handlePaginationModelChange}
+            onSortModelChange={handleSortModelChange}
+            sortModel={sortModel}
+            loading={isProjectsPending}
+            rowCount={project?.requirements.length ?? 0}
+            columns={[
+              {
+                field: "title",
+                headerName: t("routes./project/requirements.column1"),
+                flex: 1,
+              },
+              {
+                field: "responsibleUser",
+                headerName: t("routes./project/requirements.column2"),
+                flex: 1,
+              },
+              {
+                field: "category",
+                headerName: t("routes./project/requirements.column3"),
+                flex: 1,
+              },
+              {
+                field: "assignedDate",
+                headerName: t("routes./project/requirements.column4"),
+                flex: 1,
+              },
+              {
+                field: "settings",
+                renderHeader: () => <SettingsOutlined />,
+                renderCell: () => <Button>...</Button>,
+              },
+            ]}
+          />
+        </Grid2>
+        <CreateRequirementDialog
+          close={() => setCreateModalOpened(false)}
+          open={createModalOpened}
         />
       </Grid2>
-    </>
+    </StyledBox>
   );
 }
