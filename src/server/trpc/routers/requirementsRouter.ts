@@ -54,6 +54,15 @@ const requirementsRouter = router({
           responsibleUser: z.string(),
           category: z.enum(["Tec", "Org"]),
           assignedDate: z.date(),
+          history: z.array(
+            z.object({
+              date: z.date(),
+              changed: z.date(),
+              title: z.string(),
+              responsibleUser: z.string(),
+              category: z.enum(["Tec", "Org"]),
+            })
+          ).default([]),
         }),
       })
     )

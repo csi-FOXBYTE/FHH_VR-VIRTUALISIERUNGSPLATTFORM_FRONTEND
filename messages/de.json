@@ -69,6 +69,7 @@
     "category": "Kategorie",
     "assignedTo": "Zugewiesen an",
     "requirementText": "Anforderung",
-    "title": "Anforderung hinzufügen"
+    "addTitle": "Anforderung hinzufügen",
+    "editTitle": "Anforderung bearbeiten"
   }
 }

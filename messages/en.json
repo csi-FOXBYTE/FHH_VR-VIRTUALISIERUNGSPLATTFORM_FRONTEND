@@ -69,6 +69,7 @@
     "category": "Category",
     "assignedTo": "Assigned to",
     "requirementText": "Requirement",
-    "title": "Add requirement"
+    "addTitle": "Add requirement",
+    "editTitle": "Edit requirement"
   }
 }

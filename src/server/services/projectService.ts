@@ -4,7 +4,8 @@ import { Session } from "next-auth";
 import { EventBus } from "../events";
 import { faker } from "@faker-js/faker";
 import dayjs from "dayjs";
-interface IProject {
+import { IUser } from "./userService";
+export interface IProject {
   id: string;
   title: string;
   buildingNumber: number;
@@ -13,16 +14,22 @@ interface IProject {
   projectLead: string;
   assignedDate: Date;
   requirements: IRequirement[];
+  members: IUser[];
 }
-interface IRequirement {
+export interface IRequirement {
   id: string;
   title: string;
   responsibleUser: string;
   category: 'Tec' | 'Org';
   assignedDate: Date;
+  history: IRequirementHistory[];
 }
 
-const mockProjects = new Array(3).fill(0).map(() => ({
+export interface IRequirementHistory extends Omit<IRequirement, 'id' | 'assignedDate' | 'history'> {
+  changed: Date;
+}
+
+const mockProjects: IProject[] = new Array(3).fill(0).map(() => ({
   title: `${faker.company.catchPhraseAdjective()} ${faker.company.catchPhraseNoun()}`,
   id: crypto.randomUUID(),
   buildingNumber: faker.number.int({ min: 1, max: 500 }),
@@ -33,6 +40,12 @@ const mockProjects = new Array(3).fill(0).map(() => ({
     from: dayjs().toISOString(),
     to: dayjs().add(7, "day").toISOString(),
   }),
+  members: new Array(faker.number.int({ min: 1, max: 10 })).fill(0).map(() => ({
+    id: crypto.randomUUID(),
+    name: faker.person.fullName(),
+    email: faker.internet.email(),
+    role: faker.helpers.arrayElement(["admin", "user"] as const),
+  })),
   requirements: new Array(faker.number.int({ min: 1, max: 10 })).fill(0).map(() => ({
     id: crypto.randomUUID(),
     title: faker.company.catchPhrase(),
@@ -42,6 +55,7 @@ const mockProjects = new Array(3).fill(0).map(() => ({
       from: dayjs().toISOString(),
       to: dayjs().add(7, "day").toISOString(),
     }),
+    history: [],
   })),
 }));
 

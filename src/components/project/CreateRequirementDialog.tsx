@@ -20,17 +20,24 @@ import {
 import { Formik } from "formik";
 import { useTranslations } from "next-intl";
 import { trpc } from "@/server/trpc/client";
+import { IProject, IRequirement } from "@/server/services/projectService";
+
+interface CreateRequirementDialogProps extends DialogProps {
+  close: () => void;
+  project: IProject;
+  refetch: () => void;
+  initialValues?: IRequirement | null;
+  isEdit?: boolean;
+}
 
 export default function CreateRequirementDialog({
   close,
   open,
+  project,
   refetch,
-  projectId,
-}: DialogProps & {
-  close: () => void;
-  refetch: () => void;
-  projectId: string;
-}) {
+  initialValues,
+  isEdit = false,
+}: CreateRequirementDialogProps) {
   const t = useTranslations();
 
   const addRequirementMutation =
@@ -44,26 +51,56 @@ export default function CreateRequirementDialog({
       },
     });
 
+  const editRequirementMutation =
+    trpc.requirementsRouter.editRequirement.useMutation({
+      onSuccess: () => {
+        refetch();
+        close();
+      },
+      onError: (error) => {
+        console.error("editRequirementMutation failed:" + error);
+      },
+    });
+
   return (
     <Dialog open={open} onClose={close} fullWidth maxWidth="sm">
-      <DialogTitle>{t("requirementDialog.title")}</DialogTitle>
+      <DialogTitle>
+        {isEdit
+          ? t("requirementDialog.editTitle")
+          : t("requirementDialog.addTitle")}
+      </DialogTitle>
       <Formik
         initialValues={{
-          requirement: "",
-          assignedTo: "",
-          category: "Org" as "Tec" | "Org",
-          createdAt: new Date().toLocaleDateString(),
+          requirement: initialValues?.title || "",
+          assignedTo: initialValues?.responsibleUser || "",
+          category: initialValues?.category || "Org",
+          createdAt: initialValues?.assignedDate
+            ? new Date(initialValues.assignedDate).toLocaleDateString()
+            : new Date().toLocaleDateString(),
         }}
         onSubmit={(values) => {
-          addRequirementMutation.mutate({
-            projectId,
-            data: {
-              title: values.requirement,
-              responsibleUser: values.assignedTo,
-              category: values.category,
-              assignedDate: new Date(values.createdAt),
-            },
-          });
+          if (isEdit && initialValues) {
+            editRequirementMutation.mutate({
+              projectId: project.id,
+              requirementId: initialValues.id,
+              data: {
+                title: values.requirement,
+                responsibleUser: values.assignedTo,
+                category: values.category,
+                assignedDate: new Date(values.createdAt),
+              },
+            });
+          } else {
+            addRequirementMutation.mutate({
+              projectId: project.id,
+              data: {
+                title: values.requirement,
+                responsibleUser: values.assignedTo,
+                category: values.category,
+                assignedDate: new Date(values.createdAt),
+              },
+            });
+          }
         }}
       >
         {({ values, handleChange, handleSubmit }) => (
@@ -91,11 +128,13 @@ export default function CreateRequirementDialog({
                   onChange={handleChange}
                   variant="filled"
                 >
-                  <MenuItem value="">
-                    <em>{t("requirementDialog.assignedTo")}</em>
-                  </MenuItem>
-                  <MenuItem value="Person1">Person1</MenuItem>
-                  <MenuItem value="Person2">Person2</MenuItem>
+                  {project.members.map((member) => {
+                    return (
+                      <MenuItem key={member.email} value={member.email}>
+                        {member.email}
+                      </MenuItem>
+                    );
+                  })}
                 </Select>
               </FormControl>
               <FormControl component="fieldset" margin="normal">

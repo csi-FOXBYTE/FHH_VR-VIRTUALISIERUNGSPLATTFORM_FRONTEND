@@ -26,6 +26,7 @@ import {
 } from "@mui/icons-material";
 import CreateRequirementDialog from "@/components/project/CreateRequirementDialog";
 import OptionsButton from "@/components/common/OptionsButton";
+import { IRequirement } from "@/server/services/projectService";
 
 const StyledBox = styled(Box)({
   display: "flex",
@@ -35,10 +36,27 @@ const StyledBox = styled(Box)({
   height: "100%",
 });
 
+//TODO: sorting currently not working, because not getting requirments via extra server request like projects
+
 export default function Requirements() {
   const { projectId } = useParams();
+  const [editRequirement, setEditRequirement] = useState<IRequirement | null>(
+    null
+  );
 
   const t = useTranslations();
+
+  const {
+    data: project,
+    isPending: isProjectsPending,
+    refetch,
+  } = trpc.projectRouter.getProject.useQuery(
+    { projectId: projectId as string },
+    {
+      enabled: !!projectId,
+      placeholderData: keepPreviousData,
+    }
+  );
 
   const deleteRequirementMutation =
     trpc.requirementsRouter.deleteRequirement.useMutation({
@@ -47,8 +65,22 @@ export default function Requirements() {
       },
     });
 
-  const handleEditRequirementClick = useCallback((requirementId: string) => {
-    console.log(`Edit requirement with ID: ${requirementId}`);
+  const handleEditRequirementClick = useCallback(
+    (requirementId: string) => {
+      const requirement = project?.requirements.find(
+        (req) => req.id === requirementId
+      );
+      if (requirement) {
+        setEditRequirement(requirement);
+        setCreateModalOpened(true);
+      }
+    },
+    [project]
+  );
+
+  const resetEditMode = useCallback(() => {
+    setEditRequirement(null);
+    setCreateModalOpened(false);
   }, []);
 
   const handleHistoryRequirementClick = useCallback((requirementId: string) => {
@@ -119,18 +151,6 @@ export default function Requirements() {
     parseAsString.withDefault("")
   );
 
-  const {
-    data: project,
-    isPending: isProjectsPending,
-    refetch,
-  } = trpc.projectRouter.getProject.useQuery(
-    { projectId: projectId as string },
-    {
-      enabled: !!projectId,
-      placeholderData: keepPreviousData,
-    }
-  );
-
   const handleSortModelChange = useCallback(
     (model: GridSortModel) => {
       if (model.length === 0) {
@@ -156,7 +176,7 @@ export default function Requirements() {
   }, [sortBy, sortOrder]);
 
   // #endregion
-
+  if (!project) return null;
   return (
     <StyledBox>
       <Grid2
@@ -253,10 +273,15 @@ export default function Requirements() {
           />
         </Grid2>
         <CreateRequirementDialog
-          close={() => setCreateModalOpened(false)}
           open={createModalOpened}
-          projectId={projectId as string}
+          close={() => {
+            resetEditMode();
+            setCreateModalOpened(false);
+          }}
+          project={project}
           refetch={refetch}
+          initialValues={editRequirement}
+          isEdit={!!editRequirement}
         />
       </Grid2>
     </StyledBox>
