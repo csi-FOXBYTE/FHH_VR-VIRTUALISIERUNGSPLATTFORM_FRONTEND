@@ -27,20 +27,25 @@ const participantsRouter = router({
       return { success: true };
     }),
 
-  addParticipant: protectedProcedure([])
+  addParticipants: protectedProcedure([])
     .input(
       z.object({
         projectId: z.string(),
-        data: z.object({
-          name: z.string(),
-          email: z.string(),
-          role: z.enum(['admin', 'user']),
-        }),
+        participants: z.array(
+          z.object({
+            name: z.string(),
+            email: z.string(),
+            role: z.enum(['admin', 'user']),
+          })
+        ),
       })
     )
     .mutation(async (opts) => {
-      const { projectId, data } = opts.input;
-      return opts.ctx.services.project.addParticipant(projectId, data);
+      const { projectId, participants } = opts.input;
+      const addedParticipants = await Promise.all(
+        await opts.ctx.services.project.addParticipants(projectId, participants)
+      );
+      return addedParticipants;
     }),
 });
 

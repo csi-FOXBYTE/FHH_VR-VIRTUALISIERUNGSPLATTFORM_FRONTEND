@@ -342,6 +342,27 @@ export class ProjectService implements AbstractService {
     return newParticipant;
   }
 
+  //Omit Id because we want a new one extra for project.Participants.. //TODO: think about it. maybe take users id
+  async addParticipants(projectId: string, participants: Omit<IUser, 'id'>[]) {
+    const project = mockProjects.find((proj: IProject) => proj.id === projectId);
+
+    if (!project) {
+      throw new Error(`Project with ID ${projectId} not found`);
+    }
+
+    const existingParticipantEmails = new Set(project.participants.map(participant => participant.email));
+
+    //check if user was already added to avoid duplicates 
+    const newParticipants = participants
+      .filter(participant => !existingParticipantEmails.has(participant.email))
+      .map(participant => ({
+        id: crypto.randomUUID(),
+        ...participant,
+      }));
+
+    project.participants.push(...newParticipants);
+    return newParticipants;
+  }
   // #endregion
 
 }
