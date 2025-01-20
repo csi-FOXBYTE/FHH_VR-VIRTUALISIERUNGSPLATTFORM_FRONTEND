@@ -4,9 +4,9 @@ import { signIn } from "next-auth/react";
 import { useEffect } from "react";
 
 export default function LoginRedirect() {
-  useEffect(() => {
-    signIn("keycloak", {});
-  }, []);
+    useEffect(() => {
+        signIn("keycloak")
+    }, []);
 
-  return <>Redirecting to idp</>;
+    return <>Redirecting to IDP...</>;
 }

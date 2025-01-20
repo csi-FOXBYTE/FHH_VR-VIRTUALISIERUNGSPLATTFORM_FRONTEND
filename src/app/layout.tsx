@@ -1,8 +1,8 @@
-import { authOptions } from "@/server/auth/authOptions";
-import LoginRedirect from "@/components/common/LoginRedirect";
 import { routing } from "@/server/i18n/routing";
 import type { Metadata } from "next";
-import { getServerSession } from "next-auth";
+import { auth } from "@/server/auth/auth";
+import { signIn } from "next-auth/react";
+import LoginRedirect from "@/components/common/LoginRedirect";
 
 export const metadata: Metadata = {
   title: "MB Infocus",
@@ -18,16 +18,9 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const session = await getServerSession(authOptions);
+  const session = await auth();
 
-  if (!session)
-    return (
-      <html lang="en">
-        <body>
-          <LoginRedirect />
-        </body>
-      </html>
-    );
+  if (!session) return <LoginRedirect />;
 
   return <>{children}</>;
 }

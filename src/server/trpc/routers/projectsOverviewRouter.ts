@@ -1,5 +1,6 @@
 import { z } from "zod";
 import { protectedProcedure, router } from "..";
+import { createOrderBy } from "@/server/prisma/utils";
 
 const projectsOverviewRouter = router({
   getProjects: protectedProcedure([])
@@ -14,14 +15,41 @@ const projectsOverviewRouter = router({
       })
     )
     .query(async (opts) => {
-      return opts.ctx.services.project.getProjects({
-        limit: opts.input.limit,
+      const data = await opts.ctx.db.project.findMany({
         skip: opts.input.skip,
-        filter: opts.input.filter,
-        search: opts.input.search,
-        sortBy: opts.input.sortBy,
-        sortOrder: opts.input.sortOrder,
+        take: opts.input.limit,
+        orderBy: createOrderBy(
+          "Project",
+          opts.input.sortBy,
+          opts.input.sortOrder
+        ),
+        where: {
+
+        },
+        select: {
+          name: true,
+          id: true,
+          startDate: true,
+          endDate: true,
+          building: {
+            select: {
+              name: true,
+            },
+          },
+          projectManager: {
+            select: {
+              name: true,
+              id: true,
+            },
+          },
+          status: true,
+        },
       });
+
+      return {
+        data,
+        count: await opts.ctx.db.project.count({}),
+      };
     }),
 });
 

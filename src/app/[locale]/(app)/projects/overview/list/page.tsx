@@ -3,7 +3,7 @@
 import { trpc } from "@/server/trpc/client";
 import { AccessTime, Autorenew, Person, Error } from "@mui/icons-material";
 import { Chip, Grid2 } from "@mui/material";
-import { DataGrid, GridPaginationModel, GridSortModel } from "@mui/x-data-grid";
+import { DataGrid, GridColDef, GridFilterModel, GridPaginationModel, GridSortModel } from "@mui/x-data-grid";
 import { keepPreviousData } from "@tanstack/react-query";
 import { useFormatter } from "next-intl";
 import { parseAsFloat, parseAsJson, parseAsString, useQueryState } from "nuqs";
@@ -86,6 +86,78 @@ export default function ProjectOverviewListPage() {
     }
   );
 
+  const columns = useMemo<GridColDef<typeof projects[number]>[]>(() => [
+    {
+      field: "building.name",
+      headerName: "Gebäudenummer",
+      renderCell: ({ row: { building } }) => <>{building.name}</>,
+    },
+    {
+      field: "name",
+      headerName: "Projektname",
+    },
+    {
+      field: "projectManager.name",
+      headerName: "Projektleiter",
+      renderCell: ({ row: { projectManager } }) => (
+        <Chip
+          variant="outlined"
+          icon={<Person />}
+          label={projectManager.name}
+        />
+      ),
+    },
+    {
+      field: "startDate",
+      headerName: "Anfangs Datum",
+      renderCell: ({ row: { startDate } }) => (
+        <>{formatter.dateTime(startDate)}</>
+      ),
+    },
+    {
+      field: "endDate",
+      headerName: "End Datum",
+      renderCell: ({ row: { endDate } }) => (
+        <>{formatter.dateTime(endDate)}</>
+      ),
+    },
+    {
+      field: "status",
+      headerName: "Status",
+      renderCell: ({ row: { status } }) => {
+        switch (status) {
+          case "IN_WORK":
+            return (
+              <Chip
+                color="success"
+                icon={<Autorenew />}
+                label="In Arbeit"
+                variant="outlined"
+              />
+            );
+          case "CRITICAL":
+            return (
+              <Chip
+                color="error"
+                icon={<AccessTime />}
+                label="Kritisch"
+                variant="outlined"
+              />
+            );
+          case "DELAYED":
+            return (
+              <Chip
+                color="warning"
+                icon={<Error />}
+                label="Verzögert"
+                variant="outlined"
+              />
+            );
+        }
+      },
+    },
+  ], []);
+
   const formatter = useFormatter();
 
   return (
@@ -106,64 +178,15 @@ export default function ProjectOverviewListPage() {
         pagination
         filterMode="server"
         sortingMode="server"
+        disableColumnFilter
         pageSizeOptions={[25, 50, 100]}
         onPaginationModelChange={handlePaginationModelChange}
         onSortModelChange={handleSortModelChange}
+        onStateChange={console.log}
         sortModel={sortModel}
         loading={isProjectsPending}
         rowCount={count}
-        columns={[
-          {
-            field: "buildingNumber",
-            headerName: "Gebäudenummer",
-          },
-          {
-            field: "title",
-            headerName: "Projektname",
-          },
-          {
-            field: "projectLead",
-            headerName: "Projektleiter",
-            renderCell: ({ row: { projectLead } }) => (
-              <Chip variant="outlined" icon={<Person />} label={projectLead} />
-            ),
-          },
-          {
-            field: "state",
-            headerName: "Status",
-            renderCell: ({ row: { state } }) => {
-              switch (state) {
-                case "active":
-                  return (
-                    <Chip
-                      color="success"
-                      icon={<Autorenew />}
-                      label="In Arbeit"
-                      variant="outlined"
-                    />
-                  );
-                case "critical":
-                  return (
-                    <Chip
-                      color="error"
-                      icon={<AccessTime />}
-                      label="Kritisch"
-                      variant="outlined"
-                    />
-                  );
-                case "delayed":
-                  return (
-                    <Chip
-                      color="warning"
-                      icon={<Error />}
-                      label="Verzögert"
-                      variant="outlined"
-                    />
-                  );
-              }
-            },
-          },
-        ]}
+        columns={columns}
       />
     </Grid2>
   );

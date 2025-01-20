@@ -21,6 +21,7 @@ import {
   Typography,
   styled,
 } from "@mui/material";
+import { PROJECT_STATUS } from "@prisma/client";
 import { keepPreviousData } from "@tanstack/react-query";
 import { useFormatter } from "next-intl";
 import { parseAsFloat, parseAsJson, useQueryState } from "nuqs";
@@ -90,7 +91,7 @@ export default function ProjectOverviewTilesPage() {
                 overflow: "hidden",
               }}
               content="Hallo"
-              title={project.title}
+              title={project.name}
               sx={{ overflow: "hidden", width: "100%", flexShrink: 1 }}
               subheader={
                 <Typography
@@ -99,7 +100,7 @@ export default function ProjectOverviewTilesPage() {
                   whiteSpace="nowrap"
                   overflow="hidden"
                 >
-                  Gebäudenummer {project.buildingNumber}
+                  {project.building.name}
                 </Typography>
               }
               action={<MoreVert />}
@@ -108,7 +109,7 @@ export default function ProjectOverviewTilesPage() {
               <Chip
                 variant="outlined"
                 icon={<Person />}
-                label={project.projectLead}
+                label={project.projectManager.name}
               />
             </Grid2>
             <Grid2
@@ -125,9 +126,9 @@ export default function ProjectOverviewTilesPage() {
                 spacing={1}
               >
                 <Flag fontSize="small" />
-                {formatter.dateTime(project.assignedDate)}
+                {formatter.dateTime(project.startDate)}
               </Grid2>
-              <StateIconSwitch fontSize="small" state={project.state} />
+              <StateIconSwitch fontSize="small" state={project.status} />
             </Grid2>
           </Grid2>
         ))}
@@ -149,14 +150,14 @@ function StateIconSwitch({
   state,
   ...props
 }: {
-  state: "active" | "delayed" | "critical";
+  state: PROJECT_STATUS;
 } & SvgIconProps) {
   switch (state) {
-    case "active":
+    case "IN_WORK":
       return <Autorenew color="success" {...props} />;
-    case "delayed":
+    case "DELAYED":
       return <AccessTime color="warning" {...props} />;
-    case "critical":
+    case "CRITICAL":
       return <Error color="error" {...props} />;
   }
 }

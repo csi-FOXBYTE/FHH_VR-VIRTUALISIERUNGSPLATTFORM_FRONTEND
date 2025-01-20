@@ -23,12 +23,7 @@ import { ReactNode, useState } from "react";
 import CreateProjectDialog from "@/components/project/CreateProjectDialog";
 import { parseAsJson, useQueryState } from "nuqs";
 import { z } from "zod";
-
-const stateOptions = [
-  { label: "Verzögert", value: "delayed" },
-  { label: "Kritisch", value: "critical" },
-  { label: "In Arbeit", value: "active" },
-];
+import { PROJECT_STATUS } from "@prisma/client";
 
 export default function ProjectOverviewLayout({
   children,
@@ -85,15 +80,15 @@ export default function ProjectOverviewLayout({
               )}
             />
             <Select
-              value={filter?.state}
+              value={filter?.status ?? ""}
               style={{ flex: 1 }}
               onChange={(event: SelectChangeEvent<string>) => {
                 setFilter((filter) => {
                   const newFilter = { ...filter };
                   if (event.target.value === "") {
-                    delete newFilter["state"];
+                    delete newFilter["status"];
                   } else {
-                    newFilter["state"] = event.target.value;
+                    newFilter["status"] = event.target.value;
                   }
 
                   return newFilter;
@@ -113,9 +108,9 @@ export default function ProjectOverviewLayout({
                 )
               }
             >
-              {stateOptions.map((stateOption) => (
-                <MenuItem key={stateOption.value} value={stateOption.value}>
-                  {stateOption.label}
+              {Array.from(Object.keys(PROJECT_STATUS)).map((projectStatus) => (
+                <MenuItem key={projectStatus} value={projectStatus}>
+                  {projectStatus}
                 </MenuItem>
               ))}
             </Select>

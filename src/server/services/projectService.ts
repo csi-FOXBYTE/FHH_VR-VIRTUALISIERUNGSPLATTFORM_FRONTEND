@@ -123,55 +123,12 @@ export class ProjectService implements AbstractService {
     sortBy?: string;
     sortOrder?: "asc" | "desc";
   }) {
-    const data = mockProjects
-      .filter((mockProject) => {
-        for (const [filterKey, filterValue] of Array.from(
-          Object.entries(filter)
-        )) {
-          if (
-            String(mockProject[filterKey as keyof typeof mockProject]) !==
-            filterValue
-          )
-            return false;
-        }
+    const projects = await this._db.project.findMany({
+      skip: skip,
+      take: limit,
+    });
 
-        return true;
-      })
-      .filter((mockProject) => {
-        for (const [searchKey, searchValue] of Array.from(
-          Object.entries(search)
-        )) {
-          if (
-            String(mockProject[searchKey as keyof typeof mockProject])
-              .toLowerCase()
-              .toLowerCase()
-              .search(searchValue) === -1
-          ) {
-            return false;
-          }
-        }
-
-        return true;
-      });
-
-    if (sortOrder === "asc" && sortBy)
-      data.sort((a, b) =>
-        String(a[sortBy as keyof typeof a]).localeCompare(
-          String(b[sortBy as keyof typeof a])
-        )
-      );
-
-    if (sortOrder === "desc" && sortBy)
-      data.sort((a, b) =>
-        String(b[sortBy as keyof typeof b]).localeCompare(
-          String(a[sortBy as keyof typeof a])
-        )
-      );
-
-    return {
-      data: data.slice(skip, skip + limit),
-      count: data.length,
-    };
+    return { data: projects, count: await this._db.project.count({}) };
   }
 
   async getProject(projectId: string) {

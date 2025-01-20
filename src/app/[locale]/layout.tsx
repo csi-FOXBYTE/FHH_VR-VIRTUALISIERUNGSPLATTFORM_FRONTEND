@@ -1,6 +1,5 @@
-import { authOptions } from "@/server/auth/authOptions";
+import { auth } from "@/server/auth/auth";
 import { routing } from "@/server/i18n/routing";
-import { getServerSession } from "next-auth";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
 import { notFound, redirect } from "next/navigation";
@@ -20,7 +19,7 @@ export default async function RootLayout({
   children: React.ReactNode;
   params: Promise<{ locale: string }>;
 }>) {
-  const session = await getServerSession(authOptions);
+  const session = await auth();
 
   if (!session) return redirect("/api/auth/signin"); // Always redirect when no session is present, user needs to be authenticated at all times!
 

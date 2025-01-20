@@ -1,6 +1,5 @@
-import { authOptions } from "@/server/auth/authOptions";
+import { auth } from "@/server/auth/auth";
 import { TRPCError, initTRPC } from "@trpc/server";
-import { getServerSession } from "next-auth";
 import { cache } from "react";
 import SuperJSON from "superjson";
 import prisma from "@/server/prisma";
@@ -27,7 +26,7 @@ export const { createCallerFactory, router, procedure } = initTRPC
   });
 
 export const createTRPCContext = cache(async () => {
-  const session = await getServerSession(authOptions);
+  const session = await auth();
 
   return {
     session,
@@ -52,6 +51,7 @@ export function protectedProcedure(
         ctx: {
           ...ctx,
           session: session,
+        ***REMOVED***prisma,
           ***REMOVED***{
             get user() {
               _userService ??= new UserService(prisma, eventBus, session);
