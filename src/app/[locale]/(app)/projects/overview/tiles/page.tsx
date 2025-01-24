@@ -30,7 +30,6 @@ import { PROJECT_STATUS } from "@prisma/client";
 import { keepPreviousData } from "@tanstack/react-query";
 import { useFormatter } from "next-intl";
 import { parseAsFloat, parseAsJson, useQueryState } from "nuqs";
-import { useEffect } from "react";
 
 const StyledCardHeader = styled(CardHeader)`
   > .MuiCardHeader-content {
@@ -51,15 +50,14 @@ export default function ProjectOverviewTilesPage() {
 
   const formatter = useFormatter();
 
-  const { data: { count, data: projects } = { count: 0, data: [] } } =
-    trpc.projectOverviewRouter.getProjects.useQuery(
-      { limit, skip, filter: filter ?? {}, search: {} },
-      {
-        placeholderData: keepPreviousData,
-      }
-    );
-
-  useEffect(() => {}, []);
+  const {
+    data: { count, data: projects } = { count: 0, data: [] },
+  } = trpc.projectOverviewRouter.getProjects.useQuery(
+    { limit, skip, filter: filter ?? {}, search: {} },
+    {
+      placeholderData: keepPreviousData,
+    }
+  );
 
   return (
     <Grid2

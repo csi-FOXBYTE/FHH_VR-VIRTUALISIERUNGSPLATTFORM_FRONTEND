@@ -1,10 +1,15 @@
 "use client";
 
-import { projectOverviewFilter, projectOverviewFilterWithDefaults } from "@/components/project/ProjectOverviewFilter";
+import { projectOverviewFilterWithDefaults } from "@/components/project/ProjectOverviewFilter";
 import { trpc } from "@/server/trpc/client";
 import { AccessTime, Autorenew, Person, Error } from "@mui/icons-material";
 import { Chip, Grid2 } from "@mui/material";
-import { DataGrid, GridColDef, GridFilterModel, GridPaginationModel, GridSortModel } from "@mui/x-data-grid";
+import {
+  DataGrid,
+  GridColDef,
+  GridPaginationModel,
+  GridSortModel,
+} from "@mui/x-data-grid";
 import { keepPreviousData } from "@tanstack/react-query";
 import { useFormatter } from "next-intl";
 import { parseAsFloat, parseAsJson, parseAsString, useQueryState } from "nuqs";
@@ -70,6 +75,8 @@ export default function ProjectOverviewListPage() {
     parseAsJson(projectOverviewFilterWithDefaults)
   );
 
+  
+
   const {
     data: { data: projects, count } = { count: 0, data: [] },
     isPending: isProjectsPending,
@@ -77,7 +84,7 @@ export default function ProjectOverviewListPage() {
     {
       filter: filter,
       limit: pageSize,
-      skip: page * pageSize,
+      skip: (page - 1) * pageSize,
       search: {},
       sortBy,
       sortOrder: sortOrder ?? undefined,
@@ -87,77 +94,80 @@ export default function ProjectOverviewListPage() {
     }
   );
 
-  const columns = useMemo<GridColDef<typeof projects[number]>[]>(() => [
-    {
-      field: "building.name",
-      headerName: "Gebäudenummer",
-      renderCell: ({ row: { building } }) => <>{building.name}</>,
-    },
-    {
-      field: "name",
-      headerName: "Projektname",
-    },
-    {
-      field: "projectManager.name",
-      headerName: "Projektleiter",
-      renderCell: ({ row: { projectManager } }) => (
-        <Chip
-          variant="outlined"
-          icon={<Person />}
-          label={projectManager.name}
-        />
-      ),
-    },
-    {
-      field: "startDate",
-      headerName: "Anfangs Datum",
-      renderCell: ({ row: { startDate } }) => (
-        <>{formatter.dateTime(startDate)}</>
-      ),
-    },
-    {
-      field: "endDate",
-      headerName: "End Datum",
-      renderCell: ({ row: { endDate } }) => (
-        <>{formatter.dateTime(endDate)}</>
-      ),
-    },
-    {
-      field: "status",
-      headerName: "Status",
-      renderCell: ({ row: { status } }) => {
-        switch (status) {
-          case "IN_WORK":
-            return (
-              <Chip
-                color="success"
-                icon={<Autorenew />}
-                label="In Arbeit"
-                variant="outlined"
-              />
-            );
-          case "CRITICAL":
-            return (
-              <Chip
-                color="error"
-                icon={<AccessTime />}
-                label="Kritisch"
-                variant="outlined"
-              />
-            );
-          case "DELAYED":
-            return (
-              <Chip
-                color="warning"
-                icon={<Error />}
-                label="Verzögert"
-                variant="outlined"
-              />
-            );
-        }
+  const columns = useMemo<GridColDef<(typeof projects)[number]>[]>(
+    () => [
+      {
+        field: "building.name",
+        headerName: "Gebäudenummer",
+        renderCell: ({ row: { building } }) => <>{building.name}</>,
       },
-    },
-  ], []);
+      {
+        field: "name",
+        headerName: "Projektname",
+      },
+      {
+        field: "projectManager.name",
+        headerName: "Projektleiter",
+        renderCell: ({ row: { projectManager } }) => (
+          <Chip
+            variant="outlined"
+            icon={<Person />}
+            label={projectManager.name}
+          />
+        ),
+      },
+      {
+        field: "startDate",
+        headerName: "Anfangs Datum",
+        renderCell: ({ row: { startDate } }) => (
+          <>{formatter.dateTime(startDate)}</>
+        ),
+      },
+      {
+        field: "endDate",
+        headerName: "End Datum",
+        renderCell: ({ row: { endDate } }) => (
+          <>{formatter.dateTime(endDate)}</>
+        ),
+      },
+      {
+        field: "status",
+        headerName: "Status",
+        renderCell: ({ row: { status } }) => {
+          switch (status) {
+            case "IN_WORK":
+              return (
+                <Chip
+                  color="success"
+                  icon={<Autorenew />}
+                  label="In Arbeit"
+                  variant="outlined"
+                />
+              );
+            case "CRITICAL":
+              return (
+                <Chip
+                  color="error"
+                  icon={<AccessTime />}
+                  label="Kritisch"
+                  variant="outlined"
+                />
+              );
+            case "DELAYED":
+              return (
+                <Chip
+                  color="warning"
+                  icon={<Error />}
+                  label="Verzögert"
+                  variant="outlined"
+                />
+              );
+          }
+        },
+      },
+    ],
+    []
+  );
 
   const formatter = useFormatter();
 
@@ -172,6 +182,7 @@ export default function ProjectOverviewListPage() {
       spacing={2}
     >
       <DataGrid
+        disableVirtualization
         rows={projects}
         getRowId={(row) => row.id}
         paginationMode="server"

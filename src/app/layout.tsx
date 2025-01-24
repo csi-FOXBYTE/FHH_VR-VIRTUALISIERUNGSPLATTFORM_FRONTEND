@@ -1,7 +1,6 @@
 import { routing } from "@/server/i18n/routing";
 import type { Metadata } from "next";
 import { auth } from "@/server/auth/auth";
-import { signIn } from "next-auth/react";
 import LoginRedirect from "@/components/common/LoginRedirect";
 
 export const metadata: Metadata = {
@@ -20,7 +19,15 @@ export default async function RootLayout({
 }>) {
   const session = await auth();
 
-  if (!session) return <LoginRedirect />;
+  if (!session)
+    return (
+      <html lang="en">
+        <head />
+        <body>
+          <LoginRedirect />
+        </body>
+      </html>
+    );
 
   return <>{children}</>;
 }

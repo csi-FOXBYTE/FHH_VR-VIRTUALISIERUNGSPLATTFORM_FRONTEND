@@ -4,11 +4,11 @@ import { z } from "zod";
 export const projectOverviewFilter = z.object({
   buildingId: z
     .string()
-    .transform(s => s === "" ? undefined : s)
+    .transform((s) => (s === "" ? undefined : s))
     .optional(),
   projectManagerId: z
     .string()
-    .transform(s => s === "" ? undefined : s)
+    .transform((s) => (s === "" ? undefined : s))
     .optional(),
   status: z
     .enum([
@@ -17,7 +17,7 @@ export const projectOverviewFilter = z.object({
       PROJECT_STATUS.IN_WORK,
       "",
     ])
-    .transform(s => s === "" ? undefined : s)
+    .transform((s) => (s === "" ? undefined : s))
     .optional(),
   myProjects: z.boolean().optional(),
 });
