@@ -7,13 +7,13 @@ import match from "autosuggest-highlight/match";
 
 export default function SearchInput<
   TError,
-  TExtraInput extends Record<string, any>
+  TExtraInput extends Record<string, unknown>
 >({
   useQuery,
   value,
   label,
   extraInput,
-  onChange = () => {},
+  onChange = () => { },
   ...props
 }: Omit<
   AutocompleteProps<{ value: string; label: string }, false, false, false>,
@@ -24,8 +24,8 @@ export default function SearchInput<
   useQuery: (
     props:
       | ({
-          name: string;
-        } & TExtraInput)
+        name: string;
+      } & TExtraInput)
       | SkipToken
   ) => UseTRPCQueryResult<{ label: string; value: string }[], TError>;
   value?: string;
@@ -36,7 +36,6 @@ export default function SearchInput<
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
   const [tempOptions, setTempOptions] =
     useState<{ label: string; value: string }[]>();
-
   const { data: options = [], isLoading } = useQuery(
     open ? { name: debouncedSearchTerm, ...extraInput } : skipToken
   );

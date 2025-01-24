@@ -16,12 +16,14 @@ import {
   FormLabel,
   DialogProps,
   Typography,
+  CircularProgress,
 } from "@mui/material";
 import { Formik, FormikHelpers, FormikValues } from "formik";
 import { z } from "zod";
 import { toFormikValidationSchema } from "zod-formik-adapter";
-import ParticipantSelection from "@/components/common/ParticipantsSelection";
 import { useTranslations } from "next-intl";
+import SearchInput from "@/components/common/SearchInput";
+import { trpc } from "@/server/trpc/client";
 
 type FormConfig<T> = {
   [K in keyof T]: {
@@ -35,6 +37,11 @@ type FormConfig<T> = {
 interface BaseDialogFactoryProps<T> extends Omit<DialogProps, "onSubmit"> {
   close: () => void;
   onSubmit: (values: T, formikHelpers: FormikHelpers<T>) => void;
+  useQuery?: () => {
+    data?: Partial<T>;
+    isLoading: boolean;
+    error?: unknown;
+  };
   initialValues: T;
   validationSchema: z.ZodType<T>;
   formConfig: FormConfig<T>;
@@ -46,7 +53,6 @@ interface BaseDialogFactoryProps<T> extends Omit<DialogProps, "onSubmit"> {
 type DialogFactoryProps<T> = BaseDialogFactoryProps<T>;
 
 function renderError(key: string, formikProps: FormikValues) {
-  console.log(formikProps)
   if (formikProps.touched[key] && formikProps.errors[key]) {
     return (
       <Typography variant="caption" color="error" style={{ marginTop: "0.5rem" }}>
@@ -67,153 +73,165 @@ export function DialogFactory<T extends FormikValues>({
   title,
   submitButtonText,
   projectId,
+  useQuery,
 }: DialogFactoryProps<T>) {
+
   const t = useTranslations();
+
+  const query = useQuery?.();
+  const isLoading = query?.isLoading ?? false;
+  const queryData = query?.data as T;
 
   return (
     <Dialog open={open} onClose={close} fullWidth maxWidth="sm">
       <DialogTitle>{title}</DialogTitle>
-      <Formik
-        initialValues={initialValues}
-        validate={async (values) => {
-          try {
-            await toFormikValidationSchema(validationSchema).validate(values);
-          } catch (error) {
-            const validationErrors = {};
-            if (error.inner) {
-              error.inner.forEach((err) => {
-                validationErrors[err.path] = err.message;
-              });
-            }
-            console.error("Validation errors:", validationErrors);
-            return validationErrors;
-          }
-        }}
-        validationSchema={toFormikValidationSchema(validationSchema)}
-        onSubmit={(values, formikHelpers) => {
-          console.log("Submit Triggered");
-          onSubmit(values, formikHelpers);
-        }}
-      >
-        {(formikProps) => (
-          <form onSubmit={formikProps.handleSubmit}>
-            <DialogContent>
-              {Object.keys(formConfig).map((key) => {
-                const config = formConfig[key as keyof T];
-                switch (config.type) {
-                  case "text":
-                    return (
-                      <FormControl fullWidth margin="normal" key={key}>
-                        <TextField
-                          name={key}
-                          label={config.label}
-                          variant="filled"
-                          value={formikProps.values[key]}
-                          onChange={formikProps.handleChange}
-                          onBlur={formikProps.handleBlur}
-                          error={formikProps.touched[key] && Boolean(formikProps.errors[key])}
-                          helperText={formikProps.touched[key] && typeof formikProps.errors[key] === 'string' ? formikProps.errors[key] : undefined}
-                          InputProps={{ readOnly: config.readOnly }}
-                        />
-                      </FormControl>
-                    );
-                  case "select":
-                    return (
-                      <FormControl fullWidth margin="normal" key={key}>
-                        <InputLabel id={`${key}-label`}>{config.label}</InputLabel>
-                        <Select
-                          labelId={`${key}-label`}
-                          name={key}
-                          value={formikProps.values[key]}
-                          onChange={formikProps.handleChange}
-                          onBlur={formikProps.handleBlur}
-                          error={formikProps.touched[key] && Boolean(formikProps.errors[key])}
-                        >
-                          {config.options?.map((option) => (
-                            <MenuItem key={option.value} value={option.value}>
-                              {option.label}
-                            </MenuItem>
-                          ))}
-                        </Select>
-                        {renderError(key, formikProps)}
-                      </FormControl>
-                    );
-                  case "participantSelection":
-                    if (!projectId) {
-                      console.error("projectId is required for participantSelection");
-                      return null;
-                    }
-                    return (
-                      <FormControl fullWidth margin="normal" key={key}>
-                        <ParticipantSelection
-                          projectId={projectId}
-                          value={formikProps.values[key]}
-                          onChange={(event, value) => {
-                            formikProps.handleChange(value);
+      {isLoading ? (
+        <DialogContent>
+          <CircularProgress />
+        </DialogContent>
+      ) : (
+        <Formik
+          initialValues={queryData ?? initialValues}
+          validate={async (values) => {
+            try {
+              await toFormikValidationSchema(validationSchema).validate(values);
+            } catch (error: unknown) {
+              const validationErrors = {};
 
-                            // formikProps.setFieldValue(key, value?.id || "");
-                            formikProps.setFieldTouched(key, true);
-                          }}
-                          label={config.label}
-                        />
-                        {renderError(key, formikProps)}
-                      </FormControl>
-                    );
-                  case "radio":
-                    return (
-                      <FormControl component="fieldset" margin="normal" key={key}>
-                        <FormLabel component="legend">{config.label}</FormLabel>
-                        <RadioGroup
-                          name={key}
-                          value={formikProps.values[key]}
-                          onChange={formikProps.handleChange}
-                          onBlur={formikProps.handleBlur}
-                        >
-                          {config.options?.map((option) => (
-                            <FormControlLabel
-                              key={option.value}
-                              value={option.value}
-                              control={<Radio />}
-                              label={option.label}
-                            />
-                          ))}
-                        </RadioGroup>
-                        {renderError(key, formikProps)}
-                      </FormControl>
-                    );
-                  case "date":
-                    return (
-                      <FormControl fullWidth margin="normal" key={key}>
-                        <TextField
-                          name={key}
-                          label={config.label}
-                          type="date"
-                          variant="filled"
-                          value={formikProps.values[key]}
-                          onChange={formikProps.handleChange}
-                          onBlur={formikProps.handleBlur}
-                          error={formikProps.touched[key] && Boolean(formikProps.errors[key])}
-                          helperText={formikProps.touched[key] && typeof formikProps.errors[key] === 'string' ? formikProps.errors[key] : undefined}
-                          InputProps={{ readOnly: config.readOnly }}
-                        />
-                      </FormControl>
-                    );
-                  default:
-                    return null;
+              if (error.inner) {
+                error.inner.forEach((err) => {
+                  validationErrors[err.path] = err.message;
+                });
+              }
+              console.warn("Validation errors:", validationErrors);
+              return validationErrors;
+            }
+          }}
+          validationSchema={toFormikValidationSchema(validationSchema)}
+          onSubmit={(values, formikHelpers) => {
+            console.log("Submit Triggered");
+            onSubmit(values, formikHelpers);
+          }}
+        >
+          {(formikProps) => (
+            <form onSubmit={formikProps.handleSubmit}>
+              <DialogContent>
+                {Object.keys(formConfig).map((key) => {
+                  const config = formConfig[key as keyof T];
+                  switch (config.type) {
+                    case "text":
+                      return (
+                        <FormControl fullWidth margin="normal" key={key}>
+                          <TextField
+                            name={key}
+                            label={config.label}
+                            variant="filled"
+                            value={formikProps.values[key]}
+                            onChange={formikProps.handleChange}
+                            onBlur={formikProps.handleBlur}
+                            error={formikProps.touched[key] && Boolean(formikProps.errors[key])}
+                            helperText={formikProps.touched[key] && typeof formikProps.errors[key] === 'string' ? formikProps.errors[key] : undefined}
+                            InputProps={{ readOnly: config.readOnly }}
+                          />
+                        </FormControl>
+                      );
+                    case "select":
+                      return (
+                        <FormControl fullWidth margin="normal" key={key}>
+                          <InputLabel id={`${key}-label`}>{config.label}</InputLabel>
+                          <Select
+                            labelId={`${key}-label`}
+                            name={key}
+                            value={formikProps.values[key]}
+                            onChange={formikProps.handleChange}
+                            onBlur={formikProps.handleBlur}
+                            error={formikProps.touched[key] && Boolean(formikProps.errors[key])}
+                          >
+                            {config.options?.map((option) => (
+                              <MenuItem key={option.value} value={option.value}>
+                                {option.label}
+                              </MenuItem>
+                            ))}
+                          </Select>
+                          {renderError(key, formikProps)}
+                        </FormControl>
+                      );
+                    case "participantSelection":
+                      if (!projectId) {
+                        console.warn("projectId is required for participantSelection");
+                        return null;
+                      }
+                      return (
+                        <FormControl fullWidth margin="normal" key={key}>
+                          <SearchInput
+                            label="Participant"
+                            extraInput={{}}
+                            style={{ flex: 1 }}
+                            value={formikProps.values[key]}
+                            onChange={(value) => formikProps.setFieldValue(key, value)}
+                            useQuery={trpc.participantsRouter.searchParticipant.useQuery}
+                          />
+                          {renderError(key, formikProps)}
+                        </FormControl>
+                      );
+                    case "radio":
+                      return (
+                        <FormControl component="fieldset" margin="normal" key={key}>
+                          <FormLabel component="legend">{config.label}</FormLabel>
+                          <RadioGroup
+                            name={key}
+                            value={formikProps.values[key]}
+                            onChange={formikProps.handleChange}
+                            onBlur={formikProps.handleBlur}
+                          >
+                            {config.options?.map((option) => (
+                              <FormControlLabel
+                                key={option.value}
+                                value={option.value}
+                                control={<Radio />}
+                                label={option.label}
+                              />
+                            ))}
+                          </RadioGroup>
+                          {renderError(key, formikProps)}
+                        </FormControl>
+                      );
+                    case "date":
+                      return (
+                        <FormControl fullWidth margin="normal" key={key}>
+                          <TextField
+                            name={key}
+                            label={config.label}
+                            type="date"
+                            variant="filled"
+                            value={formikProps.values[key] ? new Date(formikProps.values[key]).toISOString().split('T')[0] : ''}
+                            onChange={formikProps.handleChange}
+                            onBlur={formikProps.handleBlur}
+                            error={formikProps.touched[key] && Boolean(formikProps.errors[key])}
+                            helperText={formikProps.touched[key] && typeof formikProps.errors[key] === 'string' ? formikProps.errors[key] : undefined}
+                            InputLabelProps={{ shrink: true }}
+                            inputProps={{ readOnly: config.readOnly }}
+                          />
+                        </FormControl>
+                      );
+                    default:
+                      return null;
+                  }
                 }
-              })}
-            </DialogContent>
-            <DialogActions>
-              <Button variant="outlined" color="inherit" onClick={close}>
-                {t("common.cancelButton")}
-              </Button>
-              <Button variant="outlined" type="submit">
-                {submitButtonText}
-              </Button>
-            </DialogActions>
-          </form>
-        )}
-      </Formik>
+                )}
+              </DialogContent>
+              <DialogActions>
+                <Button variant="outlined" color="inherit" onClick={close}>
+                  {t("common.cancelButton")}
+                </Button>
+                <Button variant="outlined" type="submit">
+                  {submitButtonText}
+                </Button>
+              </DialogActions>
+            </form>
+          )}
+        </Formik>
+      )}
     </Dialog>
   );
 }

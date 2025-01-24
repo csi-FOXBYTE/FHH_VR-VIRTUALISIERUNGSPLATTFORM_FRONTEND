@@ -89,7 +89,8 @@
     "editButton": "Bearbeiten",
     "addButton": "Hinzufügen",
     "backButton": "Zurück",
-    "refreshButton": "Daten aktualisieren"
+    "refreshButton": "Daten aktualisieren",
+    "loading": "Laden..."
   },
   "requirementDialog": {
     "cancel": "Abbrechen",

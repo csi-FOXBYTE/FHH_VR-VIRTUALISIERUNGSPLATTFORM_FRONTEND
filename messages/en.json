@@ -82,7 +82,8 @@
     "deleteButton": "Delete",
     "editButton": "Edit",
     "refreshButton": "Update data",
-    "saveButton": "Save"
+    "saveButton": "Save",
+    "loading": "Loading..."
   },
   "requirementDialog": {
     "cancel": "Cancel",
