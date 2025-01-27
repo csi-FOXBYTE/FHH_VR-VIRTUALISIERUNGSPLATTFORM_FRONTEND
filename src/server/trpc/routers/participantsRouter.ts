@@ -2,6 +2,34 @@ import { z } from "zod";
 import { protectedProcedure, router } from "..";
 
 const participantsRouter = router({
+
+  searchParticipant: protectedProcedure([])
+    .input(z.object({ name: z.string() }))
+    .query(async (opts) => {
+      const participants = await opts.ctx.db.user.findMany({
+        take: 10,
+        skip: 0,
+        orderBy: {
+          name: "asc",
+        },
+        select: {
+          name: true,
+          id: true,
+        },
+        where: {
+          name: {
+            contains: opts.input.name,
+            mode: "insensitive",
+          },
+        },
+      });
+
+      return participants.map((participant) => ({
+        label: participant.name,
+        value: participant.id,
+        option: participant.name
+      }));
+    }),
   // getParticipants: protectedProcedure([])
   //   .input(
   //     z.object({

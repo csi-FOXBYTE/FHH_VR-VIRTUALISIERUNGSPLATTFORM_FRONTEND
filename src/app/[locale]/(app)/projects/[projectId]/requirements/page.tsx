@@ -30,14 +30,25 @@ import { Requirement, REQUIREMENT_CATEGORY } from "@prisma/client";
 
 type RequirementFormValues = {
   id?: string;
-  name?: string;
-  description: string;
+  name: string;
   assignedToUserId: string;
   requirementCategory: REQUIREMENT_CATEGORY;
   createdAt: string;
 };
 import { DialogFactory } from "@/components/project/Dialog/DialogFactory";
 import { useSession } from "next-auth/react";
+
+const generateInitialValues = <
+  T extends Record<string, { initialValue: string | number | boolean | Date }>
+>(
+  model: T
+) => {
+  return Object.keys(model).reduce((acc, key) => {
+    const typedKey = key as keyof T;
+    acc[typedKey] = model[typedKey].initialValue;
+    return acc;
+  }, {} as { [K in keyof T]: T[K]["initialValue"] });
+};
 
 const StyledBox = styled(Box)({
   display: "flex",
@@ -51,59 +62,45 @@ const StyledBox = styled(Box)({
 export const requirementFormModel = {
   name: {
     initialValue: "",
-    validation: z.string().min(1, "Name is required"),
-  },
-  description: {
-    initialValue: "",
-    validation: z.string().min(1, "Description is required"),
+    validation: z.string().min(1, "name is required"),
   },
   assignedToUserId: {
     initialValue: "",
-    validation: z
-      .string()
-      .email("Invalid user")
-      .min(1, "User is required"),
+    validation: z.string().min(1, "User is required"),
   },
   requirementCategory: {
     initialValue: "TECHNICAL" as REQUIREMENT_CATEGORY,
-    validation: z.enum(["ORGANIZATIONAL", "TECHNICAL"], {
-      required_error: "Category is required",
-    }),
-  },
-  createdAt: {
-    initialValue: new Date().toISOString().split("T")[0],
-    validation: z.string().refine(
-      (val) => {
-        return !isNaN(Date.parse(val)); // Ensures it's a valid date
-      },
+    validation: z.nativeEnum(REQUIREMENT_CATEGORY).refine(
+      (val) => ["ORGANIZATIONAL", "TECHNICAL"].includes(val),
       {
-        message: "Creation date is required",
+        message: "Category is required",
       }
     ),
   },
+  createdAt: {
+    initialValue: new Date().toISOString().split("T")[0],
+    validation: z.any(),//TODO: add validation
+  },
 };
 
-// Generate validation schema dynamically
 export const generateZodValidationSchema = <
   T extends Record<string, { validation: z.ZodTypeAny }>
 >(
   model: T
-) => {
+): z.ZodObject<{ [K in keyof T]: T[K]["validation"] }> => {
   const shape = Object.keys(model).reduce((acc, key) => {
     acc[key as keyof T] = model[key].validation;
     return acc;
-  }, {} as Record<keyof T, z.ZodTypeAny>);
+  }, {} as { [K in keyof T]: T[K]["validation"] });
   return z.object(shape);
 };
 
-
-// Usage example: validationSchema
 const validationSchema = generateZodValidationSchema(requirementFormModel);
 
 export default function Requirements() {
   const { projectId } = useParams();
   const { data: session } = useSession();
-  const [editRequirement, setEditRequirement] = useState<Requirement | null>(
+  const [editRequirementId, setEditRequirementId] = useState<string | null>(
     null
   );
   const [historyRequirement, setHistoryRequirement] =
@@ -113,19 +110,12 @@ export default function Requirements() {
 
   const t = useTranslations();
 
-  const generateInitialValues = <
-    T extends Record<string, { initialValue: string | number | boolean | Date }>
-  >(
-    model: T
-  ) => {
-    return Object.keys(model).reduce((acc, key) => {
-      const typedKey = key as keyof T;
-      acc[typedKey] = model[typedKey].initialValue;
-      return acc;
-    }, {} as { [K in keyof T]: T[K]["initialValue"] });
-  };
+  const initialValues = useMemo(
+    () => generateInitialValues(requirementFormModel),
+    []
+  );
 
-  // #region Data Fetching
+  // #region Data Fetching/Querys
   const {
     data: project,
     isPending: isProjectsPending,
@@ -137,12 +127,43 @@ export default function Requirements() {
       placeholderData: keepPreviousData,
     }
   );
+  const deleteRequirementMutation = trpc.requirementsRouter.deleteRequirement.useMutation({
+    onSuccess: () => {
+      console.log("Requirement deleted successfully");
+      refetch();
+    },
+    onError: (error) => {
+      console.error("Error deleting requirement:", error);
+    },
+  });
+
+  const editRequirementMutation = trpc.requirementsRouter.editRequirement.useMutation({
+    onSuccess: () => {
+      console.log("Requirement edited successfully");
+      resetEditMode();
+      refetch();
+    },
+    onError: (error) => {
+      console.error("Error editing requirement:", error);
+    },
+  });
+
+  const addRequirementMutation = trpc.requirementsRouter.addRequirement.useMutation({
+    onSuccess: () => {
+      console.log("Requirement added successfully");
+      resetEditMode();
+      refetch();
+    },
+    onError: (error) => {
+      console.error("Error adding requirement:", error);
+    },
+  });
   // #endregion
 
   // #region Handlers
 
   const resetEditMode = useCallback(() => {
-    setEditRequirement(null);
+    setEditRequirementId(null);
     setCreateModalOpened(false);
   }, []);
 
@@ -165,45 +186,42 @@ export default function Requirements() {
   );
 
   const handleDeleteRequirementClick = useCallback((requirementId: string) => {
-    trpc.requirementsRouter.deleteRequirement.useMutation().mutate({
-      requirementId,
-    });
-  }, []);
+    deleteRequirementMutation.mutate({ requirementId });
+  }, [deleteRequirementMutation]);
+
   const handleEditRequirementClick = useCallback((requirementId: string) => {
-    console.log("TODO");
+    setEditRequirementId(requirementId);
+    setCreateModalOpened(true);
   }, []);
 
-  //TODO:RequirementFormValues
-  const handleSubmit = (values: RequirementFormValues) => {
-    //if "id" then existing one is edited
+  const handleSubmit = useCallback((values: RequirementFormValues) => {
     if (values.id) {
-      trpc.requirementsRouter.editRequirement.useMutation().mutate({
+      editRequirementMutation.mutate({
         projectId: projectId as string,
         requirementId: values.id as string,
         data: {
           name: values.name,
-          description: values.description,
           assignedToUserId: values.assignedToUserId,
           requirementCategory: values.requirementCategory,
           updatedAt: new Date(values.createdAt),
+          description: "",
         },
       });
     } else {
-      console.log("ok");
-      trpc.requirementsRouter.addRequirement.useMutation().mutate({
+      addRequirementMutation.mutate({
         projectId: projectId as string,
         data: {
           ...values,
-          name: values.name ?? "",
           creatorId: session?.user.id as string,
           createdAt: new Date(values.createdAt),
+          description: "",
         },
       });
     }
-  };
-
+  }, [projectId, session?.user.id, editRequirementMutation, addRequirementMutation]);
+  //#region Dialog Config
   const formConfig = {
-    description: {
+    name: {
       type: "text" as const,
       label: t("requirementDialog.requirementText"),
     },
@@ -215,8 +233,8 @@ export default function Requirements() {
       type: "radio" as const,
       label: t("requirementDialog.category"),
       options: [
-        { value: "Org", label: t("requirementDialog.orgRequirement") },
-        { value: "Tec", label: t("requirementDialog.techRequirement") },
+        { value: "ORGANIZATIONAL", label: t("requirementDialog.orgRequirement") },
+        { value: "TECHNICAL", label: t("requirementDialog.techRequirement") },
       ],
     },
     createdAt: {
@@ -226,6 +244,7 @@ export default function Requirements() {
     },
   };
 
+  //#endregion
   // #endregion
 
   //#region options
@@ -412,28 +431,22 @@ export default function Requirements() {
           close={resetEditMode}
           projectId={projectId as string}
           open={createModalOpened}
-          initialValues={
-            editRequirement
-              ? {
-                ...generateInitialValues(requirementFormModel),
-                ...editRequirement,
-                assignedToUserId: editRequirement.assignedToUserId,
-                requirementCategory: editRequirement.requirementCategory,
-                createdAt: new Date(editRequirement.createdAt)
-                  .toISOString()
-                  .split("T")[0],
-              }
-              : generateInitialValues(requirementFormModel)
-          }
+          initialValues={initialValues}
           validationSchema={validationSchema}
           onSubmit={handleSubmit}
           formConfig={formConfig}
           title={
-            editRequirement
+            editRequirementId
               ? t("requirementDialog.editTitle")
               : t("requirementDialog.addTitle")
           }
           submitButtonText={t("requirementDialog.save")}
+          useQuery={() =>
+            trpc.requirementsRouter.getRequirement.useQuery(
+              { projectId: projectId as string, requirementId: editRequirementId ?? "" },
+              { enabled: !!editRequirementId }
+            )
+          }
         />
         <RequirementHistoryDialog
           open={historyModalOpened}
