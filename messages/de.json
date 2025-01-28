@@ -78,7 +78,7 @@
       "column6": "Firma",
       "column7": "Int/Ext",
       "addButton": "Beteiligten hinzufügen",
-      "addTaskOption": "Aufgabe zuweisen",
+      "addWorkItemOption": "Aufgabe zuweisen",
       "deleteOption": "Löschen"
     }
   },
@@ -122,6 +122,31 @@
   "participantDialog": {
     "cancel": "Abbrechen",
     "save": "Speichern",
-    "title": "Beteiligten hinzufügen"
+    "title": "Beteiligte hinzufügen"
+  },
+  "workItemDialog": {
+    "title": "Aufgabe hinzufügen",
+    "name": "Titel",
+    "status": "Status",
+    "priority": "Priorität",
+    "startDate": "Start",
+    "endDate": "Fällig am",
+    "assignedToUser": "Zugeordnet an",
+    "dependsOnWorkItem": "Abhängig von",
+    "ressources": "Ressourcen",
+    "description": "Kommentar",
+    "statusOption1": "In Arbeit",
+    "statusOption2": "Geschlossen",
+    "statusOption3": "Offen",
+    "statusOption4": "Erledigt",
+    "priorityOption1": "Niedrig",
+    "priorityOption2": "Mittel",
+    "priorityOption3": "Hoch",
+    "priorityOption4": "Sehr hoch",
+    "dependencyOption1": "Start - Ende",
+    "dependencyOption2": "Start - Start",
+    "dependencyOption3": "Ende - Ende",
+    "dependencyOption4": "Ende - Start",
+    "attachments": "Anhänge"
   }
 }

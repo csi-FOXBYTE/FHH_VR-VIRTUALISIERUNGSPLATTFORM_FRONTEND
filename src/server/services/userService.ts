@@ -3,13 +3,6 @@ import { AbstractService } from "./abstractService";
 import { Session } from "next-auth";
 import { EventBus } from "../events";
 
-export interface IUser {
-  id: string;
-  name: string;
-  email: string;
-  role: "admin" | "user";
-}
-
 export class UserService implements AbstractService {
   readonly name = "user";
 

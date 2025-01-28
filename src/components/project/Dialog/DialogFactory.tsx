@@ -23,10 +23,34 @@ import { useTranslations } from "next-intl";
 import SearchInput, { SearchInputQuery } from "@/components/common/SearchInput";
 import { trpc } from "@/server/trpc/client";
 
-// Typen
+export const generateZodValidationSchema = <
+  T extends Record<string, { validation: z.ZodTypeAny }>
+>(
+  model: T
+): z.ZodObject<{ [K in keyof T]: T[K]["validation"] }> => {
+  const shape = Object.keys(model).reduce((acc, key) => {
+    const field = model[key];
+    acc[key as keyof T] = field.validation;
+    return acc;
+  }, {} as { [K in keyof T]: T[K]["validation"] });
+  return z.object(shape);
+};
+
+export const generateInitialValues = <
+  T extends Record<string, { initialValue: string | string[] | number | boolean | Date }>
+>(
+  model: T
+) => {
+  return Object.keys(model).reduce((acc, key) => {
+    const typedKey = key as keyof T;
+    acc[typedKey] = model[typedKey].initialValue;
+    return acc;
+  }, {} as { [K in keyof T]: T[K]["initialValue"] });
+};
+
 type FormConfig<T> = {
   [K in keyof T]: {
-    type: "text" | "select" | "participantSelection" | "radio" | "date";
+    type: "text" | "select" | "participantSelection" | "radio" | "date" | "attachment" | "textArea";
     label: string;
     options?: { value: string; label: string }[];
     readOnly?: boolean;
@@ -65,8 +89,8 @@ const validateFormValues = async<T>(schema: z.ZodType<T>, values: T) => {
     return validationErrors;
   }
 };
+//#region Renderer Fields
 
-// Helper: Fehleranzeige
 const renderErrorText = (key: string, formikProps: FormikValues) => {
   return formikProps.touched[key] && formikProps.errors[key]
     ? (
@@ -77,8 +101,7 @@ const renderErrorText = (key: string, formikProps: FormikValues) => {
     : null;
 };
 
-// Helper: Modularisierte Feldlogik
-const renderTextField = (key: string, config: FormConfig<any>[string], formikProps: FormikValues) => (
+const renderTextField = (key: string, config: FormConfig<any>[string], formikProps: FormikValues, rows?: number) => (
   <FormControl fullWidth margin="normal" key={key}>
     <TextField
       name={key}
@@ -90,6 +113,7 @@ const renderTextField = (key: string, config: FormConfig<any>[string], formikPro
       error={formikProps.touched[key] && Boolean(formikProps.errors[key])}
       helperText={formikProps.touched[key] && typeof formikProps.errors[key] === "string" ? formikProps.errors[key] : undefined}
       InputProps={{ readOnly: config.readOnly }}
+      rows={rows}
     />
   </FormControl>
 );
@@ -149,7 +173,15 @@ const renderRadioField = (key: string, config: FormConfig<any>[string], formikPr
   </FormControl>
 );
 
-// Hauptkomponente
+const renderAttachmentField = (key: string, config: FormConfig<any>[string], formikProps: FormikValues) => (
+  <FormControl component="fieldset" margin="normal" key={key}>
+    <FormLabel component="legend">{config.label}</FormLabel>
+    <div>TODO:</div>
+    {renderErrorText(key, formikProps)}
+  </FormControl>
+);
+//#region Component Start
+
 export function DialogFactory<T extends FormikValues>({
   close,
   open,
@@ -168,17 +200,22 @@ export function DialogFactory<T extends FormikValues>({
     switch (config.type) {
       case "text":
         return renderTextField(key, config, formikProps);
+      case "textArea":
+        return renderTextField(key, config, formikProps, 4);
       case "date":
         return renderDateField(key, config, formikProps);
       case "participantSelection":
         return renderSelectField(key, config, formikProps, trpc.participantsRouter.searchParticipant.useQuery);
       case "radio":
         return renderRadioField(key, config, formikProps);
+      case "attachment":
+        return renderAttachmentField(key, config, formikProps);
       default:
         return null;
     }
   };
 
+  //#region Render
   return (
     <Dialog open={open} onClose={close} fullWidth maxWidth="sm">
       <DialogTitle>{title}</DialogTitle>

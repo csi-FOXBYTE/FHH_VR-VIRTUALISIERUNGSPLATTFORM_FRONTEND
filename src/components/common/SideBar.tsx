@@ -112,7 +112,7 @@ export default function SideBar() {
     },
     {
       name: "Aufgaben",
-      path: "/project/workitems",
+      path: `/projects/${projectId}/workitems`,
       type: "button",
       icon: <ChecklistRtl />,
     },

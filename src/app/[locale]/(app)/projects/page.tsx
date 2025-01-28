@@ -85,7 +85,7 @@ export default function ProjectPage() {
                 <Grid2 size={6}>
                   <Card
                     component={Card}
-                    onClick={() => router.push("/project/tasks")}
+                    onClick={() => router.push("/project/workitems")}
                   >
                     <CardHeader title={t("routes./project.card2Title")} />
                     <CardContent>

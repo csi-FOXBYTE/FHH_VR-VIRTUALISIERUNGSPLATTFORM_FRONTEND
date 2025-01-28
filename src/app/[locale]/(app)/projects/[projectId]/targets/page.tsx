@@ -31,25 +31,14 @@ type TargetFormValues = {
   name: string;
   assignedToUserId: string;
   targetCategory: TARGET_CATEGORY;
-  createdAt: string;
+  createdAt?: string;
 };
-import { DialogFactory } from "@/components/project/Dialog/DialogFactory";
+import { DialogFactory, generateInitialValues, generateZodValidationSchema } from "@/components/project/Dialog/DialogFactory";
 import { useSession } from "next-auth/react";
 import usePaginationAndSorting from "@/components/hooks/usePaginationAndSorting";
 
 
 //#region Utils (external)
-const generateInitialValues = <
-  T extends Record<string, { initialValue: string | number | boolean | Date }>
->(
-  model: T
-) => {
-  return Object.keys(model).reduce((acc, key) => {
-    const typedKey = key as keyof T;
-    acc[typedKey] = model[typedKey].initialValue;
-    return acc;
-  }, {} as { [K in keyof T]: T[K]["initialValue"] });
-};
 
 const StyledBox = styled(Box)({
   display: "flex",
@@ -80,21 +69,10 @@ export const targetFormModel = {
   },
   createdAt: {
     initialValue: new Date().toISOString().split("T")[0],
-    validation: z.any(),//TODO: add validation
+    validation: z.any().optional(),//TODO: add validation
   },
 };
 
-export const generateZodValidationSchema = <
-  T extends Record<string, { validation: z.ZodTypeAny }>
->(
-  model: T
-): z.ZodObject<{ [K in keyof T]: T[K]["validation"] }> => {
-  const shape = Object.keys(model).reduce((acc, key) => {
-    acc[key as keyof T] = model[key].validation;
-    return acc;
-  }, {} as { [K in keyof T]: T[K]["validation"] });
-  return z.object(shape);
-};
 
 const validationSchema = generateZodValidationSchema(targetFormModel);
 //#endregion
@@ -192,7 +170,7 @@ export default function TargetsPage() {
           name: values.name,
           assignedToUserId: values.assignedToUserId,
           targetCategory: values.targetCategory,
-          updatedAt: new Date(values.createdAt),
+          updatedAt: values.createdAt ? new Date(values.createdAt) : new Date(Date.now()),
           description: "",
         },
       });
@@ -202,7 +180,7 @@ export default function TargetsPage() {
         data: {
           ...values,
           creatorId: session?.user.id as string,
-          createdAt: new Date(values.createdAt),
+          createdAt: values.createdAt ? new Date(values.createdAt) : new Date(Date.now()),
           description: "",
         },
       });

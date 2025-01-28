@@ -8,8 +8,8 @@
     "/project": {
       "card1Text": "To your assigned projects",
       "card1Title": "My projects",
-      "card2Text": "To your assigned tasks",
-      "card2Title": "My tasks",
+      "card2Text": "To your assigned work items",
+      "card2Title": "My work items",
       "card3Text": "Short description",
       "card3Title": "Placeholder",
       "card4Text": "Short description",
@@ -71,7 +71,7 @@
       "column6": "Department",
       "column7": "Int/Ext",
       "addButton": "Add participant",
-      "addTaskOption": "Add task",
+      "addWorkItemOption": "Add work item",
       "deleteOption": "Delete"
     }
   },
@@ -115,6 +115,38 @@
   "participantDialog": {
     "cancel": "Cancel",
     "save": "Save",
-    "title": "Add participant"
+    "title": "Add participants"
+  },
+  "enums": {
+    "PROJECT_STATUS": {
+      "CRITICAL": "Critical",
+      "DELAYED": "Delayed",
+      "IN_WORK": "In progress"
+    }
+  },
+  "workItemDialog": {
+    "title": "Add work item",
+    "assignedToUser": "Assigned to",
+    "dependencyOption1": "Start - End",
+    "dependencyOption2": "Start - Start",
+    "dependencyOption3": "End - End",
+    "dependencyOption4": "End - Start",
+    "dependsOnWorkItem": "Depending on",
+    "description": "Comment",
+    "endDate": "Due on",
+    "name": "Title",
+    "priority": "Priority",
+    "priorityOption1": "Low",
+    "priorityOption2": "Medium",
+    "priorityOption3": "High",
+    "priorityOption4": "Very high",
+    "ressources": "Resources",
+    "startDate": "Start",
+    "status": "Status",
+    "statusOption1": "In progress",
+    "statusOption2": "Closed",
+    "statusOption3": "Open",
+    "statusOption4": "Completed",
+    "attachments": "Attachments"
   }
 }

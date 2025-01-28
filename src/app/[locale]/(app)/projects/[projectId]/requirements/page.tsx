@@ -24,8 +24,12 @@ import {
   SettingsOutlined,
 } from "@mui/icons-material";
 import OptionsButton from "@/components/common/OptionsButton";
-import RequirementHistoryDialog from "@/components/project/RequirementHistoryDialog";
+import RequirementHistoryDialog from "@/components/project/Dialog/RequirementHistoryDialog";
 import { REQUIREMENT_CATEGORY } from "@prisma/client";
+
+import { DialogFactory, generateInitialValues, generateZodValidationSchema } from "@/components/project/Dialog/DialogFactory";
+import { useSession } from "next-auth/react";
+import usePaginationAndSorting from "@/components/hooks/usePaginationAndSorting";
 
 type RequirementFormValues = {
   id?: string;
@@ -34,23 +38,9 @@ type RequirementFormValues = {
   requirementCategory: REQUIREMENT_CATEGORY;
   createdAt: string;
 };
-import { DialogFactory } from "@/components/project/Dialog/DialogFactory";
-import { useSession } from "next-auth/react";
-import usePaginationAndSorting from "@/components/hooks/usePaginationAndSorting";
-
 
 //#region Utils (external)
-const generateInitialValues = <
-  T extends Record<string, { initialValue: string | number | boolean | Date }>
->(
-  model: T
-) => {
-  return Object.keys(model).reduce((acc, key) => {
-    const typedKey = key as keyof T;
-    acc[typedKey] = model[typedKey].initialValue;
-    return acc;
-  }, {} as { [K in keyof T]: T[K]["initialValue"] });
-};
+
 
 const StyledBox = styled(Box)({
   display: "flex",
@@ -81,20 +71,8 @@ export const requirementFormModel = {
   },
   createdAt: {
     initialValue: new Date().toISOString().split("T")[0],
-    validation: z.any(),//TODO: add validation
+    validation: z.string().optional(),
   },
-};
-
-export const generateZodValidationSchema = <
-  T extends Record<string, { validation: z.ZodTypeAny }>
->(
-  model: T
-): z.ZodObject<{ [K in keyof T]: T[K]["validation"] }> => {
-  const shape = Object.keys(model).reduce((acc, key) => {
-    acc[key as keyof T] = model[key].validation;
-    return acc;
-  }, {} as { [K in keyof T]: T[K]["validation"] });
-  return z.object(shape);
 };
 
 const validationSchema = generateZodValidationSchema(requirementFormModel);
@@ -217,6 +195,7 @@ export default function RequirementsPage() {
       });
     }
   }, [projectId, session?.user.id, editRequirementMutation, addRequirementMutation]);
+
   //#region Dialog Config
   const initialValues = useMemo(() => generateInitialValues(requirementFormModel), []);
 
