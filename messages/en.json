@@ -21,7 +21,8 @@
       "tabbar1": "Project details",
       "tabbar2": "Requirements",
       "tabbar3": "Targets",
-      "tabbar4": "Participants"
+      "tabbar4": "Participants",
+      "tabbar5": "Work Items"
     },
     "/project/details": {
       "Accordion1Title": "Info",
@@ -72,6 +73,18 @@
       "column7": "Int/Ext",
       "addButton": "Add participant",
       "addWorkItemOption": "Add work item",
+      "deleteOption": "Delete"
+    },
+    "/project/workitems": {
+      "title": "Work items",
+      "column1": "Work item",
+      "column2": "Priority",
+      "column3": "Status",
+      "column4": "Responsible person",
+      "column5": "Start date",
+      "column6": "End date",
+      "addButton": "Add work item",
+      "editOption": "Edit",
       "deleteOption": "Delete"
     }
   },

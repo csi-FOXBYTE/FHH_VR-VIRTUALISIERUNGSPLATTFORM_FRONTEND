@@ -27,6 +27,7 @@ import AddParticipantDialog from "@/components/project/Dialog/AddParticipantDial
 import { DialogFactory, generateInitialValues, generateZodValidationSchema } from "@/components/project/Dialog/DialogFactory";
 import { DEPENDENCY_TYPE, PRIORITY, WORK_ITEM_STATUS, } from "@prisma/client";
 import { z } from "zod";
+//#region external
 
 type WorkItemFormValues = {
   id?: string;
@@ -41,8 +42,6 @@ type WorkItemFormValues = {
   description: string;
   attachments: string[];
 };
-
-//#region Utils (external)
 
 export const workItemFormModel = {
   name: {
@@ -155,7 +154,7 @@ export default function ParticipantsPage() {
     },
   });
 
-  const createWorkItemMutation = trpc.participantsRouter.addWorkItem.useMutation({
+  const createWorkItemMutation = trpc.workItemsRouter.addWorkItem.useMutation({
     onSuccess: () => {
       console.info("WorkItem created successfully");
       refetch();
@@ -186,10 +185,11 @@ export default function ParticipantsPage() {
       ...workItem,
       startDate: new Date(workItem.startDate),
       endDate: new Date(workItem.endDate),
+      projectId: projectId as string,
     });
     setAddWorkItemModalOpened(false);
     refetch();
-  }, [createWorkItemMutation, refetch]);
+  }, [createWorkItemMutation, projectId, refetch]);
 
   const handleCloseDialog = useCallback(() => {
     setAddWorkItemModalOpened(false)
@@ -235,7 +235,7 @@ export default function ParticipantsPage() {
       label: t("workItemDialog.endDate"),
     },
     assignedToUserId: {
-      type: "participantSelection" as const,
+      type: "searchSelection" as const,
       label: t("workItemDialog.assignedToUser"),
     },
     dependencyType: {

@@ -1,7 +1,6 @@
 import { z } from "zod";
 import { protectedProcedure, router } from "..";
 import { createOrderBy } from "@/server/prisma/utils";
-import { DEPENDENCY_TYPE, PRIORITY, WORK_ITEM_STATUS } from "@prisma/client";
 
 const participantsRouter = router({
 
@@ -229,44 +228,6 @@ const participantsRouter = router({
         value: user.id,
         option: user.name
       }));
-    }),
-
-  //#region add WorkItem
-  addWorkItem: protectedProcedure([])
-    .input(
-      z.object({
-        name: z.string(),
-        status: z.nativeEnum(WORK_ITEM_STATUS),
-        priority: z.nativeEnum(PRIORITY),
-        startDate: z.date(),
-        endDate: z.date(),
-        assignedToUserId: z.string(),
-        dependsOnWorkItemId: z.string().optional(),
-        dependencyType: z.nativeEnum(DEPENDENCY_TYPE).optional(),
-        ressources: z.array(z.string()).optional(),
-        description: z.string().optional().default(""),
-      })
-    )
-    .mutation(async ({ input, ctx }) => {
-      try {
-        const workItem = await ctx.db.workItem.create({
-          data: {
-            ...input,
-          },
-        });
-
-        return {
-          success: true,
-          message: "Work item successfully created",
-          workItemId: workItem.id,
-        };
-      } catch (error) {
-        console.error("Error creating work item:", error);
-        return {
-          success: false,
-          message: "An error occurred while creating the work item",
-        };
-      }
     }),
 });
 

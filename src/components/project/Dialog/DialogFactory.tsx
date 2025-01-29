@@ -22,6 +22,7 @@ import { toFormikValidationSchema } from "zod-formik-adapter";
 import { useTranslations } from "next-intl";
 import SearchInput, { SearchInputQuery } from "@/components/common/SearchInput";
 import { trpc } from "@/server/trpc/client";
+import SelectCustom from "@/components/common/SelectCustom";
 
 export const generateZodValidationSchema = <
   T extends Record<string, { validation: z.ZodTypeAny }>
@@ -50,7 +51,7 @@ export const generateInitialValues = <
 
 type FormConfig<T> = {
   [K in keyof T]: {
-    type: "text" | "select" | "participantSelection" | "radio" | "date" | "attachment" | "textArea";
+    type: "text" | "select" | "searchSelect" | "radio" | "date" | "attachment" | "textArea";
     label: string;
     options?: { value: string; label: string }[];
     readOnly?: boolean;
@@ -136,7 +137,21 @@ const renderDateField = (key: string, config: FormConfig<any>[string], formikPro
   </FormControl>
 );
 
-const renderSelectField = (key: string, config: FormConfig<any>[string], formikProps: FormikValues, query: SearchInputQuery<{ label: string; value: string }[], any, any>) => (
+const renderSelectField = (key: string, config: FormConfig<any>[string], formikProps: FormikValues) => (
+
+  <FormControl fullWidth margin="normal" key={key}>
+    <SelectCustom
+      label={config.label}
+      style={{ flex: 1 }}
+      value={formikProps.values[key]}
+      onChange={(value: string) => formikProps.setFieldValue(key, value)}
+      options={config.options ?? []}
+    />
+    {renderErrorText(key, formikProps)}
+  </FormControl>
+);
+
+const renderSearchSelectField = (key: string, config: FormConfig<any>[string], formikProps: FormikValues, query: SearchInputQuery<{ label: string; value: string }[], any, any>) => (
 
   <FormControl fullWidth margin="normal" key={key}>
     <SearchInput
@@ -204,8 +219,10 @@ export function DialogFactory<T extends FormikValues>({
         return renderTextField(key, config, formikProps, 4);
       case "date":
         return renderDateField(key, config, formikProps);
-      case "participantSelection":
-        return renderSelectField(key, config, formikProps, trpc.participantsRouter.searchParticipant.useQuery);
+      case "select":
+        return renderSelectField(key, config, formikProps);
+      case "searchSelect":
+        return renderSearchSelectField(key, config, formikProps, trpc.participantsRouter.searchParticipant.useQuery);
       case "radio":
         return renderRadioField(key, config, formikProps);
       case "attachment":

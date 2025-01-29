@@ -140,8 +140,9 @@ model Project {
   targets      Target[]
   participants User[]
 
-  rootFolder   Folder @relation(fields: [rootFolderId], references: [id])
+  rootFolder   Folder     @relation(fields: [rootFolderId], references: [id])
   rootFolderId String
+  WorkItem     WorkItem[]
 }
 
 model CostCenter {
@@ -247,6 +248,9 @@ model WorkItem {
   description String
 
   attachments File[]
+
+  project   Project @relation(fields: [projectId], references: [id])
+  projectId String
 }
 
 // ????

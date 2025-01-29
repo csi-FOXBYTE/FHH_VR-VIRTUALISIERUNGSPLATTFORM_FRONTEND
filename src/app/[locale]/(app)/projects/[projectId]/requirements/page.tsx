@@ -11,7 +11,7 @@ import {
 } from "@mui/material";
 import { DataGrid, GridColDef, } from "@mui/x-data-grid";
 import { keepPreviousData } from "@tanstack/react-query";
-import { useTranslations } from "next-intl";
+import { useFormatter, useTranslations } from "next-intl";
 import { useParams } from "next/navigation";
 import { useCallback, useMemo, useState } from "react";
 import { z } from "zod";
@@ -30,6 +30,7 @@ import { REQUIREMENT_CATEGORY } from "@prisma/client";
 import { DialogFactory, generateInitialValues, generateZodValidationSchema } from "@/components/project/Dialog/DialogFactory";
 import { useSession } from "next-auth/react";
 import usePaginationAndSorting from "@/components/hooks/usePaginationAndSorting";
+
 
 type RequirementFormValues = {
   id?: string;
@@ -82,6 +83,8 @@ const validationSchema = generateZodValidationSchema(requirementFormModel);
 export default function RequirementsPage() {
 
   //#region Hooks
+  const formatter = useFormatter();
+
   const { projectId } = useParams();
   const { data: session } = useSession();
   const [editRequirementId, setEditRequirementId] = useState<string | null>(null);
@@ -205,7 +208,7 @@ export default function RequirementsPage() {
       label: t("requirementDialog.requirementText"),
     },
     assignedToUserId: {
-      type: "participantSelection" as const,
+      type: "searchSelection" as const,
       label: t("requirementDialog.assignedToUserEmail"),
     },
     requirementCategory: {
@@ -279,6 +282,9 @@ export default function RequirementsPage() {
         field: "createdAt",
         headerName: t("routes./project/requirements.column4"),
         flex: 1,
+        renderCell: ({ row: { createdAt } }) => (
+          <>{formatter.dateTime(createdAt)}</>
+        ),
       },
       {
         field: "settings",
@@ -288,7 +294,7 @@ export default function RequirementsPage() {
         ),
       },
     ]
-  }, [options, t]);
+  }, [formatter, options, t]);
   //#endregion
 
   //#region Render

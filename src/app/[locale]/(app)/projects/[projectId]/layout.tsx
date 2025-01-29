@@ -91,6 +91,11 @@ export default function ProjectPage({ children }: { children: ReactNode }) {
             value={`/projects/${projectId}/participants`}
             label={t("routes./project.tabbar4")}
           />
+          <Tab
+            onClick={() => router.push(`/projects/${projectId}/workitems`)}
+            value={`/projects/${projectId}/workitems`}
+            label={t("routes./project.tabbar5")}
+          />
         </Tabs>
       </Grid2>
       {children}

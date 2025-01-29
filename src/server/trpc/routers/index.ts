@@ -8,6 +8,7 @@ import projectRouter from "./projectRouter";
 import requirementsRouter from "./requirementsRouter";
 import targetsRouter from "./targetsRouter";
 import participantsRouter from "./participantsRouter";
+import workItemsRouter from "./workItemsRouter";
 
 export const appRouter = router({
   testRouter,
@@ -17,6 +18,7 @@ export const appRouter = router({
   requirementsRouter: requirementsRouter,
   targetsRouter: targetsRouter,
   participantsRouter: participantsRouter,
+  workItemsRouter: workItemsRouter,
 });
 
 export type AppRouter = typeof appRouter;

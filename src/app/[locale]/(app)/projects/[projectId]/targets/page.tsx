@@ -11,7 +11,7 @@ import {
 } from "@mui/material";
 import { DataGrid, GridColDef, } from "@mui/x-data-grid";
 import { keepPreviousData } from "@tanstack/react-query";
-import { useTranslations } from "next-intl";
+import { useFormatter, useTranslations } from "next-intl";
 import { useParams } from "next/navigation";
 import { useCallback, useMemo, useState } from "react";
 import { z } from "zod";
@@ -80,7 +80,9 @@ const validationSchema = generateZodValidationSchema(targetFormModel);
 
 export default function TargetsPage() {
 
+
   //#region Hooks
+  const formatter = useFormatter();
   const { projectId } = useParams();
   const { data: session } = useSession();
   const [editTargetId, setEditTargetId] = useState<string | null>(null);
@@ -195,7 +197,7 @@ export default function TargetsPage() {
       label: t("targetDialog.targetText"),
     },
     assignedToUserId: {
-      type: "participantSelection" as const,
+      type: "searchSelection" as const,
       label: t("targetDialog.assignedToUserEmail"),
     },
     targetCategory: {
@@ -270,6 +272,9 @@ export default function TargetsPage() {
         field: "createdAt",
         headerName: t("routes./project/targets.column4"),
         flex: 1,
+        renderCell: ({ row: { createdAt } }) => (
+          <>{formatter.dateTime(createdAt)}</>
+        ),
       },
       {
         field: "settings",
@@ -279,7 +284,7 @@ export default function TargetsPage() {
         ),
       },
     ]
-  }, [options, t]);
+  }, [formatter, options, t]);
   //#endregion
 
   //#region Render

@@ -44,7 +44,8 @@
       "tabbar1": "Projekt Details",
       "tabbar2": "Anforderungen",
       "tabbar3": "Ziele",
-      "tabbar4": "Beteiligten"
+      "tabbar4": "Beteiligten",
+      "tabbar5": "Aufgaben"
     },
     "/project/requirements": {
       "title": "Anforderungen",
@@ -80,6 +81,18 @@
       "addButton": "Beteiligten hinzufügen",
       "addWorkItemOption": "Aufgabe zuweisen",
       "deleteOption": "Löschen"
+    },
+    "/project/workitems": {
+      "title": "Aufgaben",
+      "column1": "Aufgabe",
+      "column2": "Priorität",
+      "column3": "Status",
+      "column4": "Verantwortlicher",
+      "column5": "Startdatum",
+      "column6": "Fällig bis",
+      "addButton": "Aufgabe hinzufügen",
+      "editOption": "Bearbeiten",
+      "deleteOption": "Delete"
     }
   },
   "common": {

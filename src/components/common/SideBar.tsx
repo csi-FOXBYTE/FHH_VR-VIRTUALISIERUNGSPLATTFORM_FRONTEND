@@ -105,6 +105,10 @@ export default function SideBar() {
           name: "Beteiligte",
           path: `/projects/${projectId}/participant`,
         },
+        {
+          name: "Aufgaben",
+          path: `/projects/${projectId}/workitems`,
+        },
       ],
     },
     {
@@ -112,7 +116,7 @@ export default function SideBar() {
     },
     {
       name: "Aufgaben",
-      path: `/projects/${projectId}/workitems`,
+      path: `/workitems`,
       type: "button",
       icon: <ChecklistRtl />,
     },
