@@ -3,6 +3,7 @@ import { protectedProcedure, router } from "..";
 import { createOrderBy } from "@/server/prisma/utils";
 
 const targetsRouter = router({
+  //#region get Targets
   getProjectTargets: protectedProcedure([])
     .input(
       z.object({
@@ -50,6 +51,7 @@ const targetsRouter = router({
       }
     }),
 
+  //#region get Target
   getTarget: protectedProcedure([])
     .input(
       z.object({
@@ -77,6 +79,7 @@ const targetsRouter = router({
       });
     }),
 
+  //#region delete Target
   deleteTarget: protectedProcedure([])
     .input(
       z.object({
@@ -95,7 +98,7 @@ const targetsRouter = router({
       return { success: true };
     }),
 
-
+  //#region edit Target
   editTarget: protectedProcedure([])
     .input(
       z.object({
@@ -130,7 +133,7 @@ const targetsRouter = router({
       return updatedTarget;
     }),
 
-
+  //#region add Target
   addTarget: protectedProcedure([])
     .input(
       z.object({

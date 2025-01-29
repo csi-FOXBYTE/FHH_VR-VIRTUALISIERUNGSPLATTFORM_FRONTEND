@@ -95,6 +95,15 @@
       "deleteOption": "Delete"
     }
   },
+  "userworkitems": {
+    "title": "Aufgaben",
+    "column1": "Aufgabe",
+    "column2": "Priorität",
+    "column3": "Status",
+    "column4": "Projekt",
+    "column5": "Startdatum",
+    "column6": "Fällig bis"
+  },
   "common": {
     "saveButton": "Speichern",
     "cancelButton": "Abbrechen",
@@ -138,7 +147,8 @@
     "title": "Beteiligte hinzufügen"
   },
   "workItemDialog": {
-    "title": "Aufgabe hinzufügen",
+    "addTitle": "Aufgabe hinzufügen",
+    "editTitle": "Aufgabe bearbeiten",
     "name": "Titel",
     "status": "Status",
     "priority": "Priorität",
@@ -147,6 +157,7 @@
     "assignedToUser": "Zugeordnet an",
     "dependsOnWorkItem": "Abhängig von",
     "ressources": "Ressourcen",
+    "dependsOnWorkItemId": "Zugeordnet an Aufgabe",
     "description": "Kommentar",
     "statusOption1": "In Arbeit",
     "statusOption2": "Geschlossen",

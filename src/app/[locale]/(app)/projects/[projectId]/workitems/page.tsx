@@ -18,6 +18,7 @@ import { z } from "zod";
 
 type WorkItemFormValues = {
     id?: string;
+    dependsOnWorkItemId?: string;
     name: string;
     status: WORK_ITEM_STATUS;
     priority: PRIORITY;
@@ -25,7 +26,6 @@ type WorkItemFormValues = {
     endDate: string;
     assignedToUserId: string;
     dependencyType: DEPENDENCY_TYPE;
-    ressources: string[];
     description: string;
     attachments: string[];
 };
@@ -46,17 +46,12 @@ export const workItemFormModel = {
     },
     status: {
         initialValue: "IN_WORK" as WORK_ITEM_STATUS,
-        validation: z.nativeEnum(WORK_ITEM_STATUS).refine(
-            (val) => ["IN_WORK", "CLOSED", "OPENED", "FINISHED"].includes(val),
-            {
-                message: "Status is required",
-            }
-        ),
+        validation: z.nativeEnum(WORK_ITEM_STATUS),
     },
     priority: {
         initialValue: "LOW" as PRIORITY,
         validation: z.nativeEnum(PRIORITY).refine(
-            (val) => ["LOW", "TECHNICAL", "HIGH", "SUPER_HIGH"].includes(val),
+            (val) => ["LOW", "MEDIUM", "HIGH", "SUPER_HIGH"].includes(val),
             {
                 message: "Priority is required",
             }
@@ -64,15 +59,15 @@ export const workItemFormModel = {
     },
     startDate: {
         initialValue: new Date().toISOString().split("T")[0],
-        validation: z.string().min(1, "Start date is required"), //TODO: add proper date validation
+        validation: z.string().optional().default(""),
     },
     endDate: {
         initialValue: new Date().toISOString().split("T")[0],
-        validation: z.string().min(1, "End date is required"), //TODO: add proper date validation
+        validation: z.string().optional().default(""),
     },
     assignedToUserId: {
         initialValue: "",
-        validation: z.string().min(1, "User is required"), //TODO: add t()
+        validation: z.string().min(1, "User is required"),
     },
     dependencyType: {
         initialValue: "START_END" as DEPENDENCY_TYPE,
@@ -83,17 +78,17 @@ export const workItemFormModel = {
             }
         ),
     },
-    ressources: {
-        initialValue: [] as string[],
-        validation: z.string().array().optional(),
-    },
     description: {
         initialValue: "",
         validation: z.string().min(1, "Description is required"),
     },
     attachments: {
         initialValue: [] as string[],
-        validation: z.string().array(),
+        validation: z.array(z.string()).default([]),
+    },
+    dependsOnWorkItemId: {
+        initialValue: undefined,
+        validation: z.string()
     },
 };
 
@@ -105,6 +100,7 @@ export default function WorkItemsPage() {
     //#region Hooks
     const formatter = useFormatter();
     const { projectId } = useParams();
+    const [editWorkItemId, setEditWorkItemId] = useState<string | null>(null);
     const [createModalOpened, setCreateModalOpened] = useState(false);
     const { paginationModel, sortModel, sortBy, sortOrder, handlePaginationModelChange, handleSortModelChange } = usePaginationAndSorting();
     const t = useTranslations();
@@ -127,7 +123,6 @@ export default function WorkItemsPage() {
             placeholderData: keepPreviousData,
         }
     );
-    console.log(Math.max((paginationModel.page - 1) * paginationModel.pageSize, 0), projectId as string, paginationModel.pageSize, sortBy, sortOrder)
     const createWorkItemMutation = trpc.workItemsRouter.addWorkItem.useMutation({
         onSuccess: () => {
             console.info("WorkItem created successfully");
@@ -146,8 +141,9 @@ export default function WorkItemsPage() {
             console.error("Error deleting workItem:", error);
         },
     });
-    const editWorkItemMutation = trpc.workItemsRouter.deleteWorkItem.useMutation({ //TODO:
+    const editWorkItemMutation = trpc.workItemsRouter.editWorkItem.useMutation({
         onSuccess: () => {
+            console.info("Editing workItem success:");
             refetch();
         },
         onError: (error) => {
@@ -195,7 +191,7 @@ export default function WorkItemsPage() {
             label: t("workItemDialog.endDate"),
         },
         assignedToUserId: {
-            type: "searchSelect" as const,
+            type: "searchSelection" as const,
             label: t("workItemDialog.assignedToUser"),
         },
         dependencyType: {
@@ -208,9 +204,9 @@ export default function WorkItemsPage() {
                 { value: "END_START", label: t("workItemDialog.dependencyOption4") },
             ],
         },
-        ressources: {
+        dependsOnWorkItemId: {
             type: "select" as const,
-            label: t("workItemDialog.ressources"),
+            label: t("workItemDialog.dependsOnWorkItemId"),
         },
         description: {
             type: "textArea" as const,
@@ -219,35 +215,53 @@ export default function WorkItemsPage() {
         attachments: {
             type: "attachment" as const,
             label: t("workItemDialog.attachments"),
-        }
+        },
     }), [t]);
 
     //#endregion
 
     // #region Handlers
 
-    const handleEditWorkItemClick = useCallback((workItemId: string) => {
-        editWorkItemMutation.mutate({ projectId: projectId as string, workItemId });
-    }, [editWorkItemMutation, projectId]);
-
     const handleDeleteWorkItemClick = useCallback((workItemId: string) => {
         deleteWorkItemMutation.mutate({ projectId: projectId as string, workItemId });
     }, [deleteWorkItemMutation, projectId]);
 
-    const handleAddWorkItemButtonClick = useCallback(() => {
+    const handleEditWorkItemClick = useCallback((workItemId: string) => {
+        setEditWorkItemId(workItemId);
         setCreateModalOpened(true);
     }, []);
 
-    const handleAddWorkItemSubmit = useCallback((workItem: WorkItemFormValues) => {
-        createWorkItemMutation.mutate({
-            ...workItem,
-            startDate: new Date(workItem.startDate),
-            endDate: new Date(workItem.endDate),
-            projectId: projectId as string,
-        });
+    const handleAddWorkItemClick = useCallback(() => {
+        setEditWorkItemId(null);
+        setCreateModalOpened(true);
+    }, []);
+
+    const handleSubmitWorkItem = useCallback((workItem: WorkItemFormValues) => {
+        if (workItem.id) {
+            editWorkItemMutation.mutate({
+                projectId: projectId as string,
+                workItemId: workItem.id,
+                data: {
+                    ...workItem,
+                    startDate: new Date(workItem.startDate),
+                    endDate: new Date(workItem.endDate),
+                    updatedAt: new Date(),
+                    dependsOnWorkItemId: workItem.dependsOnWorkItemId ?? undefined,
+                },
+            });
+        } else {
+            createWorkItemMutation.mutate({
+                projectId: projectId as string,
+                ...workItem,
+                startDate: new Date(workItem.startDate),
+                endDate: new Date(workItem.endDate),
+                createdAt: new Date(),
+                dependsOnWorkItemId: workItem.dependsOnWorkItemId ?? undefined,
+            });
+        }
         setCreateModalOpened(false);
         refetch();
-    }, [createWorkItemMutation, projectId, refetch]);
+    }, [editWorkItemMutation, createWorkItemMutation, projectId, refetch]);
 
     const handleCloseDialog = useCallback(() => {
         setCreateModalOpened(false);
@@ -385,7 +399,7 @@ export default function WorkItemsPage() {
                             {t("common.refreshButton")}
                         </Button>
                         <Button
-                            onClick={handleAddWorkItemButtonClick}
+                            onClick={handleAddWorkItemClick}
                             variant="contained"
                             startIcon={<Add />}
                             sx={{
@@ -429,11 +443,15 @@ export default function WorkItemsPage() {
                         open={createModalOpened}
                         initialValues={initialValues}
                         validationSchema={validationSchema}
-                        onSubmit={handleAddWorkItemSubmit}
+                        onSubmit={handleSubmitWorkItem}
                         formConfig={formConfig}
-                        title={t("workItemDialog.title")}
+                        title={editWorkItemId ? t("workItemDialog.editTitle") : t("workItemDialog.addTitle")}
                         submitButtonText={t("requirementDialog.save")}
-
+                        useQuery={() =>
+                            trpc.workItemsRouter.getWorkItem.useQuery(
+                                { projectId: projectId as string, workItemId: editWorkItemId ?? "" },
+                                { enabled: !!editWorkItemId }
+                            )}
                     />
                 </Grid2>
             </Grid2>

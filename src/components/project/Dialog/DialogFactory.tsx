@@ -31,14 +31,21 @@ export const generateZodValidationSchema = <
 ): z.ZodObject<{ [K in keyof T]: T[K]["validation"] }> => {
   const shape = Object.keys(model).reduce((acc, key) => {
     const field = model[key];
-    acc[key as keyof T] = field.validation;
+
+    if (field.validation instanceof z.ZodString) {
+      acc[key as keyof T] = field.validation.nullish().default(""); // Fix für optionale Strings
+    } else {
+      acc[key as keyof T] = field.validation;
+    }
+
     return acc;
   }, {} as { [K in keyof T]: T[K]["validation"] });
+
   return z.object(shape);
 };
 
 export const generateInitialValues = <
-  T extends Record<string, { initialValue: string | string[] | number | boolean | Date }>
+  T extends Record<string, { initialValue: string | string[] | number | boolean | Date | undefined }>
 >(
   model: T
 ) => {
@@ -51,7 +58,7 @@ export const generateInitialValues = <
 
 type FormConfig<T> = {
   [K in keyof T]: {
-    type: "text" | "select" | "searchSelect" | "radio" | "date" | "attachment" | "textArea";
+    type: "text" | "select" | "searchSelection" | "radio" | "date" | "attachment" | "textArea";
     label: string;
     options?: { value: string; label: string }[];
     readOnly?: boolean;
@@ -85,7 +92,7 @@ const validateFormValues = async<T>(schema: z.ZodType<T>, values: T) => {
     const validationErrors: Record<string, string> = {};
     error.errors.forEach((err: any) => {
       validationErrors[err.path[0]] = err.message;
-      console.log(err.message);
+      console.error(err);
     });
     return validationErrors;
   }
@@ -195,6 +202,23 @@ const renderAttachmentField = (key: string, config: FormConfig<any>[string], for
     {renderErrorText(key, formikProps)}
   </FormControl>
 );
+const formatDateFields = <T extends FormikValues>(
+  values: T,
+  formConfig: FormConfig<T>
+): T => {
+  const formattedValues = { ...values };
+
+  Object.keys(formConfig).forEach((key) => {
+    if (formConfig[key].type === "date" && formattedValues[key]) {
+      const dateValue = formattedValues[key];
+      if (dateValue instanceof Date) {
+        (formattedValues as any)[key] = dateValue.toISOString().split("T")[0];
+      }
+    }
+  });
+
+  return formattedValues;
+};
 //#region Component Start
 
 export function DialogFactory<T extends FormikValues>({
@@ -221,7 +245,7 @@ export function DialogFactory<T extends FormikValues>({
         return renderDateField(key, config, formikProps);
       case "select":
         return renderSelectField(key, config, formikProps);
-      case "searchSelect":
+      case "searchSelection":
         return renderSearchSelectField(key, config, formikProps, trpc.participantsRouter.searchParticipant.useQuery);
       case "radio":
         return renderRadioField(key, config, formikProps);
@@ -242,11 +266,11 @@ export function DialogFactory<T extends FormikValues>({
         </Box>
       ) : (
         <Formik
-          initialValues={queryData as T ?? initialValues}
+          initialValues={formatDateFields(queryData as T ?? initialValues, formConfig)}
           validate={(values) => validateFormValues(validationSchema, values)}
           validationSchema={toFormikValidationSchema(validationSchema)}
           onSubmit={(values, formikHelpers) => {
-            console.log("Submit Triggered", values);
+            console.info("Submit Triggered", values);
             onSubmit(values, formikHelpers)
           }}
         >

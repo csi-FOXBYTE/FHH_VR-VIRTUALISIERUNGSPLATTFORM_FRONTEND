@@ -46,10 +46,9 @@ export default function Kanban<
     }
 
     return stateMap;
-  }, [data, columns]);
+  }, [columns, data, stateField, groupField]);
 
   const handleDragEnd = (event: DragEndEvent) => {
-    console.log(event);
     onChange(
       data.map((record) => {
         if (

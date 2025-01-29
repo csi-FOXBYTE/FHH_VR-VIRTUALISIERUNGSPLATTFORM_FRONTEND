@@ -45,7 +45,34 @@ const workItemsRouter = router({
       });
       return { data, count };
     }),
-
+  //#region get WorkItem
+  getWorkItem: protectedProcedure([])
+    .input(
+      z.object({
+        projectId: z.string(),
+        workItemId: z.string(),
+      })
+    )
+    .query(async (opts) => {
+      const { projectId, workItemId } = opts.input;
+      return opts.ctx.db.workItem.findFirstOrThrow({
+        where: {
+          id: workItemId,
+          projectId
+        },
+        select: {
+          id: true,
+          name: true,
+          status: true,
+          priority: true,
+          startDate: true,
+          endDate: true,
+          assignedToUser: true,
+          dependsOnWorkItemId: true,
+          dependencyType: true,
+        }
+      });
+    }),
   //#region add WorkItem
   addWorkItem: protectedProcedure([])
     .input(
@@ -56,11 +83,12 @@ const workItemsRouter = router({
         startDate: z.date(),
         endDate: z.date(),
         assignedToUserId: z.string(),
-        dependsOnWorkItemId: z.string().optional(),
+        dependsOnWorkItemId: z.string().optional() ?? undefined,
         dependencyType: z.nativeEnum(DEPENDENCY_TYPE).optional(),
         ressources: z.array(z.string()).optional(),
         description: z.string().optional().default(""),
         projectId: z.string(),
+        createdAt: z.date(),
       })
     )
     .mutation(async ({ input, ctx }) => {
@@ -113,6 +141,53 @@ const workItemsRouter = router({
       }
     }),
 
+
+  //#region edit WorkItem
+  editWorkItem: protectedProcedure([])
+    .input(
+      z.object({
+        projectId: z.string(),
+        workItemId: z.string(),
+        data: z.object({
+          name: z.string(),
+          status: z.nativeEnum(WORK_ITEM_STATUS),
+          priority: z.nativeEnum(PRIORITY),
+          startDate: z.date(),
+          endDate: z.date(),
+          assignedToUserId: z.string(),
+          dependsOnWorkItemId: z.string().optional(),
+          dependencyType: z.nativeEnum(DEPENDENCY_TYPE).optional(),
+          ressources: z.array(z.string()).optional(),
+          description: z.string().optional().default(""),
+          updatedAt: z.date(),
+        }),
+      })
+    )
+    .mutation(async (opts) => {
+      const { projectId, workItemId, data } = opts.input;
+
+      const updatedWorkItem = await opts.ctx.db.workItem.update({
+        where: {
+          id: workItemId,
+          projectId: projectId,
+        },
+        data: {
+          name: data.name,
+          status: data.status,
+          priority: data.priority,
+          startDate: data.startDate,
+          endDate: data.endDate,
+          assignedToUserId: data.assignedToUserId,
+          dependencyType: data.dependencyType,
+          ressources: data.ressources,
+          description: data.description,
+          updatedAt: data.updatedAt,
+          dependsOnWorkItemId: data.dependsOnWorkItemId ?? undefined
+        },
+      });
+
+      return updatedWorkItem;
+    }),
 });
 
 export default workItemsRouter;

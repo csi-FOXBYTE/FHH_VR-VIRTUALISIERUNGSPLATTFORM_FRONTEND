@@ -98,7 +98,7 @@ export default function Details() {
                   initialValues={{
                     projectName: "",
                   }}
-                  onSubmit={console.log}
+                  onSubmit={() => { console.log("TODO:") }}
                   style={{ padding: 0, margin: 0 }}
                 >
                   {(props) => (

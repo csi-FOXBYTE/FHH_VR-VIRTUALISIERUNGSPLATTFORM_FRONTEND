@@ -201,7 +201,7 @@ export default function ProjectOverviewListPage() {
         pageSizeOptions={[25, 50, 100]}
         onPaginationModelChange={handlePaginationModelChange}
         onSortModelChange={handleSortModelChange}
-        onStateChange={console.log}
+        onStateChange={() => console.log("TODO:")}
         sortModel={sortModel}
         loading={isProjectsPending}
         rowCount={count}

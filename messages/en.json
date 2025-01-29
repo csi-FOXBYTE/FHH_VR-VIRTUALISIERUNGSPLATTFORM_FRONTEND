@@ -88,6 +88,15 @@
       "deleteOption": "Delete"
     }
   },
+  "userworkitems": {
+    "title": "Work items",
+    "column1": "Work item",
+    "column2": "Priority",
+    "column3": "Status",
+    "column4": "Project",
+    "column5": "Start date",
+    "column6": "End date"
+  },
   "common": {
     "addButton": "Add",
     "backButton": "Back",
@@ -138,7 +147,8 @@
     }
   },
   "workItemDialog": {
-    "title": "Add work item",
+    "addTitle": "Add work item",
+    "editTitle": "Edit work item",
     "assignedToUser": "Assigned to",
     "dependencyOption1": "Start - End",
     "dependencyOption2": "Start - Start",
@@ -154,6 +164,7 @@
     "priorityOption3": "High",
     "priorityOption4": "Very high",
     "ressources": "Resources",
+    "dependsOnWorkItemId": "Parent work item",
     "startDate": "Start",
     "status": "Status",
     "statusOption1": "In progress",

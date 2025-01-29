@@ -85,7 +85,7 @@ export default function SideBar() {
     },
     {
       name: "Projekte",
-      path: "/project",
+      path: "/projects",
       type: "folder",
       icon: <Folder />,
       children: [
@@ -125,7 +125,7 @@ export default function SideBar() {
     },
     {
       name: "Terminplanung",
-      path: "/project/date",
+      path: "/projects/date",
       type: "folder",
       icon: <CalendarMonth />,
       children: [
@@ -148,7 +148,7 @@ export default function SideBar() {
     },
     {
       name: "Kostenplanung",
-      path: "/project/costplanner",
+      path: "/projects/costplanner",
       type: "folder",
       icon: <Money />,
       children: [
@@ -164,7 +164,7 @@ export default function SideBar() {
     {
       name: "CAD 2D/3D",
       icon: <ThreeDRotation />,
-      path: "/project/cad",
+      path: "/projects/cad",
       type: "folder",
       disabled: true,
       children: [
@@ -180,7 +180,7 @@ export default function SideBar() {
     },
     {
       name: "Dokumentation",
-      path: "/project/documentation",
+      path: "/projects/documentation",
       type: "button",
       icon: <DocumentScanner />,
     },
@@ -189,7 +189,7 @@ export default function SideBar() {
     },
     {
       name: "Standards und Vorlagen",
-      path: "/project/standards",
+      path: "/projects/standards",
       type: "button",
       icon: <DeveloperBoard />,
     },
@@ -198,7 +198,7 @@ export default function SideBar() {
     },
     {
       name: "Protokolle und LOP",
-      path: "/project/protocols",
+      path: "/projects/protocols",
       type: "button",
       icon: <ContentPaste />,
     },
@@ -233,7 +233,13 @@ export default function SideBar() {
                     key={item.name}
                     title={item.name}
                   >
-                    <ListItemIcon>{item.icon}</ListItemIcon>
+                    <ListItemIcon style={{
+                      color: pathname === item.path
+                        ? "#008DFC"
+                        : "inherit",
+                    }}>
+                      {item.icon}
+                    </ListItemIcon>
                     <StyledListItemText primary={item.name} />
                   </ListItemButton>
                 );
@@ -254,7 +260,7 @@ export default function SideBar() {
                         style={{
                           color: pathname.startsWith(item.path)
                             ? "#008DFC"
-                            : "undefined",
+                            : "inherit",
                         }}
                       >
                         {item.icon}
