@@ -107,7 +107,7 @@ export default function ProjectOverviewListPage() {
       {
         field: "building.name",
         headerName: "Gebäudenummer",
-        renderCell: ({ row: { building } }) => <>{building.name}</>,
+        renderCell: ({ row: { building } }) => <>{building?.name}</>,
       },
       {
         field: "name",

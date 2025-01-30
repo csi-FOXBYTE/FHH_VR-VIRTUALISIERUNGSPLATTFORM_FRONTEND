@@ -19,13 +19,26 @@ import { Close } from "@mui/icons-material";
 import { useState } from "react";
 import CustomTabPanel from "../common/CustomTabPanel";
 import { Formik } from "formik";
+import { trpc } from "@/server/trpc/client";
+import { useSession } from "next-auth/react";
+import { PROJECT_STATUS } from "@prisma/client";
 
 export default function CreateProjectDialog({
   close,
   ...props
 }: DialogProps & { close: () => void }) {
   const [index, setIndex] = useState(0);
+  const { data: session } = useSession();
 
+  const addProjectItemMutation = trpc.projectOverviewRouter.addProject.useMutation({
+    onSuccess: () => {
+      console.info("Project adding successfully");
+      close();
+    },
+    onError: (error) => {
+      console.error("Error adding poject:", error);
+    },
+  });
   return (
     <Dialog {...props}>
       <DialogActions>
@@ -54,8 +67,43 @@ export default function CreateProjectDialog({
       <Formik
         initialValues={{
           projectName: "",
+          number: "",
+          building: "",
+          room: "",
+          abc: "",
+          category: "",
+          leader: "",
+          startDate: "",
+          endDate: "",
         }}
-        onSubmit={console.log}
+        onSubmit={(values) => {
+          const payload = {
+            createdAt: new Date(),
+            updatedAt: new Date(),
+            creatorId: session?.user?.id as string,
+            projectManagerId: session?.user?.id as string,
+            projectCategoryId: "",
+            status: "IN_WORK" as PROJECT_STATUS,
+            name: values.projectName,
+            contactPersonId: session?.user?.id as string,
+            testBenchNumber: 999,
+            startDate: new Date(),
+            endDate: new Date(),
+            projectType: "dummy-type",
+            plannedBudget: 1000,
+            calculateTargetFromSubProjectSpecifications: false,
+            description: "dummy-description",
+          };
+          addProjectItemMutation.mutate(payload, {
+            onError: (error) => {
+              console.error("Mutation Error:", error);
+              if (error instanceof Error) {
+                console.error("Error Message:", error.message);
+                console.error("Error Stack:", error.stack);
+              }
+            },
+          });
+        }}
         style={{ padding: 0, margin: 0 }}
       >
         {(props) => (
@@ -87,6 +135,7 @@ export default function CreateProjectDialog({
                         name="number"
                         label="Prüfstand-Nr."
                         variant="filled"
+                        disabled
                       />
                     </FormControl>
                   </Grid2>
@@ -96,17 +145,22 @@ export default function CreateProjectDialog({
                         name="building"
                         label="Gebäude"
                         variant="filled"
+                        disabled
                       />
                     </FormControl>
                   </Grid2>
                   <Grid2 size={6}>
                     <FormControl fullWidth>
-                      <TextField name="room" label="Raum" variant="filled" />
+                      <TextField name="room" label="Raum" variant="filled"
+                        disabled
+                      />
                     </FormControl>
                   </Grid2>
                   <Grid2 size={6}>
                     <FormControl fullWidth>
-                      <TextField name="abc" label="Etage" variant="filled" />
+                      <TextField name="abc" label="Etage" variant="filled"
+                        disabled
+                      />
                     </FormControl>
                   </Grid2>
                   <Grid2 size={12}>
@@ -116,6 +170,8 @@ export default function CreateProjectDialog({
                         name="productCategory"
                         label="Projekt Kategorie"
                         variant="filled"
+                        disabled
+
                       />
                     </FormControl>
                   </Grid2>
@@ -126,6 +182,7 @@ export default function CreateProjectDialog({
                         name="partner"
                         label="Ansprechpartner"
                         variant="filled"
+                        disabled
                       />
                     </FormControl>
                   </Grid2>
@@ -136,6 +193,8 @@ export default function CreateProjectDialog({
                         name="leader"
                         label="Projektleiter"
                         variant="filled"
+                        disabled
+
                       />
                     </FormControl>
                   </Grid2>
@@ -153,6 +212,9 @@ export default function CreateProjectDialog({
                         name="startDate"
                         label="Startdatum"
                         variant="filled"
+                        type="date"
+                        disabled
+
                       />
                     </FormControl>
                   </Grid2>
@@ -166,6 +228,9 @@ export default function CreateProjectDialog({
                         name="endDate"
                         label="Enddatum"
                         variant="filled"
+                        type="date"
+                        disabled
+
                       />
                     </FormControl>
                   </Grid2>
@@ -176,6 +241,8 @@ export default function CreateProjectDialog({
                         name="projectType"
                         label="Projekt-Art"
                         variant="filled"
+                        disabled
+
                       />
                     </FormControl>
                   </Grid2>
@@ -186,6 +253,8 @@ export default function CreateProjectDialog({
                         name="costCenter"
                         label="Kostenstelle"
                         variant="filled"
+                        disabled
+
                       />
                     </FormControl>
                   </Grid2>
@@ -196,9 +265,11 @@ export default function CreateProjectDialog({
                         value={props.values.projectName}
                         onChange={props.handleChange}
                         onBlur={props.handleBlur}
-                        name="endDate"
+                        name="plannedHours"
                         label="Geplante Stunden"
                         variant="filled"
+                        disabled
+
                       />
                     </FormControl>
                   </Grid2>
@@ -209,9 +280,11 @@ export default function CreateProjectDialog({
                         value={props.values.projectName}
                         onChange={props.handleChange}
                         onBlur={props.handleBlur}
-                        name="endDate"
+                        name="plannedBudget"
                         label="Geplantes Budget"
                         variant="filled"
+                        disabled
+
                       />
                     </FormControl>
                   </Grid2>
@@ -219,6 +292,8 @@ export default function CreateProjectDialog({
                     <FormControlLabel
                       control={<Switch />}
                       label="Soll aus Teilprojektvorgaben berechnen"
+                      disabled
+
                     />
                   </Grid2>
                 </Grid2>
@@ -238,6 +313,8 @@ export default function CreateProjectDialog({
                         name="endDate"
                         label="Beschreibung"
                         variant="filled"
+                        disabled
+
                       />
                     </FormControl>
                   </Grid2>
@@ -254,6 +331,8 @@ export default function CreateProjectDialog({
                         name="endDate"
                         label="Zusätzliche Informationen"
                         variant="filled"
+                        disabled
+
                       />
                     </FormControl>
                   </Grid2>
@@ -271,6 +350,6 @@ export default function CreateProjectDialog({
           </form>
         )}
       </Formik>
-    </Dialog>
+    </Dialog >
   );
 }

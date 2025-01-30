@@ -4,7 +4,6 @@ import { useSession } from "next-auth/react";
 import { ComponentType, memo } from "react";
 
 export const useRBAC = (neededPermissions: GeneratedPermissions[]): boolean => {
-  neededPermissions.includes("project:create");
   // TODO: RBAC logic
 
   return true;

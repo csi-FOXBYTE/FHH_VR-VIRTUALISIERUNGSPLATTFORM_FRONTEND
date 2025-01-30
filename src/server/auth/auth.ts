@@ -1,6 +1,7 @@
 import NextAuth from "next-auth";
 import KeycloakProvider from "next-auth/providers/keycloak";
 import CredentialsProvider from "next-auth/providers/credentials";
+import prisma from "../prisma";
 // import { PrismaAdapter } from "@auth/prisma-adapter";
 // import prisma from "../prisma";
 
@@ -17,21 +18,38 @@ export const { auth, handlers, signIn, signOut, unstable_update } = NextAuth({
         email: { label: "Email", type: "email", placeholder: "email" },
         password: { label: "Password", type: "password" },
       },
-      
+
       async authorize(credentials) {
         // Add logic here to look up the user from the credentials supplied
-        const user = {
-          id: "1",
-          name: "Admin Foxbyte",
-          email: "admin@foxbyte.de",
-        };
-
-        console.log(credentials);
 
         if (credentials.password === "admin@123") {
-          console.log("correct")
-          // Any object returned will be saved in `user` property of the JWT
-          return user;
+          try {
+            return await prisma.user.findFirstOrThrow({
+              where: {
+                email: {
+                  equals: (credentials.email as string) ?? "",
+                  mode: "insensitive"
+                },
+              },
+              select: {
+                name: true,
+                id: true,
+                email: true,
+              }
+            });
+          } catch {
+            return await prisma.user.create({
+              data: {
+                email: (credentials.email as string),
+                name: "Foxbyte",
+              },
+              select: {
+                name: true,
+                id: true,
+                email: true,
+              }
+            });
+          }
         } else {
           // If you return null then an error will be displayed advising the user to check their details.
           return null;
@@ -42,11 +60,29 @@ export const { auth, handlers, signIn, signOut, unstable_update } = NextAuth({
     }),
   ],
   callbacks: {
-    async session({ session, user }) {
-      // Optionally, attach user info to the session
-      if (user) {
-        session.user.id = user.id;
-      }
+    async session({ session, token }) {
+      if (!session.user) throw new Error("No user!");
+      if (!session.user.email) throw new Error("No email!");
+
+      const user = await prisma.user.findFirstOrThrow({
+        where: {
+          email: {
+            equals: (token.email as string) ?? "",
+            mode: "insensitive"
+          },
+        },
+        select: {
+          name: true,
+          id: true,
+          email: true,
+        }
+      });
+
+      session.userId = user.id;
+      session.user.id = user.id;
+      session.user.name = user.name;
+      session.user.email = user.email;
+
       return session;
     },
   },

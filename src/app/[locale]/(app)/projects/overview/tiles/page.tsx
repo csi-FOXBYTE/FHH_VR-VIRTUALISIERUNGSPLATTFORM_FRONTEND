@@ -101,7 +101,7 @@ export default function ProjectOverviewTilesPage() {
                     whiteSpace="nowrap"
                     overflow="hidden"
                   >
-                    {project.building.name}
+                    {project.building?.name}
                   </Typography>
                 }
               />

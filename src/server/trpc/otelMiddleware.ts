@@ -4,15 +4,15 @@ import { initTRPC } from "@trpc/server";
 function safeParseJson(data: unknown): string {
   try {
     return JSON.stringify(data);
-  } catch {
-    return "";
+  } catch (e) {
+    return "error safeParseJson " + e;
   }
 }
 
 export function createOTelPlugin(
   opts: { tracerName: string } = { tracerName: "trpc" }
 ) {
-  const t = initTRPC.context<any>().meta<{}>().create();
+  const t = initTRPC.context<{}>().meta<{}>().create();
 
   const tracer = trace.getTracer(opts.tracerName);
 

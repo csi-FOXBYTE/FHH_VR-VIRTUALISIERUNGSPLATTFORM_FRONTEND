@@ -110,15 +110,15 @@ model Project {
   creator   User     @relation("createdProjects", fields: [creatorId], references: [id])
   creatorId String
 
-  projectManager    User            @relation("managedProjects", fields: [projectManagerId], references: [id])
+  projectManager    User             @relation("managedProjects", fields: [projectManagerId], references: [id])
   projectManagerId  String
-  projectCategory   ProjectCategory @relation(fields: [projectCategoryId], references: [id])
-  projectCategoryId String
+  projectCategory   ProjectCategory? @relation(fields: [projectCategoryId], references: [id])
+  projectCategoryId String?
   status            PROJECT_STATUS
   name              String
-  building          Building        @relation(fields: [buildingId], references: [id])
-  buildingId        String
-  contactPerson     User            @relation("contactPersonForProjects", fields: [contactPersonId], references: [id])
+  building          Building?        @relation(fields: [buildingId], references: [id])
+  buildingId        String?
+  contactPerson     User             @relation("contactPersonForProjects", fields: [contactPersonId], references: [id])
   contactPersonId   String
   testBenchNumber   Float?
 
@@ -127,8 +127,8 @@ model Project {
 
   projectType String // ???
 
-  costCenter   CostCenter @relation(fields: [costCenterId], references: [id])
-  costCenterId String
+  costCenter   CostCenter? @relation(fields: [costCenterId], references: [id])
+  costCenterId String?
 
   plannedBudget Float?
 
@@ -140,8 +140,8 @@ model Project {
   targets      Target[]
   participants User[]
 
-  rootFolder   Folder     @relation(fields: [rootFolderId], references: [id])
-  rootFolderId String
+  rootFolder   Folder?    @relation(fields: [rootFolderId], references: [id])
+  rootFolderId String?
   WorkItem     WorkItem[]
 }
 

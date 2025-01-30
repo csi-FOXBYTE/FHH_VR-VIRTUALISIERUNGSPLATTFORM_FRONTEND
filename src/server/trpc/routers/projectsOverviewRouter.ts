@@ -4,6 +4,7 @@ import { createOrderBy } from "@/server/prisma/utils";
 import { projectOverviewFilter } from "@/components/project/ProjectOverviewFilter";
 
 const projectsOverviewRouter = router({
+  //#region getProjects
   getProjects: protectedProcedure([])
     .input(
       z.object({
@@ -71,6 +72,51 @@ const projectsOverviewRouter = router({
         }),
       };
     }),
+  //#region add Project
+  addProject: protectedProcedure([])
+    .input(
+      z.object({
+        createdAt: z.date().optional(),
+        updatedAt: z.date().optional(),
+        creatorId: z.string(),
+        projectManagerId: z.string(),
+        status: z.enum(["IN_WORK", "DELAYED", "CRITICAL"]),
+        name: z.string(),
+        contactPersonId: z.string(),
+        testBenchNumber: z.number().optional(),
+        startDate: z.date(),
+        endDate: z.date(),
+        projectType: z.string(),
+        plannedBudget: z.number().optional(),
+        calculateTargetFromSubProjectSpecifications: z.boolean().optional(),
+        description: z.string().optional(),
+      })
+    )
+    .mutation(async ({ input, ctx }) => {
+      try {
+        console.log("_________Received input in mutation:", input);
+        const project = await ctx.db.project.create({
+          data: {
+            ...input,
+            createdAt: input.createdAt ?? new Date(),
+            updatedAt: input.updatedAt ?? new Date(),
+          },
+        });
+
+        return {
+          success: true,
+          message: "Project successfully created",
+          projectId: project.id,
+        };
+      } catch (error) {
+        console.error("Error creating Project:", error);
+        return {
+          success: false,
+          message: "An error occurred while creating the Project",
+        };
+      }
+    }),
+
 });
 
 export default projectsOverviewRouter;
