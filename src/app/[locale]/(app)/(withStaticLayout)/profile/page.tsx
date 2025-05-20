@@ -1,0 +1,87 @@
+"use client";
+
+import UserAvatar from "@/components/common/UserAvatar";
+import { Link } from "@/server/i18n/routing";
+import {
+  Button,
+  ButtonGroup,
+  Grid2,
+  TextField,
+  Typography,
+} from "@mui/material";
+import { useSession } from "next-auth/react";
+import { useTranslations } from "next-intl";
+
+export default function ProfilePage() {
+  const session = useSession();
+  const t = useTranslations();
+
+  return (
+    <Grid2 container flexDirection="column">
+      <Typography variant="h4" marginBottom={4}>
+        {t("profile.profile")}
+      </Typography>
+      <Typography variant="h6" marginBottom={2}>
+        {t("profile.personal-data")}
+      </Typography>
+      <Grid2 container spacing={2} marginBottom={4}>
+        <Grid2></Grid2>
+        <Grid2 size={12} container justifyItems="stretch" alignItems="center">
+          <UserAvatar style={{ width: 64, height: 64 }} />
+
+          <TextField
+            disabled
+            value={session.data?.user.name}
+            style={{ flex: 1 }}
+            label={t("profile.name")}
+          />
+        </Grid2>
+        <Grid2
+          value={session.data?.user.email}
+          disabled
+          label={t("profile.email")}
+          component={TextField}
+          size={{
+            lg: 6,
+            md: 6,
+            sm: 12,
+            xl: 6,
+            xs: 12,
+          }}
+        />
+        <Grid2
+          value="-"
+          disabled
+          label={t("profile.user-group")}
+          component={TextField}
+          size={{
+            lg: 6,
+            md: 6,
+            sm: 12,
+            xl: 6,
+            xs: 12,
+          }}
+        />
+      </Grid2>
+      <Grid2 container justifyContent="flex-end">
+        <ButtonGroup>
+          <Button
+            LinkComponent={Link}
+            size="large"
+            variant="outlined"
+            href={`https://myprofile.microsoft.com/?login_hint=${encodeURIComponent(
+              session.data?.user.email ?? ""
+            )}`}
+            target="_blank"
+            color="secondary"
+          >
+            {t("profile.update-account")}
+          </Button>
+          <Button size="large" variant="contained" color="secondary">
+            {t("profile.delete-account")}
+          </Button>
+        </ButtonGroup>
+      </Grid2>
+    </Grid2>
+  );
+}

@@ -6,6 +6,7 @@ import { notFound } from "next/navigation";
 import Providers from "@/appProviders";
 import { NuqsAdapter } from "nuqs/adapters/next/app";
 import { ReactNode } from "react";
+import Script from "next/script";
 
 export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
@@ -32,6 +33,10 @@ export default async function RootLayout({
     <html lang={locale}>
       <head>
         <link rel="icon" href="/favicon_32x32.png" sizes="any" />
+        <Script id="set-cesium-base-url" strategy="beforeInteractive" dangerouslySetInnerHTML={{
+          __html: `
+          window.CESIUM_BASE_URL="${process.env.NEXTAUTH_URL}/cesium";`
+        }} />
       </head>
       <body>
         <NextIntlClientProvider messages={messages}>

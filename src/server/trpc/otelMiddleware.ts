@@ -12,7 +12,7 @@ function safeParseJson(data: unknown): string {
 export function createOTelPlugin(
   opts: { tracerName: string } = { tracerName: "trpc" }
 ) {
-  const t = initTRPC.context<{}>().meta<{}>().create();
+  const t = initTRPC.context<object>().meta<object>().create();
 
   const tracer = trace.getTracer(opts.tracerName);
 

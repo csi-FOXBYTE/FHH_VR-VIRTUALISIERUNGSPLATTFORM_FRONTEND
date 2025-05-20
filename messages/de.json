@@ -1,1 +1,54 @@
-{}
+{
+  "index": {
+    "my-area": "Mein Bereich",
+    "project-management": "Projektverwaltung",
+    "collaboration": "Zusammenarbeit",
+    "administration": "Administration",
+    "welcoming-text": "Hallo {name}!",
+    "show-profile": "Profil ansehen",
+    "manage-projects": "Projekte verwalten",
+    "show-collaboration": "Zusammenarbeit aufrufen",
+    "show-administration": "Administrationsbereich öffnen",
+    "today": "Heute",
+    "last-logged-in-message": "Zuletzt eingeloggt am {date}."
+  },
+  "navbar": {
+    "profile": "Profil",
+    "project-management": "Projektverwaltung",
+    "collaboration": "Zusammenarbeit",
+    "administration": "Administration",
+    "sign-out": "Ausloggen",
+    "system-version": "System version",
+    "help": "Hilfe",
+    "settings": "Einstellungen"
+  },
+  "navigation": {
+    "my-area": "Mein Bereich",
+    "profile": "Profil",
+    "not-found": "Nicht gefunden",
+    "administration": "Administration",
+    "project-management": "Projektverwaltung",
+    "collaboration": "Zusammenarbeit",
+    "3d-viewer": "3D Viewer"
+  },
+  "footer": {
+    "impressum": "Impressum",
+    "datenschutz": "Datenschutz"
+  },
+  "profile": {
+    "profile": "Profil",
+    "name": "Name",
+    "email": "E-Mail-Adresse",
+    "user-group": "Nutzergruppe",
+    "personal-data": "Persönliche Daten",
+    "last-login": "Letzter Login",
+    "delete-account": "Konto löschen",
+    "update-account": "Konto bearbeiten"
+  },
+  "collaboration": {
+    "collaboration": "Zusammenarbeit",
+    "to-project": "Zum Projekt",
+    "copied-to-clipboard-success": "Code wurde erfolgreich in die Zwischenablage kopiert!",
+    "code": "Code"
+  }
+}

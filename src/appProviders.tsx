@@ -10,11 +10,12 @@ import { Session } from "next-auth";
 import { routing } from "./server/i18n/routing";
 import { deDE, enUS } from "@mui/material/locale";
 import { deDE as xdeDE, enUS as xenUS } from "@mui/x-data-grid/locales";
+import { SnackbarProvider } from "notistack";
 
-const supportedLocales: Record<typeof routing.locales[number], Theme> = {
-  "de": createTheme(deDE, xdeDE),
-  "en": createTheme(enUS, xenUS),
-}
+const supportedLocales: Record<(typeof routing.locales)[number], Theme> = {
+  de: createTheme(deDE, xdeDE),
+  en: createTheme(enUS, xenUS),
+};
 
 export default function AppProviders({
   session,
@@ -25,15 +26,20 @@ export default function AppProviders({
   children: ReactNode;
   locale: string;
 }) {
-  const themeWithLocale = createTheme(supportedLocales[locale as "en"] ?? supportedLocales.en, theme);
+  const themeWithLocale = createTheme(
+    supportedLocales[locale as "en"] ?? supportedLocales.en,
+    theme
+  );
 
   return (
     <AppRouterCacheProvider>
-      <ThemeProvider theme={themeWithLocale}>
-        <SessionProvider session={session}>
-          <TRPCProvider>{children}</TRPCProvider>
-        </SessionProvider>
-      </ThemeProvider>
+      <SnackbarProvider>
+        <ThemeProvider theme={themeWithLocale}>
+          <SessionProvider session={session}>
+            <TRPCProvider>{children}</TRPCProvider>
+          </SessionProvider>
+        </ThemeProvider>
+      </SnackbarProvider>
     </AppRouterCacheProvider>
   );
 }

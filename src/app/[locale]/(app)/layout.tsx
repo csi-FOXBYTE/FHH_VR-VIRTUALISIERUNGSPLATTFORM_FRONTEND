@@ -1,60 +1,71 @@
 "use client";
 
-import MenuIcon from "@mui/icons-material/Menu";
+import FancyFooterEdge from "@/components/common/FancyFooterEdge";
+import UserAvatar from "@/components/common/UserAvatar";
+import ProfileMenu from "@/components/navbar/ProfileMenu";
+import {
+  locales,
+  Link as NextLink,
+  usePathname,
+  useRouter,
+} from "@/server/i18n/routing";
+import { QuestionMark } from "@mui/icons-material";
 import {
   AppBar,
+  ButtonGroup,
   CssBaseline,
-  Divider,
+  Grid2,
   IconButton,
-  ListItemIcon,
-  Menu,
+  Link,
   MenuItem,
-  Paper,
+  Select,
+  SelectChangeEvent,
   Toolbar,
   Tooltip,
-  Link,
   Typography,
-  ButtonGroup,
-  Grid2,
+  useTheme
 } from "@mui/material";
-import { signOut, useSession } from "next-auth/react";
-import { useState, MouseEvent } from "react";
-import Logout from "@mui/icons-material/Logout";
-import { Link as NextLink } from "@/server/i18n/routing";
-import { useLocale } from "next-intl";
-import { AccountCircle, Language, Mail } from "@mui/icons-material";
-import SideBar from "@/components/common/SideBar";
-import { parseAsBoolean, useQueryState } from "nuqs";
+import { useLocale, useTranslations } from "next-intl";
+import Image from "next/image";
+import { MouseEvent, useState } from "react";
 
 export default function LocaleLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
-
-  const [sideBarOpen, setSideBarOpen] = useQueryState(
-    "sideBarOpen",
-    parseAsBoolean.withDefault(false)
-  );
-
-  const open = Boolean(anchorEl);
-
   const handleClick = (event: MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget);
+    setProfileAnchorEl(event.currentTarget);
   };
 
   const handleClose = () => {
-    setAnchorEl(null);
-  };
-
-  const handleLogout = () => {
-    signOut();
+    setProfileAnchorEl(null);
   };
 
   const locale = useLocale();
 
-  const session = useSession();
+  const theme = useTheme();
+
+  const [profileAnchorEl, setProfileAnchorEl] = useState<HTMLElement | null>(
+    null
+  );
+
+  const router = useRouter();
+
+  const pathname = usePathname();
+
+  const handleChangeLocale = (event: SelectChangeEvent<string>) => {
+    router.push(
+      {
+        pathname: pathname,
+      },
+      {
+        locale: event.target.value,
+      }
+    );
+  };
+
+  const t = useTranslations();
 
   return (
     <div
@@ -67,86 +78,99 @@ export default function LocaleLayout({
       }}
     >
       <CssBaseline />
+      <ProfileMenu anchorEl={profileAnchorEl} close={handleClose} />
       <AppBar position="sticky" color="primary">
         <Toolbar style={{ paddingLeft: 0 }}>
-          <IconButton color="inherit">
-            <MenuIcon />
-          </IconButton>
-          <Link href="/" component={NextLink} underline="none" color="inherit">
-            <Typography variant="body1">Base</Typography>
+          <Link
+            href="/"
+            component={NextLink}
+            style={{ padding: "16px 32px" }}
+            underline="none"
+            color="inherit"
+          >
+            <Image
+              alt="Hamburg logo"
+              src="/logo.png"
+              fetchPriority="low"
+              style={{ width: "250px", height: "auto" }}
+              height={45}
+              width={250}
+              quality={90}
+            />
           </Link>
           <div style={{ flex: 1 }} />
           <ButtonGroup>
-            <Tooltip title="Notifications">
-              <IconButton color="inherit">
-                <Mail />
+            <Select
+              value={locale}
+              onChange={handleChangeLocale}
+              variant="outlined"
+              style={{ border: "none" }}
+            >
+              {locales.map((locale) => (
+                <MenuItem key={locale} value={locale}>
+                  {locale.toUpperCase()}
+                </MenuItem>
+              ))}
+            </Select>
+            <Tooltip title={t("navbar.help")}>
+              <IconButton style={{ color: "black" }}>
+                <QuestionMark />
               </IconButton>
             </Tooltip>
-            <Tooltip title="Language">
-              <IconButton color="inherit">
-                <Language />
-              </IconButton>
-            </Tooltip>
-            <Tooltip title="Account settings">
+
+            <Tooltip title={t("navbar.settings")}>
               <IconButton
                 aria-haspopup="true"
                 onClick={handleClick}
                 color="inherit"
               >
-                <AccountCircle />
+                <UserAvatar sx={{ width: 24, height: 24, fontSize: 10 }} />
               </IconButton>
             </Tooltip>
           </ButtonGroup>
-          <Menu
-            transformOrigin={{ horizontal: "right", vertical: "top" }}
-            anchorOrigin={{ horizontal: "right", vertical: "bottom" }}
-            onClose={handleClose}
-            onClick={handleClose}
-            open={open}
-            anchorEl={anchorEl}
-          >
-            <MenuItem LinkComponent={NextLink} href="/profile">
-              <AccountCircle />
-              &nbsp;Profile
-            </MenuItem>
-            <Divider />
-            <MenuItem>Logged in as {session.data?.user.email}</MenuItem>
-            <MenuItem onClick={handleLogout}>
-              <ListItemIcon>
-                <Logout fontSize="small" />
-                &nbsp;Logout
-              </ListItemIcon>
-            </MenuItem>
-          </Menu>
         </Toolbar>
       </AppBar>
-      <Grid2
-        style={{ flex: 1, overflow: "hidden" }}
-        container
-        flexDirection="row"
-        wrap="nowrap"
+      {children}
+      <footer
+        style={{
+          background: theme.palette.secondary.main,
+          padding: theme.spacing(3),
+          position: "relative",
+          color: "white",
+        }}
       >
-        <SideBar
-          items={[
-            {
-              name: "Test",
-              path: "/test",
-              type: "folder",
-            },
-          ]}
-        />
-        <Paper
-          elevation={0}
-          sx={{
-            flex: 1,
-            overflow: "hidden",
-            padding: "32px 64px",
-            boxSizing: "border-box",
+        <FancyFooterEdge
+          style={{
+            position: "absolute",
+            top: -46,
+            left: 0,
+            width: 150,
+            zIndex: 20,
+            pointerEvents: "none",
           }}
-        >
-          {children}
-        </Paper>
-      </Grid2>
+        />
+        <Grid2 container justifyContent="space-between" spacing={4}>
+          <Typography>©Hamburg LGV 2025</Typography>
+          <Grid2 container spacing={4}>
+            <Link
+              href={"/impressum"}
+              underline="none"
+              color="inherit"
+              component={NextLink}
+            >
+              {t("footer.impressum")}
+            </Link>
+            <Link
+              href={"/dsgvo"}
+              underline="none"
+              color="inherit"
+              component={NextLink}
+            >
+              {t("footer.datenschutz")}
+            </Link>
+          </Grid2>
+        </Grid2>
+      </footer>
     </div>
   );
 }

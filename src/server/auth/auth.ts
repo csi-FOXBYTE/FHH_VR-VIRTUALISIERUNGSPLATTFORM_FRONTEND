@@ -1,19 +1,19 @@
 import NextAuth from "next-auth";
-import KeycloakProvider from "next-auth/providers/keycloak";
+import MicrosoftEntraIdProvider from "next-auth/providers/microsoft-entra-id"
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import prisma from "../prisma";
 
 export const { auth, handlers, signIn, signOut, unstable_update } = NextAuth({
   providers: [
-    KeycloakProvider({
-      clientId: process.env.KEYCLOAK_ID!,
-      clientSecret: process.env.KEYCLOAK_SECRET!,
-      issuer: process.env.KEYCLOAK_ISSUER,
+    MicrosoftEntraIdProvider({
+      clientSecret: process.env.MICROSOFT_ENTRA_CLIENT_SECRET,
+      clientId: process.env.MICROSOFT_ENTRA_CLIENT_ID,
+      issuer: process.env.MICROSOFT_ENTRA_ISSUER,
     }),
   ],
   session: {
     strategy: "database",
-    maxAge: 14,
+    maxAge: 259200,
   },
   adapter: PrismaAdapter(prisma),
 });

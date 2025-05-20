@@ -1,27 +1,30 @@
 # syntax=docker/dockerfile:1.3
 
-FROM node:18-alpine AS base
+FROM node:23-alpine AS base
 
-RUN apk add openssl && \
-    apk add openssl-dev && \
-    apk add libc6-compat && \
-    rm -rf /var/cache/apk/*
+RUN apk add openssl \
+    && apk add openssl-dev \
+    && apk add libc6-compat \
+    && rm -rf /var/cache/apk/*
+
+RUN npm i -g corepack@latest
 
 # Install dependencies only when needed
 FROM base AS deps
 # Check https://github.com/nodejs/docker-node/tree/b4117f9333da4138b03a546ec926ef50a31506c3#nodealpine to understand why libc6-compat might be needed.
 RUN apk add --no-cache libc6-compat
 WORKDIR /app
-
+# ENV COREPACK_INTEGRITY_KEYS=0
 # Install dependencies based on the preferred package manager
 COPY package.json yarn.lock* package-lock.json* pnpm-lock.yaml* .npmrc ./
-RUN --mount=type=secret,id=npmrc,target=/root/.npmrc corepack enable pnpm && pnpm i --frozen-lockfile
+RUN --mount=type=secret,id=npmrc,target=/root/.npmrc \
+    --mount=type=secret,id=env,target=.env \
+    corepack enable pnpm && pnpm i
 
 # Rebuild the source code only when needed
 FROM base AS builder
 WORKDIR /app
 COPY . .
-COPY .npmrc ./
 COPY --from=deps /app/node_modules ./node_modules
 
 
@@ -30,7 +33,9 @@ COPY --from=deps /app/node_modules ./node_modules
 # Uncomment the following line in case you want to disable telemetry during the build.
 ENV NEXT_TELEMETRY_DISABLED=1
 
-RUN --mount=type=secret,id=npmrc,target=/root/.npmrc corepack enable pnpm && pnpm prisma generate && pnpm run build
+RUN --mount=type=secret,id=npmrc,target=/root/.npmrc \
+    --mount=type=secret,id=env,target=.env \
+    corepack enable pnpm && pnpm zenstack generate && pnpm run build
 
 # Production image, copy all the files and run next
 FROM base AS runner
@@ -53,6 +58,8 @@ RUN chown nextjs:nodejs .next
 # https://nextjs.org/docs/advanced-features/output-file-tracing
 COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
 COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+
+RUN rm .env
 
 USER nextjs
 

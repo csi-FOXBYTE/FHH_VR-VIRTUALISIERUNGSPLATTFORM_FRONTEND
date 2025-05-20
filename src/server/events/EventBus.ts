@@ -1,14 +1,14 @@
 import { Subject, filter } from "rxjs";
 
 export type Events = {
-  [key: string]: Event<any>;
+  [key: string]: Event<Record<string, unknown>>;
 };
 
-export type TypedEvent<Payload extends Record<string, any>> = {
+export type TypedEvent<Payload extends Record<string, unknown>> = {
   payload: Payload;
 };
 
-type Event<Payload extends Record<string, any>> = Record<string, Payload>;
+type Event<Payload extends Record<string, unknown>> = Record<string, Payload>;
 
 type InternalEvents<
   K extends keyof E,
@@ -20,9 +20,6 @@ type InternalEvents<
   id: string;
 };
 
-type EmitOptions = {};
-type OnOptions = {};
-
 export class EventBusImpl<E extends { [key: string]: Events }> {
   private readonly _subjects: {
     [K in keyof E]?: Subject<InternalEvents<K, E, keyof E[K]>>;
@@ -31,26 +28,21 @@ export class EventBusImpl<E extends { [key: string]: Events }> {
   emit<K extends keyof E, T extends keyof E[K]>(
     event: K,
     type: T,
-    payload: E[K][T]["payload"],
-    opts?: EmitOptions
+    payload: E[K][T]["payload"]
   ): void {
     if (!this._subjects[event])
       this._subjects[event] = new Subject<InternalEvents<K, E, keyof E[K]>>();
     this._subjects[event]!.next({ type, payload, id: crypto.randomUUID() });
   }
 
-  on<K extends keyof E>(event: K, opts?: OnOptions) {
+  on<K extends keyof E>(event: K) {
     if (!this._subjects[event])
       this._subjects[event] = new Subject<InternalEvents<K, E, keyof E[K]>>();
 
     return this._subjects[event]!.asObservable();
   }
 
-  onType<K extends keyof E, T extends keyof E[K]>(
-    event: K,
-    type: T,
-    opts?: OnOptions
-  ) {
+  onType<K extends keyof E, T extends keyof E[K]>(event: K, type: T) {
     if (!this._subjects[event])
       this._subjects[event] = new Subject<InternalEvents<K, E, keyof E[K]>>();
 

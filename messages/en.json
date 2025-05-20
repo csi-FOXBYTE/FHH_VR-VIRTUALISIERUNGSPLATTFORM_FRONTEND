@@ -1,1 +1,54 @@
-{}
+{
+  "index": {
+    "my-area": "My Area",
+    "project-management": "Project Management",
+    "collaboration": "Collaboration",
+    "administration": "Administration",
+    "welcoming-text": "Hello {name}!",
+    "show-profile": "View Profile",
+    "manage-projects": "Manage Projects",
+    "show-collaboration": "Open Collaboration",
+    "show-administration": "Open Administration",
+    "today": "Today",
+    "last-logged-in-message": "Last logged in on {date}."
+  },
+  "navbar": {
+    "profile": "Profile",
+    "project-management": "Project Management",
+    "collaboration": "Collaboration",
+    "administration": "Administration",
+    "sign-out": "Sign Out",
+    "system-version": "System Version",
+    "help": "Help",
+    "settings": "Settings"
+  },
+  "navigation": {
+    "my-area": "My Area",
+    "profile": "Profile",
+    "not-found": "Not Found",
+    "administration": "Administration",
+    "project-management": "Project Management",
+    "collaboration": "Collaboration",
+    "3d-viewer": "3D Viewer"
+  },
+  "footer": {
+    "impressum": "Legal Notice",
+    "datenschutz": "Privacy Policy"
+  },
+  "profile": {
+    "profile": "Profile",
+    "name": "Name",
+    "email": "Email Address",
+    "user-group": "User Group",
+    "personal-data": "Personal Data",
+    "last-login": "Last Login",
+    "delete-account": "Delete Account",
+    "update-account": "Edit Account"
+  },
+  "collaboration": {
+    "collaboration": "Collaboration",
+    "to-project": "To Project",
+    "copied-to-clipboard-success": "Code successfully copied to clipboard!",
+    "code": "Code"
+  }
+}

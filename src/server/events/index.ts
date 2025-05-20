@@ -4,6 +4,7 @@ import { EventBusImpl } from "./EventBus";
 import type { EventMap } from "./EventMap";
 
 const eventBusSingleton = () => {
+  // @ts-expect-error wrong types
   return new EventBusImpl<EventMap>();
 };
 
