@@ -14,7 +14,7 @@ const initialEpsg = epsgValues.find((epsg) => epsg.label === "EPSG:25832");
 
 const srcSRS = "+proj=geocent +datum=WGS84 +units=m +no_defs +type=crs";
 
-export default function TranslateInput({
+export default function TranslationInput({
   value,
   readOnly = false,
   onImmediateChange,
@@ -39,6 +39,11 @@ export default function TranslateInput({
   const yRef = useRef<HTMLInputElement>(null);
   const zRef = useRef<HTMLInputElement>(null);
 
+  const [prevTransformedValue, setPrevTransformedValue] = useState<{
+    x: string;
+    y: string;
+    z: string;
+  }>({ x: "1", y: "1", z: "1" });
   const [transformedValue, setTransformedValue] = useState<{
     x: string;
     y: string;
@@ -55,10 +60,20 @@ export default function TranslateInput({
     const [x, y, z] = transformer.forward([value.x, value.y, value.z]);
 
     setTransformedValue({ x: x.toString(), y: y.toString(), z: z.toString() });
+    setPrevTransformedValue({
+      x: x.toString(),
+      y: y.toString(),
+      z: z.toString(),
+    });
   }, [value, transformer]);
 
   useEffect(() => {
-    if (transformedValue === undefined) return;
+    if (
+      prevTransformedValue.x === transformedValue.x &&
+      prevTransformedValue.y === transformedValue.y &&
+      prevTransformedValue.z === transformedValue.z
+    )
+      return;
 
     const x = parseFloat(transformedValue.x);
     const y = parseFloat(transformedValue.y);
@@ -71,14 +86,17 @@ export default function TranslateInput({
     const newValue = { x: xNew, y: yNew, z: zNew };
 
     onImmediateChange?.(newValue);
-  }, [onImmediateChange, transformedValue, transformer]);
+  }, [
+    onImmediateChange,
+    prevTransformedValue.x,
+    prevTransformedValue.y,
+    prevTransformedValue.z,
+    transformedValue,
+    transformer,
+  ]);
 
   return (
-    <Grid2
-      container
-      flexDirection="column"
-      spacing={2}
-    >
+    <Grid2 container flexDirection="column" spacing={2}>
       <Autocomplete
         disablePortal
         renderInput={(params) => <TextField {...params} label="EPSG" />}
@@ -93,8 +111,8 @@ export default function TranslateInput({
         slotProps={{
           input: {
             startAdornment: <InputAdornment position="start">X</InputAdornment>,
-            endAdornment: <InputAdornment position="end"> m</InputAdornment>
-          }
+            endAdornment: <InputAdornment position="end"> m</InputAdornment>,
+          },
         }}
         inputRef={xRef}
         variant="standard"
@@ -112,8 +130,8 @@ export default function TranslateInput({
         slotProps={{
           input: {
             startAdornment: <InputAdornment position="start">Y</InputAdornment>,
-            endAdornment: <InputAdornment position="end"> m</InputAdornment>
-          }
+            endAdornment: <InputAdornment position="end"> m</InputAdornment>,
+          },
         }}
         inputRef={yRef}
         variant="standard"
@@ -131,8 +149,8 @@ export default function TranslateInput({
         slotProps={{
           input: {
             startAdornment: <InputAdornment position="start">Z</InputAdornment>,
-            endAdornment: <InputAdornment position="end"> m</InputAdornment>
-          }
+            endAdornment: <InputAdornment position="end"> m</InputAdornment>,
+          },
         }}
         inputRef={zRef}
         variant="standard"

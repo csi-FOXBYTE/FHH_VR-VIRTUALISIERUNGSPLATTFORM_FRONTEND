@@ -1,6 +1,6 @@
 import { Box, Grid2, Tab, Tabs, Typography } from "@mui/material";
 import { SelectedObjectResolved } from "./ViewerProvider";
-import TransformSwitch from "./ObjectPropertySwitch";
+import TransformSwitch from "./TransformSwitch";
 import { Note, TransformOutlined } from "@mui/icons-material";
 import { useState } from "react";
 

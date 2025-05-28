@@ -1,9 +1,9 @@
-import TranslateInput from "./TranslateInput";
+import TranslationInput from "./TransformInputs/TranslationInput";
 
 export default function TransformInput() {
     return (
         <>
-        <TranslateInput />
+        <TranslationInput />
         </>
     )
 };

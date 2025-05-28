@@ -65,7 +65,7 @@ export type SelectedObjectResolved =
   | VisualAxis
   | Tile3D;
 
-type ViewerStoreType = {
+export type ViewerStoreType = {
   ctx: ResiumContext | null;
   setCtx: (ctx: ResiumContext) => void;
 

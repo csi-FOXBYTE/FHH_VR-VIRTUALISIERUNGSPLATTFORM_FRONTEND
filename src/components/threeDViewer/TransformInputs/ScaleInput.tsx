@@ -8,6 +8,11 @@ export default function ScaleInput({
   value?: { x: number; y: number; z: number };
   onImmediateChange?: (value: { x: number; y: number; z: number }) => void;
 }) {
+  const [prevTransformedValue, setPrevTransformedValue] = useState<{
+    x: string;
+    y: string;
+    z: string;
+  }>({ x: "1", y: "1", z: "1" });
   const [transformedValue, setTransformedValue] = useState<{
     x: string;
     y: string;
@@ -17,19 +22,33 @@ export default function ScaleInput({
   useEffect(() => {
     if (!value) return;
 
+    const x = value.x.toFixed(5);
+    const y = value.y.toFixed(5);
+    const z = value.z.toFixed(5);
+
     setTransformedValue({
-      x: value.x.toFixed(5),
-      y: value.y.toFixed(5),
-      z: value.z.toFixed(5),
+      x,
+      y,
+      z,
+    });
+    setPrevTransformedValue({
+      x,
+      y,
+      z,
     });
   }, [value]);
 
   useEffect(() => {
+    if (
+      prevTransformedValue.x === transformedValue.x &&
+      prevTransformedValue.y === transformedValue.y &&
+      prevTransformedValue.z === transformedValue.z
+    )
+      return;
+
     const x = parseFloat(transformedValue.x);
     const y = parseFloat(transformedValue.y);
     const z = parseFloat(transformedValue.z);
-
-    console.log({ x, y, z });
 
     if (Number.isNaN(x) || Number.isNaN(y) || Number.isNaN(z)) return;
 
@@ -48,6 +67,9 @@ export default function ScaleInput({
     onImmediateChange?.({ x, y, z });
   }, [
     onImmediateChange,
+    prevTransformedValue.x,
+    prevTransformedValue.y,
+    prevTransformedValue.z,
     transformedValue.x,
     transformedValue.y,
     transformedValue.z,

@@ -80,6 +80,8 @@ export default function ProjectObject({
     projectObject.translation.z,
   ]);
 
+  if (!url) return null;
+
   return (
     <Model
       onClick={() => setSelectedObject(projectObject)}

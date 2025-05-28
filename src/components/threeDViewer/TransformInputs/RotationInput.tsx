@@ -23,6 +23,11 @@ export default function RotationInput({
     w: number;
   }) => void;
 }) {
+  const [prevHprText, setPrevHprText] = useState({
+    heading: "0",
+    pitch: "0",
+    roll: "0",
+  });
   const [hprText, setHprText] = useState({
     heading: "0",
     pitch: "0",
@@ -49,18 +54,34 @@ export default function RotationInput({
     const qLocal = Quaternion.multiply(earthToLocal, qE, new Quaternion());
     const hpr = HeadingPitchRoll.fromQuaternion(qLocal);
 
+    const heading = ((hpr.heading * 180) / Math.PI).toFixed(5);
+    const pitch = ((hpr.pitch * 180) / Math.PI).toFixed(5);
+    const roll = ((hpr.roll * 180) / Math.PI).toFixed(5);
     setHprText({
-      heading: ((hpr.heading * 180) / Math.PI).toFixed(5),
-      pitch: ((hpr.pitch * 180) / Math.PI).toFixed(5),
-      roll: ((hpr.roll * 180) / Math.PI).toFixed(5),
+      heading,
+      pitch,
+      roll,
+    });
+    setPrevHprText({
+      heading,
+      pitch,
+      roll,
     });
   }, [value, earthToLocal]);
 
   // 3. When the user edits H/P/R, convert back to an ECEF quaternion
   useEffect(() => {
+    if (
+      hprText.heading === prevHprText.heading ||
+      hprText.pitch === prevHprText.heading ||
+      hprText.roll === prevHprText.roll
+    )
+      return;
+
     const h = parseFloat(hprText.heading);
     const p = parseFloat(hprText.pitch);
     const r = parseFloat(hprText.roll);
+
     if ([h, p, r].some(Number.isNaN)) return;
 
     // Local quaternion from HPR
@@ -86,6 +107,8 @@ export default function RotationInput({
     hprText.roll,
     localToEarth,
     onImmediateChange,
+    prevHprText.heading,
+    prevHprText.roll,
   ]);
 
   return (
@@ -99,7 +122,9 @@ export default function RotationInput({
           onChange={(e) => setHprText({ ...hprText, [field]: e.target.value })}
           slotProps={{
             input: {
-              startAdornment: <InputAdornment position="start">{field}</InputAdornment>,
+              startAdornment: (
+                <InputAdornment position="start">{field}</InputAdornment>
+              ),
               endAdornment: <InputAdornment position="end">°</InputAdornment>,
             },
           }}
