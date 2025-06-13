@@ -1,10 +1,7 @@
-import { Entity, PolygonGraphics } from "resium";
-import { useSelectedObject, useViewerStore } from "./ViewerProvider";
-import { Cartesian3, Color } from "cesium";
+import ClippingPolygon from "./ClippingPolygon";
+import { useViewerStore } from "./ViewerProvider";
 
 export default function ClippingPolygons() {
-  const selectedObject = useSelectedObject();
-  const setSelectedObject = useViewerStore((state) => state.setSelectedObject);
   const clippingPolygons = useViewerStore(
     (state) => state.clippingPolygons.value
   );
@@ -12,25 +9,9 @@ export default function ClippingPolygons() {
   return clippingPolygons
     .filter((p) => p.visible)
     .map((clippingPolygon) => (
-      <Entity
+      <ClippingPolygon
         key={clippingPolygon.id}
-        selected={selectedObject?.id === clippingPolygon.id}
-        onClick={() => setSelectedObject(clippingPolygon)}
-      >
-        <PolygonGraphics
-          extrudedHeight={100}
-          hierarchy={{
-            holes: [],
-            positions: clippingPolygon.positions.map(
-              (p) => new Cartesian3(p.x, p.y, p.z)
-            ),
-            isConstant: false,
-          }}
-          outline
-          outlineColor={new Color(1, 1, 0, 0.6)}
-          material={new Color(1, 1, 0, 0.5)}
-          fill
-        />
-      </Entity>
+        clippingPolygon={clippingPolygon}
+      />
     ));
 }

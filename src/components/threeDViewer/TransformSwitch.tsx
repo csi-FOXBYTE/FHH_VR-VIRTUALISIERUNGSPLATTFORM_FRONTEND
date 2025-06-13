@@ -1,4 +1,4 @@
-import { Divider, Grid2 } from "@mui/material";
+import { Divider, Grid, Typography } from "@mui/material";
 import {
   Cartesian3,
   ConstantPositionProperty,
@@ -195,15 +195,18 @@ export default function TransformSwitch({
         });
       }, 500);
     },
-    [objectRefs.startingPoints, selectedObject.id, updateStartingPoint, viewer?.scene]
+    [
+      objectRefs.startingPoints,
+      selectedObject.id,
+      updateStartingPoint,
+      viewer?.scene,
+    ]
   );
 
   switch (selectedObject.type) {
-    case "CLIPPING_POLYGON":
-      return "-";
     case "PROJECT_OBJECT":
       return (
-        <Grid2 container flexDirection="column" spacing={2}>
+        <Grid container flexDirection="column" spacing={2}>
           <TranslationInput
             value={selectedObject.translation}
             onImmediateChange={handleTranslationChange}
@@ -219,23 +222,39 @@ export default function TransformSwitch({
             value={selectedObject.scale}
             onImmediateChange={handleScaleChange}
           />
-        </Grid2>
+        </Grid>
       );
     case "STARTING_POINT":
       return (
-        <TranslationInput
-          onImmediateChange={handleTranslationChangeStartingPoint}
-          value={selectedObject.position}
-        />
+        <Grid container spacing={2} flexDirection="column">
+          <Typography>Origin</Typography>
+          <TranslationInput
+            onImmediateChange={handleTranslationChangeStartingPoint}
+            value={selectedObject.position}
+          />
+          <Typography>Target</Typography>
+          <TranslationInput
+            onImmediateChange={handleTranslationChangeStartingPoint}
+            value={selectedObject.position}
+          />
+        </Grid>
       );
-    case "TILE_3D":
-      return "3D Tile feature";
     case "VISUAL_AXIS":
       return (
-        <TranslationInput
-          onImmediateChange={handleTranslationChangeVisualAxis}
-          value={selectedObject.position}
-        />
+        <Grid container spacing={2} flexDirection="column">
+          <Typography>Origin</Typography>
+          <TranslationInput
+            onImmediateChange={handleTranslationChangeVisualAxis}
+            value={selectedObject.position}
+          />
+          <Typography>Target</Typography>
+          <TranslationInput
+            onImmediateChange={handleTranslationChangeVisualAxis}
+            value={selectedObject.position}
+          />
+        </Grid>
       );
+    default:
+      return null;
   }
 }

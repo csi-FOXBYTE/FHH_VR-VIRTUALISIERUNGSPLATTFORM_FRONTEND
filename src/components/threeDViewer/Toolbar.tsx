@@ -3,12 +3,9 @@ import {
   AddLocationAlt,
   ContentCut,
   Crop169,
-  Expand,
-  OpenWith,
-  ThreeSixty,
   Tonality
 } from "@mui/icons-material";
-import { Divider, Grid2, IconButton, Tooltip, useTheme } from "@mui/material";
+import { Divider, Grid, IconButton, Tooltip, useTheme } from "@mui/material";
 import { useViewerStore } from "./ViewerProvider";
 
 export default function Toolbar() {
@@ -48,7 +45,7 @@ export default function Toolbar() {
         borderRadius: "0 8px 8px 0px",
       }}
     >
-      <Grid2 container flexDirection="column">
+      <Grid container flexDirection="column">
         <Tooltip arrow placement="right" title="Toggle camera safe zone">
           <IconButton
             color={safeCameraZoneVisible ? "primary" : undefined}
@@ -63,22 +60,6 @@ export default function Toolbar() {
             onClick={toggleShadowVisibility}
           >
             <Tonality />
-          </IconButton>
-        </Tooltip>
-        <Divider />
-        <Tooltip arrow placement="right" title="Translate">
-          <IconButton>
-            <OpenWith />
-          </IconButton>
-        </Tooltip>
-        <Tooltip arrow placement="right" title="Rotate">
-          <IconButton>
-            <ThreeSixty />
-          </IconButton>
-        </Tooltip>
-        <Tooltip arrow placement="right" title="Scale">
-          <IconButton>
-            <Expand />
           </IconButton>
         </Tooltip>
         <Divider />
@@ -97,7 +78,7 @@ export default function Toolbar() {
             <AddAPhoto />
           </IconButton>
         </Tooltip>
-      </Grid2>
+      </Grid>
     </div>
   );
 }

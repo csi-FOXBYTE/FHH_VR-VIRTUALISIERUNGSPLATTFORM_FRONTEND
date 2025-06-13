@@ -8,7 +8,17 @@ const nextConfig: NextConfig = {
   output: "standalone",
   reactStrictMode: true,
   env: {
-    version 
+    version,
+  },
+  rewrites: async () => {
+    if (!process.env.BACKEND_URL) throw new Error("No backend url supplied!");
+
+    return [
+      {
+        source: "/api/backend/:path*",
+        destination: `${process.env.BACKEND_URL}/:path*`,
+      },
+    ];
   },
 };
 

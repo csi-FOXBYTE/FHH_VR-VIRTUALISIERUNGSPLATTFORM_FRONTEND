@@ -1,16 +1,17 @@
 "use client";
 
-import { CircularProgress, Grid2 } from "@mui/material";
+import { CircularProgress, Grid } from "@mui/material";
 import "cesium/Build/Cesium/Widgets/widgets.css";
 import dynamic from "next/dynamic";
 import AppBar from "./AppBar";
 import RightDrawer from "./RightDrawer";
 import Toolbar from "./Toolbar";
+import ImportProjectObjectDialog from "./ImportProjectObjectDialog";
 
 const ResiumViewer = dynamic(async () => (await import("./Viewer")).default, {
   ssr: false,
   loading: () => (
-    <Grid2
+    <Grid
       width="100%"
       height="100%"
       flexDirection="column"
@@ -18,11 +19,14 @@ const ResiumViewer = dynamic(async () => (await import("./Viewer")).default, {
       style={{ background: "white" }}
       justifyContent="center"
       alignContent="center"
+      position="absolute"
+      top="0"
+      left="0"
       justifyItems="center"
     >
       <CircularProgress />
       <div>Loading Viewer component... </div>
-    </Grid2>
+    </Grid>
   ),
 });
 
@@ -34,25 +38,27 @@ export function ThreeDViewer() {
         height: "100%",
         overflow: "hidden",
         position: "relative",
+        display: "flex",
+        flexDirection: "column",
       }}
     >
       <AppBar />
+      <ImportProjectObjectDialog />
       <div
         style={{
-          width: "100%",
-          height: "100%",
+          flex: 1,
           overflow: "hidden",
           position: "relative",
           background: "rgba(0, 0, 0, 0.75)",
         }}
       >
         <Toolbar />
-        <Grid2 container height="100%">
-          <Grid2 flex={1} position="relative" height="100%">
+        <Grid container height="100%">
+          <Grid flex={1} position="relative" height="100%">
             <ResiumViewer />
-          </Grid2>
+          </Grid>
           <RightDrawer />
-        </Grid2>
+        </Grid>
       </div>
     </div>
   );

@@ -1,8 +1,12 @@
 import "server-only";
 import { PrismaClient } from "@prisma/client";
+import { versioningExtension } from "./extensions/versioningExtension";
+import realtimeExtension from "./extensions/realtimeExtension";
 
 const prismaClientSingleton = () => {
-  return new PrismaClient();
+  return new PrismaClient()
+    .$extends(realtimeExtension({ intervalMs: 1000 }))
+    .$extends(versioningExtension());
 };
 
 declare const globalThis: {

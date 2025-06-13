@@ -20,7 +20,13 @@
     "sign-out": "Sign Out",
     "system-version": "System Version",
     "help": "Help",
-    "settings": "Settings"
+    "settings": "Settings",
+    "login": "Login",
+    "register": "Register"
+  },
+  "landingpage": {
+    "in-3d-and-virtual-reality": "in 3D and Virtual Reality",
+    "download": "Download"
   },
   "navigation": {
     "my-area": "My Area",
@@ -29,7 +35,9 @@
     "administration": "Administration",
     "project-management": "Project Management",
     "collaboration": "Collaboration",
-    "3d-viewer": "3D Viewer"
+    "editor": "Editor",
+    "new-project": "New Project",
+    "project": "Project"
   },
   "footer": {
     "imprint": "Imprint",

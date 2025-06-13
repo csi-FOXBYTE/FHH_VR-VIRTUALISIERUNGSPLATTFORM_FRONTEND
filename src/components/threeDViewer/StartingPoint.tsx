@@ -1,0 +1,91 @@
+import * as Cesium from "cesium";
+import { useEffect, useState } from "react";
+import { Entity, LabelGraphics } from "resium";
+import CameraFrustum from "./CameraFrustum";
+import {
+    StartingPoint as StartingPointType,
+    useViewerStore,
+} from "./ViewerProvider";
+
+export default function StartingPoint({
+  startingPoint,
+}: {
+  startingPoint: StartingPointType;
+}) {
+  const selectedObject = useViewerStore((state) => state.selectedObject);
+  const setSelectedObject = useViewerStore((state) => state.setSelectedObject);
+
+  const registerObjectRef = useViewerStore((state) => state.registerObjectRef);
+  const unregisterObjectRef = useViewerStore(
+    (state) => state.unregisterObjectRef
+  );
+
+  const [entityRef, setEntityRef] = useState<Cesium.Entity | null>(null);
+
+  useEffect(() => {
+    if (entityRef !== null)
+      registerObjectRef({
+        type: "STARTING_POINT",
+        id: startingPoint.id,
+        objectRef: entityRef,
+      });
+    return () => {
+      unregisterObjectRef({ type: "STARTING_POINT", id: startingPoint.id });
+    };
+  }, [unregisterObjectRef, entityRef, startingPoint.id, registerObjectRef]);
+
+  return (
+    <>
+      <Entity
+        show={startingPoint.visible}
+        position={
+          new Cesium.Cartesian3(
+            startingPoint.position.x,
+            startingPoint.position.y,
+            startingPoint.position.z
+          )
+        }
+        id={startingPoint.id}
+        onClick={() => setSelectedObject(startingPoint)}
+        ref={(ref) => setEntityRef(ref?.cesiumElement ?? null)}
+      >
+        <LabelGraphics
+          text={startingPoint.name}
+          pixelOffset={new Cesium.Cartesian2(0, 16)}
+          scale={0.75}
+          style={Cesium.LabelStyle.FILL}
+          horizontalOrigin={Cesium.HorizontalOrigin.CENTER}
+          backgroundColor={Cesium.Color.WHITE}
+          backgroundPadding={new Cesium.Cartesian2(8, 4)}
+          showBackground
+          disableDepthTestDistance={1000}
+          fillColor={Cesium.Color.BLACK}
+        />
+      </Entity>
+      {startingPoint.visible ? (
+        <CameraFrustum
+          key={startingPoint.id}
+          target={
+            new Cesium.Cartesian3(
+              startingPoint.target.x,
+              startingPoint.target.y,
+              startingPoint.target.z
+            )
+          }
+          position={
+            new Cesium.Cartesian3(
+              startingPoint.position.x,
+              startingPoint.position.y,
+              startingPoint.position.z
+            )
+          }
+          color={
+            startingPoint.id === selectedObject?.id
+              ? Cesium.Color.YELLOW
+              : Cesium.Color.BLACK
+          }
+        />
+      ) : null}
+    </>
+  );
+}

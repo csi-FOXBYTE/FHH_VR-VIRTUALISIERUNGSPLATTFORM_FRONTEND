@@ -27,6 +27,8 @@ model User {
   updatedAt     DateTime        @updatedAt()
   role          Role?           @relation(fields: [roleId], references: [id])
   roleId        String?
+  createdTasks  Task[]
+  projects      Project[]
 }
 
 model Account {
@@ -80,8 +82,31 @@ model Authenticator {
 }
 
 model Role {
-  id         String @id() @default(cuid())
-  name       String
-  permssions String
-  users      User[]
+  id          String   @id() @default(cuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt()
+  name        String
+  permissions String
+  users       User[]
+}
+
+model Task {
+  id              String   @id() @default(cuid())
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt()
+  payload         String   @db.Text()
+  /// PENDING, STARTED, FINISHED
+  status          String   @default("PENDING")
+  createdByUser   User     @relation(fields: [createdByUserId], references: [id])
+  createdByUserId String
+}
+
+model Project {
+  id          String   @id() @default(cuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt()
+  title       String   @db.Text()
+  description String   @db.Text()
+  owner       User     @relation(fields: [ownerId], references: [id])
+  ownerId     String
 }

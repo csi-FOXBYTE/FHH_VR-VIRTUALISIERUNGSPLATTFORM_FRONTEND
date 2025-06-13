@@ -1,4 +1,4 @@
-import { Autocomplete, Grid2, InputAdornment, TextField } from "@mui/material";
+import { Autocomplete, Grid, InputAdornment, TextField } from "@mui/material";
 import proj4 from "proj4";
 import proj4List from "proj4-list";
 import { useEffect, useMemo, useRef, useState } from "react";
@@ -59,12 +59,12 @@ export default function TranslationInput({
 
     const [x, y, z] = transformer.forward([value.x, value.y, value.z]);
 
-    setTransformedValue({ x: x.toString(), y: y.toString(), z: z.toString() });
     setPrevTransformedValue({
       x: x.toString(),
       y: y.toString(),
       z: z.toString(),
     });
+    setTransformedValue({ x: x.toString(), y: y.toString(), z: z.toString() });
   }, [value, transformer]);
 
   useEffect(() => {
@@ -96,7 +96,7 @@ export default function TranslationInput({
   ]);
 
   return (
-    <Grid2 container flexDirection="column" spacing={2}>
+    <Grid container flexDirection="column" spacing={2}>
       <Autocomplete
         disablePortal
         renderInput={(params) => <TextField {...params} label="EPSG" />}
@@ -163,6 +163,6 @@ export default function TranslationInput({
         value={transformedValue?.z ?? ""}
         disabled={readOnly}
       />
-    </Grid2>
+    </Grid>
   );
 }

@@ -1,8 +1,4 @@
-import {
-  Cartesian3,
-  Entity,
-  Model
-} from "cesium";
+import { Cartesian3, Entity, Model } from "cesium";
 import { ResiumContext } from "resium";
 import { create } from "zustand";
 
@@ -31,6 +27,7 @@ export type StartingPoint = {
   id: string;
   name: string;
   position: { x: number; y: number; z: number };
+  target: { x: number; y: number; z: number };
   visible: boolean;
 };
 
@@ -91,6 +88,9 @@ export type ViewerStoreType = {
 
   projectObjects: {
     value: ProjectObject[];
+    _importerOpen: boolean;
+    toggleImport: () => void;
+    toggleVisibility: (id: string) => void;
     set: (projectObjects: ProjectObject[]) => void;
     update: (projectObject: Partial<ProjectObject> & { id: string }) => void;
     delete: (id: string) => void;
@@ -99,6 +99,9 @@ export type ViewerStoreType = {
 
   startingPoints: {
     value: StartingPoint[];
+    helpers: {
+      flyTo: (startingPoint: StartingPoint) => void;
+    };
     set: (startingPoints: StartingPoint[]) => void;
     update: (startingPoint: Partial<StartingPoint> & { id: string }) => void;
     delete: (id: string) => void;
@@ -249,21 +252,23 @@ export const useViewerStore = create<ViewerStoreType>((set, get) => ({
     async create() {
       const polygon = await get().tools.pickPolygon();
 
-      set((state) => ({
-        clippingPolygons: {
-          ...state.clippingPolygons,
-          value: [
-            ...state.clippingPolygons.value,
-            {
-              id: crypto.randomUUID(),
-              name: `Clipping polygon ${state.clippingPolygons.value.length}`,
-              positions: polygon,
-              type: "CLIPPING_POLYGON",
-              visible: true,
-            },
-          ],
-        },
-      }));
+      set((state) => {
+        const newPolygon = {
+          id: crypto.randomUUID(),
+          name: `Clipping polygon ${state.clippingPolygons.value.length}`,
+          positions: polygon,
+          type: "CLIPPING_POLYGON",
+          visible: true,
+        } as const;
+
+        return {
+          selectedObject: newPolygon,
+          clippingPolygons: {
+            ...state.clippingPolygons,
+            value: [...state.clippingPolygons.value, newPolygon],
+          },
+        };
+      });
 
       get().history.takeSnapshot();
     },
@@ -301,6 +306,8 @@ export const useViewerStore = create<ViewerStoreType>((set, get) => ({
         Cartesian3.subtract(target, destination, direction);
         Cartesian3.normalize(direction, direction);
 
+        camera.cancelFlight();
+
         camera.setView({
           destination,
           orientation: {
@@ -311,27 +318,31 @@ export const useViewerStore = create<ViewerStoreType>((set, get) => ({
       },
     },
     async create() {
+      const origin = await get().tools.pickPoint();
+      const target = await get().tools.pickPoint();
+
       set((state) => {
         if (!state.ctx?.camera) throw new Error("Camera is undefined!");
+
+        const newVisualAxis = {
+          id: crypto.randomUUID(),
+          name: `Visual axis ${state.visualAxes.value.length}`,
+          position: {
+            ...origin,
+            z: origin.z + 1.7,
+          },
+          type: "VISUAL_AXIS",
+          target: {
+            ...target,
+            z: target.z + 1.7,
+          },
+          visible: true,
+        } as const;
 
         return {
           visualAxes: {
             ...state.visualAxes,
-            value: [
-              ...state.visualAxes.value,
-              {
-                id: crypto.randomUUID(),
-                name: `Visual axis ${state.visualAxes.value.length}`,
-                position: state.ctx.camera.position.clone(),
-                target: Cartesian3.add(
-                  state.ctx.camera.position,
-                  state.ctx.camera.direction,
-                  new Cartesian3()
-                ),
-                type: "VISUAL_AXIS",
-                visible: true,
-              },
-            ],
+            value: [...state.visualAxes.value, newVisualAxis],
           },
         };
       });
@@ -396,25 +407,79 @@ export const useViewerStore = create<ViewerStoreType>((set, get) => ({
     },
   },
   startingPoints: {
+    helpers: {
+      flyTo: (startingPoint) => {
+        const ctx = get().ctx;
+
+        if (!ctx) throw new Error("Context is undefined!");
+
+        const { camera, viewer } = ctx;
+
+        if (!camera) throw new Error("Camera is undefined!");
+        if (!viewer) throw new Error("Viewer is undefined!");
+
+        const destination = new Cartesian3(
+          startingPoint.position.x,
+          startingPoint.position.y,
+          startingPoint.position.z
+        );
+
+        const up =
+          viewer.scene.globe.ellipsoid.geodeticSurfaceNormal(destination);
+
+        const target = new Cartesian3(
+          startingPoint.target.x,
+          startingPoint.target.y,
+          startingPoint.target.z
+        );
+
+        const direction = new Cartesian3();
+
+        Cartesian3.subtract(target, destination, direction);
+        Cartesian3.normalize(direction, direction);
+
+        camera.cancelFlight();
+
+        camera.setView({
+          destination,
+          orientation: {
+            direction,
+            up,
+          },
+        });
+      },
+    },
     value: [],
     async create() {
-      const point = await get().tools.pickPoint();
+      const origin = await get().tools.pickPoint();
+      const target = await get().tools.pickPoint();
 
-      set((state) => ({
-        startingPoints: {
-          ...state.startingPoints,
-          value: [
-            ...state.startingPoints.value,
-            {
-              id: crypto.randomUUID(),
-              name: "Starting Point " + state.startingPoints.value.length,
-              position: point,
-              type: "STARTING_POINT",
-              visible: true,
-            },
-          ],
-        },
-      }));
+      set((state) => {
+        if (!state.ctx?.camera) return {};
+
+        const newStartingPoint = {
+          id: crypto.randomUUID(),
+          name: "Starting Point " + state.startingPoints.value.length,
+          position: {
+            ...origin,
+            z: origin.z + 1.7,
+          },
+          type: "STARTING_POINT",
+          target: {
+            ...target,
+            z: target.z + 1.7,
+          },
+          visible: true,
+        } as const;
+
+        return {
+          selectedObject: newStartingPoint,
+          startingPoints: {
+            ...state.startingPoints,
+            value: [...state.startingPoints.value, newStartingPoint],
+          },
+        };
+      });
 
       get().history.takeSnapshot();
     },
@@ -480,6 +545,38 @@ export const useViewerStore = create<ViewerStoreType>((set, get) => ({
         projectObjects: {
           ...state.projectObjects,
           value: projectObjects,
+        },
+      }));
+    },
+    _importerOpen: false,
+    toggleVisibility(id) {
+      set((state) => {
+        const newValue = state.projectObjects.value.slice();
+
+        const foundProjectObjectIndex = newValue.findIndex((p) => p.id === id);
+
+        console.log(foundProjectObjectIndex);
+
+        if (foundProjectObjectIndex === -1) return {};
+
+        newValue[foundProjectObjectIndex] = {
+          ...newValue[foundProjectObjectIndex],
+          visible: !newValue[foundProjectObjectIndex].visible,
+        };
+
+        return {
+          projectObjects: {
+            ...state.projectObjects,
+            value: newValue,
+          },
+        };
+      });
+    },
+    toggleImport() {
+      set((state) => ({
+        projectObjects: {
+          ...state.projectObjects,
+          _importerOpen: !state.projectObjects._importerOpen,
         },
       }));
     },

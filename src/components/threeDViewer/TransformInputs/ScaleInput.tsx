@@ -1,4 +1,4 @@
-import { Grid2, InputAdornment, TextField } from "@mui/material";
+import { Grid, InputAdornment, TextField } from "@mui/material";
 import { useEffect, useState } from "react";
 
 export default function ScaleInput({
@@ -26,12 +26,12 @@ export default function ScaleInput({
     const y = value.y.toFixed(5);
     const z = value.z.toFixed(5);
 
-    setTransformedValue({
+    setPrevTransformedValue({
       x,
       y,
       z,
     });
-    setPrevTransformedValue({
+    setTransformedValue({
       x,
       y,
       z,
@@ -76,7 +76,7 @@ export default function ScaleInput({
   ]);
 
   return (
-    <Grid2 container flexDirection="column" spacing={2}>
+    <Grid container flexDirection="column" spacing={2}>
       <TextField
         variant="standard"
         type="number"
@@ -125,6 +125,6 @@ export default function ScaleInput({
           },
         }}
       />
-    </Grid2>
+    </Grid>
   );
 }

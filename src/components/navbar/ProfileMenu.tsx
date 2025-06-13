@@ -1,21 +1,21 @@
-import {
-  Divider,
-  Grid2,
-  ListItemIcon,
-  Menu,
-  MenuItem,
-  Typography,
-} from "@mui/material";
-import UserAvatar from "../common/UserAvatar";
+import { Link } from "@/server/i18n/routing";
 import {
   AdminPanelSettingsOutlined,
   DesktopWindows,
   Logout,
   PersonOutlined,
 } from "@mui/icons-material";
+import {
+  Divider,
+  Grid,
+  ListItemIcon,
+  Menu,
+  MenuItem,
+  Typography,
+} from "@mui/material";
 import { signOut, useSession } from "next-auth/react";
 import { useTranslations } from "next-intl";
-import { Link } from "@/server/i18n/routing";
+import UserAvatar from "../common/UserAvatar";
 
 export default function ProfileMenu({
   anchorEl,
@@ -27,7 +27,9 @@ export default function ProfileMenu({
   const session = useSession();
 
   const handleLogout = () => {
-    signOut();
+    signOut({
+      redirectTo: "/"
+    });
   };
 
   const t = useTranslations();
@@ -43,20 +45,20 @@ export default function ProfileMenu({
     >
       <MenuItem style={{ display: "flex", gap: 8 }}>
         <UserAvatar />
-        <Grid2>
+        <Grid>
           <Typography variant="body1">{session.data?.user.name}</Typography>
           <Typography variant="caption">{session.data?.user.email}</Typography>
-        </Grid2>
+        </Grid>
       </MenuItem>
       <Divider />
       <MenuItem>
         <ListItemIcon>
           <DesktopWindows />
         </ListItemIcon>
-        <Grid2>
+        <Grid>
           <Typography variant="body1">{t("navbar.system-version")}</Typography>
           <Typography variant="caption">v{process.env.version}</Typography>
-        </Grid2>
+        </Grid>
       </MenuItem>
       <Divider />
       <MenuItem component={Link} href="/profile">

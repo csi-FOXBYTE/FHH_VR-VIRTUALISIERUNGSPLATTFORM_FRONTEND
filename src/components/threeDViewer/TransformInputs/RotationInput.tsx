@@ -1,4 +1,4 @@
-import { Grid2, InputAdornment, TextField } from "@mui/material";
+import { Grid, InputAdornment, TextField } from "@mui/material";
 import {
   Cartesian3,
   HeadingPitchRoll,
@@ -54,9 +54,14 @@ export default function RotationInput({
     const qLocal = Quaternion.multiply(earthToLocal, qE, new Quaternion());
     const hpr = HeadingPitchRoll.fromQuaternion(qLocal);
 
-    const heading = ((hpr.heading * 180) / Math.PI).toFixed(5);
-    const pitch = ((hpr.pitch * 180) / Math.PI).toFixed(5);
-    const roll = ((hpr.roll * 180) / Math.PI).toFixed(5);
+    let heading = ((hpr.heading * 180) / Math.PI).toFixed(5);
+    let pitch = ((hpr.pitch * 180) / Math.PI).toFixed(5);
+    let roll = ((hpr.roll * 180) / Math.PI).toFixed(5);
+
+    if (heading === "-0.00000") heading = "0.00000";
+    if (pitch === "-0.00000") pitch = "0.00000";
+    if (roll === "-0.00000") roll = "0.00000";
+
     setHprText({
       heading,
       pitch,
@@ -72,8 +77,8 @@ export default function RotationInput({
   // 3. When the user edits H/P/R, convert back to an ECEF quaternion
   useEffect(() => {
     if (
-      hprText.heading === prevHprText.heading ||
-      hprText.pitch === prevHprText.heading ||
+      hprText.heading === prevHprText.heading &&
+      hprText.pitch === prevHprText.pitch &&
       hprText.roll === prevHprText.roll
     )
       return;
@@ -109,10 +114,11 @@ export default function RotationInput({
     onImmediateChange,
     prevHprText.heading,
     prevHprText.roll,
+    prevHprText.pitch
   ]);
 
   return (
-    <Grid2 container flexDirection="column" spacing={2}>
+    <Grid container flexDirection="column" spacing={2}>
       {(["heading", "pitch", "roll"] as const).map((field) => (
         <TextField
           key={field}
@@ -130,6 +136,6 @@ export default function RotationInput({
           }}
         />
       ))}
-    </Grid2>
+    </Grid>
   );
 }

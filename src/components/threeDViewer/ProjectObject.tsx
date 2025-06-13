@@ -13,6 +13,7 @@ export default function ProjectObject({
 }) {
   const [modelRef, setModelRef] = useState<Cesium.Model | null>(null);
 
+  const selectedObject = useViewerStore((state) => state.selectedObject);
   const setSelectedObject = useViewerStore((state) => state.setSelectedObject);
 
   const registerObjectRef = useViewerStore((state) => state.registerObjectRef);
@@ -86,7 +87,10 @@ export default function ProjectObject({
     <Model
       onClick={() => setSelectedObject(projectObject)}
       url={url}
+      show={projectObject.visible}
       modelMatrix={modelMatrix}
+      silhouetteSize={selectedObject?.id === projectObject.id ? 8 : 0}
+      silhouetteColor={Cesium.Color.YELLOW}
       ref={(ref) => {
         if (!ref?.cesiumElement) return;
 
