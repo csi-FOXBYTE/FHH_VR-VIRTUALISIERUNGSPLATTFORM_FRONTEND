@@ -1,3 +1,7 @@
+import PageContainer from "@/components/common/PageContainer";
+
 export default function GDPRPage() {
-    return null;
+    return (
+        <PageContainer>{null}</PageContainer>
+    );
 }

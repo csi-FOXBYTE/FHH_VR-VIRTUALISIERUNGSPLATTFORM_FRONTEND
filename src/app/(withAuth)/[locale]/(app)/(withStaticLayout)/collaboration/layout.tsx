@@ -1,6 +1,6 @@
 "use server";
 
-import { HydrateClient } from "@/server/trpc/server";
+import { HydrateClient, trpc } from "@/server/trpc/server";
 import { getTranslations } from "next-intl/server";
 import { ReactNode } from "react";
 
@@ -15,5 +15,7 @@ export default async function CollaborationLayout({
 }: {
   children: ReactNode;
 }) {
+  await trpc.eventsRouter.list.prefetch();
+
   return <HydrateClient>{children}</HydrateClient>;
 }

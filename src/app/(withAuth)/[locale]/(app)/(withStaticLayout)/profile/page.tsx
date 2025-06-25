@@ -1,5 +1,6 @@
 "use client";
 
+import PageContainer from "@/components/common/PageContainer";
 import UserAvatar from "@/components/common/UserAvatar";
 import { Link } from "@/server/i18n/routing";
 import {
@@ -17,10 +18,7 @@ export default function ProfilePage() {
   const t = useTranslations();
 
   return (
-    <Grid container flexDirection="column">
-      <Typography variant="h4" marginBottom={4}>
-        {t("profile.profile")}
-      </Typography>
+    <PageContainer>
       <Typography variant="h6" marginBottom={2}>
         {t("profile.personal-data")}
       </Typography>
@@ -82,6 +80,6 @@ export default function ProfilePage() {
           </Button>
         </ButtonGroup>
       </Grid>
-    </Grid>
+      </PageContainer>
   );
 }

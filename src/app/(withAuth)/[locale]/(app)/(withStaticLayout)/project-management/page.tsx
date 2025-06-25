@@ -1,43 +1,44 @@
 "use client";
 
-import ListWithPagination from "@/components/common/ListWithPagination";
+import PageContainer from "@/components/common/PageContainer";
 import { TabPanel } from "@/components/common/TabPanel";
+import useDataGridServerSideHelper from "@/components/dataGridServerSide/useDataGridServerSideOptions";
 import { Link as NextLink } from "@/server/i18n/routing";
 import { trpc } from "@/server/trpc/client";
-import { MoreVert } from "@mui/icons-material";
-import {
-  Button,
-  Grid,
-  IconButton,
-  Link,
-  ListItemIcon,
-  ListItemText,
-  Tab,
-  Tabs,
-  Typography
-} from "@mui/material";
+import { Add } from "@mui/icons-material";
+import { Button, Link, ListItemText, Tab, Tabs } from "@mui/material";
+import { DataGrid } from "@mui/x-data-grid";
 import { keepPreviousData } from "@tanstack/react-query";
+import { useTranslations } from "next-intl";
 import { parseAsInteger, useQueryState } from "nuqs";
 
 export default function ProjectManagementPage() {
+  const t = useTranslations();
+
   const [selectedTab, setSelectedTab] = useQueryState(
     "tab",
     parseAsInteger.withDefault(0)
   );
-  const [page, setSelectedPage] = useQueryState(
-    "page",
-    parseAsInteger.withDefault(0)
-  );
-  const [rowsPerPage, setRowsPerPage] = useQueryState(
-    "rowsPerPage",
-    parseAsInteger.withDefault(10)
-  );
+
+  const { props } = useDataGridServerSideHelper("project-management", {
+    extraActions: (
+      <Button
+        LinkComponent={NextLink}
+        href={"/project-management/new"}
+        variant="contained"
+        startIcon={<Add />}
+      >
+        {t("project-management.create-project")}
+      </Button>
+    ),
+  });
 
   const { data: { data, count } = { data: [], count: 0 } } =
     trpc.projectManagementRouter.list.useQuery(
       {
-        page,
-        rowsPerPage,
+        filterModel: props.filterModel,
+        paginationModel: props.paginationModel,
+        sortModel: props.sortModel,
       },
       {
         placeholderData: keepPreviousData,
@@ -45,26 +46,17 @@ export default function ProjectManagementPage() {
     );
 
   return (
-    <Grid
-      container
-      flexDirection="column"
-      overflow="hidden"
-      flex="1"
-      flexWrap="nowrap"
-    >
-      <Typography variant="h4" marginBottom={4}>
-        Projektverwaltung
-      </Typography>
+    <PageContainer>
       <Tabs value={selectedTab}>
         <Tab
           onClick={() => setSelectedTab(0)}
-          label="Meine Projekte"
+          label={t("project-management.my-projects")}
           value={0}
         />
         <Tab
           disabled
           onClick={() => setSelectedTab(1)}
-          label="Mit mir geteilte Projekte"
+          label={t("project-management.shared-projects")}
           value={1}
         />
       </Tabs>
@@ -76,62 +68,49 @@ export default function ProjectManagementPage() {
         flexDirection="column"
         flexWrap="nowrap"
         index={0}
+        position="relative"
         value={selectedTab}
       >
-        <Grid container justifyContent="flex-end">
-          <Button
-            LinkComponent={NextLink}
-            href={"/project-management/new"}
-            variant="contained"
-          >
-            Projekt anlegen
-          </Button>
-        </Grid>
-        <ListWithPagination
-          rowsPerPage={rowsPerPage}
-          totalRows={count}
-          page={page}
-          sx={{ height: "100%", overflow: "hidden", flex: 1 }}
-          onPageChange={setSelectedPage}
-          onRowsPerPageChange={setRowsPerPage}
-          data={data}
-          getId={({ row }) => row.id}
-          renderRow={({ row }) => (
-            <>
-              <ListItemText
-                slotProps={{
-                  secondary: {
-                    sx: {
-                      whiteSpace: "nowrap",
-                      overflow: "hidden",
-                      textOverflow: "ellipsis",
-                    },
-                  },
-                }}
-                primary={
+        <DataGrid
+          {...props}
+          rows={data}
+          style={{ maxWidth: "100%" }}
+          rowCount={count}
+          columns={[
+            {
+              flex: 1,
+              field: "title",
+              renderCell({ row }) {
+                return (
                   <Link
                     component={NextLink}
                     color="textPrimary"
                     underline="none"
                     href={`/project-management/${row.id}`}
                   >
-                    {row.title}
+                    <ListItemText
+                      slotProps={{
+                        secondary: {
+                          sx: {
+                            whiteSpace: "nowrap",
+                            overflow: "hidden",
+                            textOverflow: "ellipsis",
+                          },
+                        },
+                      }}
+                      primary={row.title}
+                      secondary={row.description}
+                    />
                   </Link>
-                }
-                secondary={row.description}
-              />
-              <ListItemIcon>
-                <IconButton>
-                  <MoreVert />
-                </IconButton>
-              </ListItemIcon>
-            </>
-          )}
+                );
+              },
+            },
+          ]}
         />
       </TabPanel>
       <TabPanel visible index={1} value={selectedTab}>
         Not implemented yet!
       </TabPanel>
-    </Grid>
+    </PageContainer>
   );
 }

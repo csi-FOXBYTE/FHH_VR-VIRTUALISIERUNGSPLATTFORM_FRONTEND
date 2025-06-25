@@ -14,23 +14,24 @@ generator client {
 
 /// NEXT-AUTH
 model User {
-  id             String          @id() @default(cuid())
-  name           String?
-  phoneNumber    String?
-  email          String          @unique()
-  emailVerified  DateTime?
-  image          String?         @db.Text()
-  accounts       Account[]
-  sessions       Session[]
-  Authenticator  Authenticator[]
-  createdAt      DateTime        @default(now())
-  updatedAt      DateTime        @updatedAt()
-  role           Role?           @relation(fields: [roleId], references: [id])
-  roleId         String?
-  createdTasks   Task[]
-  projects       Project[]
-  createdEvents  Event[]
-  attendedEvents EventAttendee[]
+  id                String          @id() @default(cuid())
+  name              String?
+  phoneNumber       String?
+  email             String          @unique()
+  emailVerified     DateTime?
+  image             String?         @db.Text()
+  accounts          Account[]
+  sessions          Session[]
+  Authenticator     Authenticator[]
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt()
+  role              Role?           @relation(fields: [roleId], references: [id])
+  roleId            String?
+  createdTasks      Task[]
+  projects          Project[]
+  createdEvents     Event[]
+  attendedEvents    EventAttendee[]
+  createdBaseLayers BaseLayer[]
 }
 
 model Account {
@@ -140,4 +141,32 @@ model Event {
   project            Project?        @relation(fields: [projectId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   projectId          String?
   attendees          EventAttendee[]
+}
+
+model BaseLayer {
+  id          String   @id() @default(cuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt()
+  creator     User     @relation(fields: [creatorId], references: [id])
+  creatorId   String
+  name        String
+  description String   @default("")
+  sizeGB      Float
+  href        String
+  /// Can be one of 3D-TILES, TERRAIN, IMAGERY, WMS
+  type        String
+}
+
+model VisualAxis {
+  id          String   @id() @default(cuid())
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt()
+  name        String
+  description String   @default("")
+  startPointX Float
+  startPointY Float
+  startPointZ Float
+  endPointX   Float
+  endPointY   Float
+  endPointZ   Float
 }

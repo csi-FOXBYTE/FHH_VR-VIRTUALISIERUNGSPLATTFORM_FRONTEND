@@ -1,90 +1,71 @@
 "use client";
 
-import { ArrowRightOutlined } from "@mui/icons-material";
-import {
-  Button,
-  Card,
-  CardActions,
-  CardContent,
-  CardHeader,
-  Grid,
-  GridProps,
-  Link,
-  Typography,
-} from "@mui/material";
-
-const cardProps: GridProps<typeof Card> = {
-  size: {
-    xl: 6,
-    lg: 6,
-    md: 6,
-    sm: 12,
-    xs: 12,
-  },
-  component: Card,
-  padding: 3,
-  elevation: 2,
-  borderRadius: 1,
-};
+import Cards from "@/components/common/Cards";
+import PageContainer from "@/components/common/PageContainer";
+import { Typography } from "@mui/material";
+import { useTranslations } from "next-intl";
 
 export default function AdministrationPage() {
+  const t = useTranslations();
+
   return (
-    <Grid container spacing={4} flexDirection="column">
-      <Typography variant="h4">Administration</Typography>
-      <Grid container spacing={2}>
-        <Grid {...cardProps}>
-          <CardHeader title="Datenverwaltung" />
-          <CardContent></CardContent>
-          <CardActions>
-            <Button
-              variant="text"
-              endIcon={<ArrowRightOutlined />}
-              href="/profile"
-              color="secondary"
-              LinkComponent={Link}
-            ></Button>
-          </CardActions>
-        </Grid>
-        <Grid {...cardProps}>
-          <CardHeader title="Nutzer- und Gruppenverwaltung" />
-          <CardContent></CardContent>
-          <CardActions>
-            <Button
-              variant="text"
-              endIcon={<ArrowRightOutlined />}
-              href="/profile"
-              color="secondary"
-              LinkComponent={Link}
-            ></Button>
-          </CardActions>
-        </Grid>
-        <Grid {...cardProps}>
-          <CardHeader title="Systemaktivitäten und Logs" />
-          <CardContent></CardContent>
-          <CardActions>
-            <Button
-              variant="text"
-              endIcon={<ArrowRightOutlined />}
-              href="/profile"
-              color="secondary"
-              LinkComponent={Link}
-            ></Button>
-          </CardActions>
-        </Grid>
-        <Grid {...cardProps}>
-          <CardHeader title="Konfiguration" />
-          <CardContent></CardContent>
-          <CardActions>
-            <Button
-              variant="text"
-              endIcon={<ArrowRightOutlined />}
-              href="/profile"
-              color="secondary"
-              LinkComponent={Link}
-            ></Button>
-          </CardActions>
-        </Grid>
-      </Grid>
-    </Grid>
+    <PageContainer>
+      <Cards
+        items={[
+          {
+            content: (
+              <Typography>
+                {t("administration.data-management-description")}
+              </Typography>
+            ),
+            key: "data-management",
+            link: {
+              href: "/administration/data-management",
+              label: t("administration.go-to-data-management"),
+            },
+            title: t("administration.data-management"),
+          },
+          {
+            content: (
+              <Typography>
+                {t("administration.configuration-description")}
+              </Typography>
+            ),
+            key: "configuration",
+            link: {
+              href: "/administration/configuration",
+              label: t("administration.go-to-configuration"),
+            },
+            title: t("administration.configuration"),
+          },
+          {
+            content: (
+              <Typography>
+                {t("administration.system-activities-and-logs-description")}
+              </Typography>
+            ),
+            key: "system-activities-and-logs",
+            link: {
+              href: "/administration/system-activities-and-logs",
+              label: t("administration.go-to-system-activities"),
+            },
+            title: t("administration.system-activities-and-logs"),
+          },
+          {
+            content: (
+              <Typography>
+                {t("administration.user-management-description")}
+              </Typography>
+            ),
+            key: "user-management",
+            link: {
+              href: "/administration/user-management",
+              label: t("administration.go-to-user-management"),
+            },
+            title: t("administration.user-management"),
+          },
+        ]}
+      />
+    </PageContainer>
   );
 }

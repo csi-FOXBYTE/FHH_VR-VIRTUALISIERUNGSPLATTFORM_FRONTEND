@@ -34,10 +34,10 @@ const eventsRouter = router({
         event.creator.id === opts.ctx.session.user.id ? "MODERATOR" : "GUEST",
     }));
   }),
-  getMeetingDetails: protectedProcedure
+  getEventDetails: protectedProcedure
     .input(z.object({ id: z.string() }))
     .query(async (opts) => {
-      return await opts.ctx.db.event.findFirstOrThrow({
+      const event = await opts.ctx.db.event.findFirstOrThrow({
         where: {
           id: opts.input.id,
         },
@@ -46,6 +46,12 @@ const eventsRouter = router({
           startTime: true,
           endTime: true,
           title: true,
+          project: {
+            select: {
+              id: true,
+              title: true,
+            },
+          },
           attendees: {
             select: {
               user: {
@@ -59,6 +65,11 @@ const eventsRouter = router({
           },
         },
       });
+
+      return {
+        ...event,
+        attendees: event.attendees.map((attendee) => attendee.user),
+      };
     }),
   getPossibleAttendees: protectedProcedure
     .input(z.object({ search: z.string() }))

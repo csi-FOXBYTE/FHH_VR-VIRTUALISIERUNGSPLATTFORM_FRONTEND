@@ -1,5 +1,6 @@
 import { Search } from "@mui/icons-material";
 import {
+  Box,
   Checkbox,
   Divider,
   Grid,
@@ -9,9 +10,9 @@ import {
   ListItemText,
   SxProps,
   TablePagination,
-  TextField
+  TextField,
 } from "@mui/material";
-import { parseAsString, useQueryState } from "nuqs";
+import { useTranslations } from "next-intl";
 import { Fragment, Key, ReactNode } from "react";
 
 export default function ListWithPagination<D, S extends Key>({
@@ -28,6 +29,8 @@ export default function ListWithPagination<D, S extends Key>({
   toolbarActions = null,
   selection,
   onSelectionChange,
+  search,
+  onSearchChange,
 }: {
   sx?: SxProps;
   data: D[];
@@ -48,15 +51,12 @@ export default function ListWithPagination<D, S extends Key>({
   }) => ReactNode;
   getId: ({ row }: { row: D }) => S;
   onPageChange: (page: number) => void;
+  search?: string;
+  onSearchChange?: (search: string) => void;
   disableDivider?: boolean;
   toolbarActions?: ReactNode;
 }) {
-  const [search, setSearch] = useQueryState(
-    "search",
-    parseAsString.withDefault("").withOptions({
-      throttleMs: 1000,
-    })
-  );
+  const t = useTranslations();
 
   const internalSelection = new Set(selection);
 
@@ -72,10 +72,12 @@ export default function ListWithPagination<D, S extends Key>({
         <Grid container>
           <TextField
             variant="standard"
-            label="Suche"
-            placeholder="Begriff eingeben..."
+            label={t("components.list-with-pagination.search")}
+            placeholder={t(
+              "components.list-with-pagination.search-placeholder"
+            )}
             value={search}
-            onChange={(event) => setSearch(event.target.value)}
+            onChange={(event) => onSearchChange?.(event.target.value)}
             slotProps={{
               input: {
                 startAdornment: (
@@ -92,7 +94,7 @@ export default function ListWithPagination<D, S extends Key>({
             }}
           />
         </Grid>
-        {toolbarActions ? <Divider orientation="vertical" /> : null}
+        <Box flex="1" />
         {toolbarActions}
       </Grid>
       <Divider />

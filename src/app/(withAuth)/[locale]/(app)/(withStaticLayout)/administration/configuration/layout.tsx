@@ -1,22 +1,19 @@
 "use server";
 
-import { HydrateClient, trpc } from "@/server/trpc/server";
+import { HydrateClient } from "@/server/trpc/server";
 import { getTranslations } from "next-intl/server";
 import { ReactNode } from "react";
 
 export async function generateMetadata() {
   const t = await getTranslations();
 
-  return { title: t("navigation.my-area") };
+  return { title: t("navigation.configuration") };
 }
 
-export default async function MyAreaLayout({
+export default async function ConfigurationLayout({
   children,
 }: {
   children: ReactNode;
 }) {
-  await trpc.myAreaRouter.getLastLogin.prefetch();
-  await trpc.myAreaRouter.getTodaysEvents.prefetch();
-
   return <HydrateClient>{children}</HydrateClient>;
 }

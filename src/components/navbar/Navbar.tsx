@@ -74,7 +74,7 @@ export default function Navbar({ elevated = true }: NavbarProps) {
       <ProfileMenu anchorEl={profileAnchorEl} close={handleClose} />
       <Toolbar style={{ paddingLeft: 0 }}>
         <Link
-          href="/"
+          href="/my-area"
           component={NextLink}
           style={{ padding: "16px 32px" }}
           underline="none"

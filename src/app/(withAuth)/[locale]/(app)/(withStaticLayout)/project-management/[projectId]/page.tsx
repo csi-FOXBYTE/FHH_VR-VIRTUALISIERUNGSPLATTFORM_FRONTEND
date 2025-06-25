@@ -1,6 +1,7 @@
 "use client";
 
 import ListWithPagination from "@/components/common/ListWithPagination";
+import PageContainer from "@/components/common/PageContainer";
 import { Link, useRouter } from "@/server/i18n/routing";
 import { trpc } from "@/server/trpc/client";
 import {
@@ -21,7 +22,7 @@ import {
   ListItemText,
   Menu,
   styled,
-  TextField
+  TextField,
 } from "@mui/material";
 import { skipToken } from "@tanstack/react-query";
 import { useParams } from "next/navigation";
@@ -127,13 +128,7 @@ export default function ProjectPage() {
   });
 
   return (
-    <Grid
-      container
-      flexDirection="column"
-      flex="1"
-      spacing={2}
-      flexWrap="nowrap"
-    >
+    <PageContainer flexWrap="nowrap">
       <Grid
         flexDirection="column"
         spacing={2}
@@ -143,7 +138,7 @@ export default function ProjectPage() {
         flexWrap="nowrap"
         onSubmit={handleSubmit((data) => {
           if (isNew) {
-            createProjectMutation(data)
+            createProjectMutation(data);
           } else {
             updateProjectMutation({ id: projectId, ...data });
           }
@@ -215,19 +210,25 @@ export default function ProjectPage() {
             disabled={isNew}
             endIcon={<KeyboardArrowDown />}
             onClick={() => setMenuNewOpen(true)}
-            ref={ref => setMenuNewRef(ref ?? null)}
+            ref={(ref) => setMenuNewRef(ref ?? null)}
           >
             Neu
           </Button>
-          <Menu anchorOrigin={{ vertical: "bottom", horizontal: "left"}} open={menuNewOpen} onClose={() => setMenuNewOpen(false)} anchorEl={menuNewRef}>
-              <ListItemButton LinkComponent={Link} href={`/project-management/${projectId}/editor`}>
-                <ListItemIcon>
-                  <Add />
-                </ListItemIcon>
-                <ListItemText>
-                  Ebene hinzufügen
-                </ListItemText>
-              </ListItemButton>
+          <Menu
+            anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
+            open={menuNewOpen}
+            onClose={() => setMenuNewOpen(false)}
+            anchorEl={menuNewRef}
+          >
+            <ListItemButton
+              LinkComponent={Link}
+              href={`/project-management/${projectId}/editor`}
+            >
+              <ListItemIcon>
+                <Add />
+              </ListItemIcon>
+              <ListItemText>Ebene hinzufügen</ListItemText>
+            </ListItemButton>
           </Menu>
         </Grid>
       </Grid>
@@ -261,6 +262,6 @@ export default function ProjectPage() {
           />
         </>
       )}
-    </Grid>
+    </PageContainer>
   );
 }

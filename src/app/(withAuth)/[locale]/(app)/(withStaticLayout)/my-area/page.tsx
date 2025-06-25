@@ -1,8 +1,8 @@
 "use client";
 
-import { Link } from "@/server/i18n/routing";
+import Cards from "@/components/common/Cards";
+import PageContainer from "@/components/common/PageContainer";
 import { trpc } from "@/server/trpc/client";
-import { ArrowRightOutlined } from "@mui/icons-material";
 import {
   Timeline,
   TimelineConnector,
@@ -10,35 +10,12 @@ import {
   TimelineDot,
   TimelineItem,
   TimelineOppositeContent,
-  TimelineSeparator
+  TimelineSeparator,
 } from "@mui/lab";
-import {
-  Button,
-  Card,
-  CardActions,
-  CardContent,
-  CardHeader,
-  Grid,
-  GridProps,
-  Typography,
-} from "@mui/material";
+import { Typography } from "@mui/material";
 import dayjs from "dayjs";
 import { useSession } from "next-auth/react";
 import { useFormatter, useTranslations } from "next-intl";
-
-const cardProps: GridProps<typeof Card> = {
-  size: {
-    xl: 6,
-    lg: 6,
-    md: 6,
-    sm: 12,
-    xs: 12,
-  },
-  component: Card,
-  padding: 3,
-  elevation: 2,
-  borderRadius: 1,
-};
 
 export default function MyAreaPage() {
   const session = useSession();
@@ -50,120 +27,119 @@ export default function MyAreaPage() {
   const { data: { updatedAt } = { updatedAt: new Date() } } =
     trpc.myAreaRouter.getLastLogin.useQuery();
 
+  const { data: todaysEvents = [] } =
+    trpc.myAreaRouter.getTodaysEvents.useQuery();
+
   return (
-    <Grid container spacing={4} flexDirection="column">
-      <Typography variant="h4">{t("index.my-area")}</Typography>
-      <Grid container spacing={2}>
-        <Grid {...cardProps}>
-          <CardHeader
-            title={t("index.welcoming-text", { name: session.data?.user.name })}
-          />
-          <CardContent>
-            {t("index.last-logged-in-message", {
+    <PageContainer>
+      <Cards
+        items={[
+          {
+            key: "profile",
+            content: t("index.last-logged-in-message", {
               date: formatter.dateTime(updatedAt, {
                 dateStyle: "long",
                 timeStyle: "medium",
               }),
-            })}
-          </CardContent>
-          <CardActions>
-            <Button
-              variant="text"
-              endIcon={<ArrowRightOutlined />}
-              href="/profile"
-              color="secondary"
-              LinkComponent={Link}
-            >
-              {t("index.show-profile")}
-            </Button>
-          </CardActions>
-        </Grid>
-        <Grid {...cardProps}>
-          <CardHeader title={t("index.project-management")} />
-          <CardContent></CardContent>
-          <CardActions>
-            <Button
-              variant="text"
-              endIcon={<ArrowRightOutlined />}
-              href="/project-management"
-              color="secondary"
-              LinkComponent={Link}
-            >
-              {t("index.manage-projects")}
-            </Button>
-          </CardActions>
-        </Grid>
-        <Grid {...cardProps}>
-          <CardHeader title={t("index.collaboration")} />
-          <CardContent>
-            <span>
-              {t("index.today")}{" "}
-              {formatter.dateTime(dayjs().toDate(), { dateStyle: "medium" })}
-            </span>
-            <Timeline>
-              <TimelineItem>
-                <TimelineOppositeContent>
-                  <span style={{ whiteSpace: "nowrap" }}>
-                    {formatter.dateTimeRange(
-                      dayjs().hour(12).minute(30).toDate(),
-                      dayjs().hour(13).minute(30).toDate(),
-                      {
-                        timeStyle: "short",
-                      }
-                    )}
-                  </span>
-                </TimelineOppositeContent>
-                <TimelineSeparator>
-                  <TimelineDot />
-                  <TimelineConnector />
-                </TimelineSeparator>
-                <TimelineContent>Bauphase 1</TimelineContent>
-              </TimelineItem>
-              <TimelineItem>
-                <TimelineOppositeContent>
-                  {formatter.dateTimeRange(
-                    dayjs().hour(15).minute(30).toDate(),
-                    dayjs().hour(16).minute(0).toDate(),
-                    {
-                      timeStyle: "short",
-                    }
+            }),
+            link: {
+              href: "/profile",
+              label: t("index.show-profile"),
+            },
+            title: t("index.welcoming-text", { name: session.data?.user.name }),
+          },
+          {
+            key: "project-management",
+            content: (
+              <Typography textAlign="justify" whiteSpace="break-spaces">
+                In diesem Bereich verwalten Sie Ihre Projekte zentral und
+                effizient. Sie können neue Projekte anlegen, bestehende löschen
+                oder bearbeiten. Zusätzlich haben Sie die Möglichkeit,
+                projektspezifische Daten hochzuladen und als Ebenen innerhalb
+                des Systems verfügbar zu machen.
+              </Typography>
+            ),
+            link: {
+              href: "/project-management",
+              label: t("index.manage-projects"),
+            },
+            title: t("index.project-management"),
+          },
+          {
+            key: "collaboration",
+            content: (
+              <>
+                <span>
+                  Folgende Termine stehen heute am&nbsp;
+                  {formatter.dateTime(dayjs().toDate(), {
+                    dateStyle: "medium",
+                  })}
+                  &nbsp; an:
+                </span>
+                <Timeline>
+                  {todaysEvents.length !== 0 ? (
+                    todaysEvents.map((event, index) => (
+                      <TimelineItem key={event.id}>
+                        <TimelineOppositeContent>
+                          <span style={{ whiteSpace: "nowrap" }}>
+                            {formatter.dateTimeRange(
+                              event.startTime,
+                              event.endTime,
+                              {
+                                timeStyle: "short",
+                              }
+                            )}
+                          </span>
+                        </TimelineOppositeContent>
+                        <TimelineSeparator>
+                          <TimelineDot />
+                          {index === todaysEvents.length - 1 ? null : (
+                            <TimelineConnector />
+                          )}
+                        </TimelineSeparator>
+                        <TimelineContent>{event.title}</TimelineContent>
+                      </TimelineItem>
+                    ))
+                  ) : (
+                    <TimelineItem>
+                      <TimelineOppositeContent></TimelineOppositeContent>
+                      <TimelineSeparator>
+                        <TimelineDot />
+                      </TimelineSeparator>
+                      <TimelineContent>
+                        Keine Termine bevorstehend
+                      </TimelineContent>
+                    </TimelineItem>
                   )}
-                </TimelineOppositeContent>
-                <TimelineSeparator>
-                  <TimelineDot />
-                </TimelineSeparator>
-                <TimelineContent>Bauphase 2</TimelineContent>
-              </TimelineItem>
-            </Timeline>
-          </CardContent>
-          <CardActions>
-            <Button
-              variant="text"
-              endIcon={<ArrowRightOutlined />}
-              href="/collaboration"
-              color="secondary"
-              LinkComponent={Link}
-            >
-              {t("index.show-collaboration")}
-            </Button>
-          </CardActions>
-        </Grid>
-        <Grid {...cardProps}>
-          <CardHeader title={t("index.administration")} />
-          <CardContent></CardContent>
-          <CardActions>
-            <Button
-              variant="text"
-              endIcon={<ArrowRightOutlined />}
-              href="/administration"
-              color="secondary"
-              LinkComponent={Link}
-            >
-              {t("index.show-administration")}
-            </Button>
-          </CardActions>
-        </Grid>
-      </Grid>
-    </Grid>
+                </Timeline>
+              </>
+            ),
+            link: {
+              href: "/collaboration",
+              label: t("index.show-collaboration"),
+            },
+            title: t("index.collaboration"),
+          },
+          {
+            key: "administration",
+            content: (
+              <Typography textAlign="justify" whiteSpace="break-spaces">
+                Über diesen Bereich erhalten Sie Zugriff auf zentrale
+                Verwaltungsfunktionen des Systems. Hier können Sie Basisdaten
+                hochladen und organisieren, Systemeinstellungen wie APIs und
+                Anwendungen konfigurieren, Systemaktivitäten sowie
+                sicherheitsrelevante Logs einsehen und Benutzer sowie Gruppen
+                verwalten.
+              </Typography>
+            ),
+            link: {
+              href: "/administration",
+              label: t("index.show-administration"),
+            },
+            title: t("index.administration"),
+          },
+        ]}
+      />
+    </PageContainer>
   );
 }

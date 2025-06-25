@@ -1,6 +1,7 @@
 "use client";
 
-import EventCUDialog from "@/components/events/EventCUDialog";
+import PageContainer from "@/components/common/PageContainer";
+import EventCUDialog from "@/components/cuDialogs/EventCUDialog";
 import { useEventSubscriber } from "@/hooks";
 import { Link } from "@/server/i18n/routing";
 import { trpc } from "@/server/trpc/client";
@@ -112,7 +113,7 @@ export default function CollaborationPage() {
   });
 
   return (
-    <Grid container flexDirection="column" height="100%">
+    <PageContainer>
       <EventCUDialog
         id={id ?? undefined}
         mode={mode}
@@ -307,6 +308,6 @@ export default function CollaborationPage() {
           ))}
         </List>
       </Paper>
-    </Grid>
+    </PageContainer>
   );
 }

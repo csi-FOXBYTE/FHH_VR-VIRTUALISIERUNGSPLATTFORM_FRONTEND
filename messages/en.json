@@ -21,7 +21,7 @@
     "system-version": "System Version",
     "help": "Help",
     "settings": "Settings",
-    "login": "Login",
+    "login": "Log In",
     "register": "Register"
   },
   "landingpage": {
@@ -37,11 +37,15 @@
     "collaboration": "Collaboration",
     "editor": "Editor",
     "new-project": "New Project",
-    "project": "Project"
+    "project": "Project",
+    "user-management": "User & Group Management",
+    "configuration": "Configuration",
+    "system-activities-and-logs": "System Activities & Logs",
+    "data-management": "Data Management"
   },
   "footer": {
     "imprint": "Imprint",
-    "gdpr": "GDPR"
+    "gdpr": "Privacy Policy"
   },
   "profile": {
     "profile": "Profile",
@@ -58,5 +62,44 @@
     "to-project": "To Project",
     "copied-to-clipboard-success": "Code successfully copied to clipboard!",
     "code": "Code"
+  },
+  "administration": {
+    "data-management": "Data Management",
+    "user-management": "User & Group Management",
+    "configuration": "Configuration",
+    "system-activities-and-logs": "System Activities & Logs",
+    "go-to-configuration": "Go to Configuration",
+    "go-to-data-management": "Go to Data Management",
+    "go-to-system-activities": "Go to System Activities",
+    "go-to-user-management": "Go to User & Group Management",
+    "system-activities-and-logs-description": "All log entries for system, database, users, and security.",
+    "configuration-description": "Manage system settings for data, APIs, and applications.",
+    "data-management-description": "Upload base data, manage datasets, and define viewing axes.",
+    "user-management-description": "Add users, manage permissions, and organize groups.",
+    "title": "Administration"
+  },
+  "configuration": {
+    "title": "Configuration"
+  },
+  "user-management": {
+    "title": "User & Group Management"
+  },
+  "system-activities": {
+    "title": "System Activities & Logs"
+  },
+  "data-management": {
+    "title": "Data Management"
+  },
+  "project-management": {
+    "title": "Project Management",
+    "my-projects": "My Projects",
+    "shared-projects": "Projects Shared with Me",
+    "create-project": "Create Project"
+  },
+  "components": {
+    "list-with-pagination": {
+      "search": "Search",
+      "search-placeholder": "Enter term..."
+    }
   }
 }

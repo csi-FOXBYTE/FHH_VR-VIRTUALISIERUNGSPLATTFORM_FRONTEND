@@ -67,7 +67,7 @@ export default function BreadCrumbs({ style = {} }: { style?: CSSProperties }) {
 
   return (
     <Breadcrumbs style={{ marginBottom: 32, ...style }}>
-      {crumbs.map((crumb) => (
+      {crumbs.map((crumb, index) => (
         <Link
           component={NextLink}
           href={crumb.href}
@@ -77,6 +77,7 @@ export default function BreadCrumbs({ style = {} }: { style?: CSSProperties }) {
           alignItems="center"
           display="flex"
           alignContent="center"
+          fontWeight={index === crumbs.length - 1 ? "bold" : ""}
           key={crumb.href}
         >
           {crumb.content}

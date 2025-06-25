@@ -55,6 +55,8 @@
     "cesium": "^1.129.0",
     "client-only": "^0.0.1",
     "dayjs": "^1.11.13",
+    "exceljs": "^4.4.0",
+    "material-ui-confirm": "^4.0.0",
     "material-ui-popup-state": "^5.3.6",
     "next": "15.0.3",
     "next-auth": "5.0.0-beta.25",

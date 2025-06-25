@@ -4,12 +4,11 @@
     "project-management": "Projektverwaltung",
     "collaboration": "Zusammenarbeit",
     "administration": "Administration",
-    "welcoming-text": "Hallo {name}!",
+    "welcoming-text": "Hallo, {name}!",
     "show-profile": "Profil ansehen",
     "manage-projects": "Projekte verwalten",
     "show-collaboration": "Zusammenarbeit aufrufen",
     "show-administration": "Administrationsbereich öffnen",
-    "today": "Heute",
     "last-logged-in-message": "Zuletzt eingeloggt am {date}."
   },
   "navbar": {
@@ -18,7 +17,7 @@
     "collaboration": "Zusammenarbeit",
     "administration": "Administration",
     "sign-out": "Ausloggen",
-    "system-version": "System version",
+    "system-version": "System Version",
     "help": "Hilfe",
     "settings": "Einstellungen",
     "login": "Anmelden",
@@ -37,7 +36,11 @@
     "collaboration": "Zusammenarbeit",
     "editor": "Editor",
     "new-project": "Neues Projekt",
-    "project": "Projekt"
+    "project": "Projekt",
+    "user-management": "Nutzer- und Gruppenverwaltung",
+    "configuration": "Konfiguration",
+    "system-activities-and-logs": "Systemaktivitäten und Logs",
+    "data-management": "Datenverwaltung"
   },
   "footer": {
     "imprint": "Impressum",
@@ -58,5 +61,44 @@
     "to-project": "Zum Projekt",
     "copied-to-clipboard-success": "Code wurde erfolgreich in die Zwischenablage kopiert!",
     "code": "Code"
+  },
+  "administration": {
+    "data-management": "Datenverwaltung",
+    "user-management": "Nutzer- und Gruppenverwaltung",
+    "configuration": "Konfiguration",
+    "system-activities-and-logs": "Systemaktivitäten und Logs",
+    "go-to-configuration": "Zur Konfiguration",
+    "go-to-data-management": "Zur Datenverwaltung",
+    "go-to-system-activities": "Zu Systemaktivitäten",
+    "go-to-user-management": "Zur Nutzer- und Gruppenverwaltung",
+    "system-activities-and-logs-description": "Alle Log-Einträge zu System, Datenbank, Nutzern und Sicherheit.",
+    "configuration-description": "Systemeinstellungen für Daten, APIs und Anwendungen verwalten.",
+    "data-management-description": "Basisdaten hochladen, verwalten und Sichtachsen festlegen.",
+    "user-management-description": "Nutzer hinzufügen, Rechte verwalten und Gruppen organisieren.",
+    "title": "Administration"
+  },
+  "configuration": {
+    "title": "Konfiguration"
+  },
+  "user-management": {
+    "title": "Nutzer- und Gruppenverwaltung"
+  },
+  "system-activities": {
+    "title": "Systemaktivitäten und Logs"
+  },
+  "data-management": {
+    "title": "Datenverwaltung"
+  },
+  "project-management": {
+    "title": "Projektverwaltung",
+    "my-projects": "Meine Projekte",
+    "shared-projects": "Mit mir geteilte Projekte",
+    "create-project": "Projekt anlegen"
+  },
+  "components": {
+    "list-with-pagination": {
+      "search": "Suche",
+      "search-placeholder": "Begriff eingeben..."
+    }
   }
 }
