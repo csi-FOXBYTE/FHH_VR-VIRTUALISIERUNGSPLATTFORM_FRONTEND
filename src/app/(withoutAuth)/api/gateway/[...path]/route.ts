@@ -33,6 +33,7 @@ async function proxy(
   // 1. Build your upstream URL
   const upstreamBase = process.env.BACKEND_URL!; // e.g. https://api.internal.example
   const upstreamPath = (await params).path.join("/");
+
   const url = `${upstreamBase}/${upstreamPath}?${request.nextUrl.searchParams.toString()}`;
 
   // 2. Copy method, headers, and body
@@ -45,7 +46,10 @@ async function proxy(
     if (!session) return new NextResponse("ACESS_DENIED", { status: 401 });
 
     const access_token = await createAccessToken({
-      sessionToken: request.cookies.get("authjs.session-token")?.value ?? "",
+      sessionToken:
+        request.cookies.get("authjs.session-token")?.value ??
+        request.cookies.get("__Secure-authjs.session-token")?.value ??
+        "",
       userId: session.user.id,
     });
 

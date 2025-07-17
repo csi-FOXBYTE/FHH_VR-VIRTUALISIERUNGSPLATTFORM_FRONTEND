@@ -135,6 +135,9 @@ importers:
       next:
         specifier: 15.3.4
         version: 15.3.4(@opentelemetry/api@1.9.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(sass@1.89.2)
+      next-absolute-url:
+        specifier: ^1.2.2
+        version: 1.2.2
       next-auth:
         specifier: 5.0.0-beta.25
         version: 5.0.0-beta.25(next@15.3.4(@opentelemetry/api@1.9.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(sass@1.89.2))(react@19.1.0)
@@ -3546,6 +3549,9 @@ packages:
   netmask@2.0.2:
     resolution: {integrity: sha512-dBpDMdxv9Irdq66304OLfEmQ9tbNRFnFTuZiLo+bD+r332bBmMJ8GBLXklIXXgxd3+v9+KUnZaUR5PJMa75Gsg==}
     engines: {node: '>= 0.4.0'}
+
+  next-absolute-url@1.2.2:
+    resolution: {integrity: sha512-Z2+LZXQTthhw2je9u4eq8QWXxXd57a6b54x9exBfQX4Dct6YxaMjcXZWNLHd9AOlCue84EsMpdSGP7wACqUnPg==}
 
   next-auth@5.0.0-beta.25:
     resolution: {integrity: sha512-2dJJw1sHQl2qxCrRk+KTQbeH+izFbGFPuJj5eGgBZFYyiYYtvlrBeUw1E/OJJxTRjuxbSYGnCTkUIRsIIW0bog==}
@@ -8345,6 +8351,8 @@ snapshots:
   negotiator@1.0.0: {}
 
   netmask@2.0.2: {}
+
+  next-absolute-url@1.2.2: {}
 
   next-auth@5.0.0-beta.25(next@15.3.4(@opentelemetry/api@1.9.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)(sass@1.89.2))(react@19.1.0):
     dependencies:

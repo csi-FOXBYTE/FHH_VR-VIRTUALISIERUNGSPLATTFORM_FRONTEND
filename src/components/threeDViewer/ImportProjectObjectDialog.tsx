@@ -1,26 +1,24 @@
 import {
   Autocomplete,
   Button,
-  ButtonGroup,
+  CircularProgress,
   Dialog,
   DialogActions,
   DialogContent,
   DialogTitle,
   Grid,
-  TextField,
-  CircularProgress,
   LinearProgress,
+  TextField,
 } from "@mui/material";
-import { ReactNode, useState } from "react";
-import proj4List from "proj4-list";
-import { Add } from "@mui/icons-material";
 import { useMutation } from "@tanstack/react-query";
-import { useViewerStore } from "./ViewerProvider";
+import type { Job } from "bullmq";
 import { Cartesian3, Matrix3, Matrix4, Quaternion } from "cesium";
 import { useSnackbar } from "notistack";
-import type { Job } from "bullmq";
-import GatewayAPI from "@/server/gatewayApi/client";
+import proj4List from "proj4-list";
+import { ReactNode, useState } from "react";
 import DragAndDropzone from "../common/DragAndDropZone";
+import { useViewerStore } from "./ViewerProvider";
+import { getApis } from "@/server/gatewayApi/client";
 
 const epsgValues = Object.values(proj4List)
   .map(([epsg, proj4]) => ({
@@ -99,6 +97,8 @@ export default function ImportProjectObjectDialog() {
       mutationFn: async () => {
         if (!file) return;
 
+        const { converter3DApi } = await getApis();
+
         setPendingState("uploading");
 
         const formData = new FormData();
@@ -107,7 +107,7 @@ export default function ImportProjectObjectDialog() {
         formData.append("file", file);
 
         const { jobId, secret } =
-          await GatewayAPI.converter3DApi.converter3DUploadProjectModelPost({
+          await converter3DApi.converter3DUploadProjectModelPost({
             epsgCode: selectedEpsg.label,
             file: file,
             fileName: file.name,
@@ -117,58 +117,34 @@ export default function ImportProjectObjectDialog() {
 
         for (let i = 0; i < 512; i++) {
           const result =
-            await GatewayAPI.converter3DApi.converter3DGetProjectModelStatusPost(
-              {
-                converter3DUploadProjectModelPost200Response: {
-                  jobId,
-                  secret,
-                },
-              }
-            );
+            await converter3DApi.converter3DGetProjectModelStatusPost({
+              converter3DUploadProjectModelPost200Response: {
+                jobId,
+                secret,
+              },
+            });
 
-          setPendingState(result.state);
+          setPendingState(result.state as "uploading");
           setProgress(result.progress);
-
-          console.log(result);
 
           if (result.state === "completed") {
             modelMatrixRaw = result.modelMatrix!;
             break;
           }
 
-          await new Promise((resolve) => setTimeout(resolve, 1000));
+          await new Promise((resolve) => setTimeout(resolve, 5000));
         }
 
         if (!modelMatrixRaw) throw new Error("FAILED");
 
-        const blob =
-          await GatewayAPI.converter3DApi.converter3DDownloadProjectModelPost({
-            converter3DUploadProjectModelPost200Response: {
-              jobId,
-              secret,
-            },
-          });
+        const blob = await converter3DApi.converter3DDownloadProjectModelPost({
+          converter3DUploadProjectModelPost200Response: {
+            jobId,
+            secret,
+          },
+        });
 
         const arrayBuffer = await blob.arrayBuffer();
-        console.log("Got ArrayBuffer of length", arrayBuffer.byteLength);
-
-        // 3. Wrap the ArrayBuffer back into a Blob (preserving original type)
-        // const downloadable = new Blob([arrayBuffer], { type: blob.type });
-
-        // // 4. Create an object URL for the Blob
-        // const url = URL.createObjectURL(downloadable);
-
-        // // 5. Create a temporary <a> and click it to start download
-        // const a = document.createElement("a");
-        // a.style.display = "none";
-        // a.href = url;
-        // a.download = "my-file.glb";
-        // document.body.appendChild(a);
-        // a.click();
-
-        // // 6. Clean up
-        // URL.revokeObjectURL(url);
-        // document.body.removeChild(a);
 
         const modelMatrix = Matrix4.fromColumnMajorArray(modelMatrixRaw);
 

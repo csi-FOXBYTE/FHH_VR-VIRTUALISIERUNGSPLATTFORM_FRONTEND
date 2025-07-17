@@ -30,6 +30,8 @@ export default async function RootLayout({
 
   const messages = await getMessages();
 
+  const configuration = await createConfiguration();
+
   return (
     <html lang={locale}>
       <head>
@@ -39,7 +41,7 @@ export default async function RootLayout({
           strategy="beforeInteractive"
           dangerouslySetInnerHTML={{
             __html: `
-          window.CESIUM_BASE_URL="${process.env.NEXT_PUBLIC_BASE_URL}/cesium";`,
+          window.CESIUM_BASE_URL="/cesium";`,
           }}
         />
       </head>
@@ -47,7 +49,7 @@ export default async function RootLayout({
         <NextIntlClientProvider messages={messages}>
           <NuqsAdapter>
             <Providers
-              configuration={await createConfiguration()}
+              configuration={configuration}
               locale={locale}
               session={session}
             >

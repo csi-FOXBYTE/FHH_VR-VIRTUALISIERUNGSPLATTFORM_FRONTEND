@@ -5,7 +5,7 @@ import {
 } from "@/server/auth/unityHelpers";
 import { NextRequest, NextResponse } from "next/server";
 
-export default async function POST(request: NextRequest) {
+export async function POST(request: NextRequest) {
   // 1. Parse form data
   const form = Object.fromEntries(await request.formData()) as Record<
     string,

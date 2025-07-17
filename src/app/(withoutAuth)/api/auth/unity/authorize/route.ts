@@ -2,6 +2,9 @@ import { signIn } from "@/server/auth/auth";
 import { createCode } from "@/server/auth/unityHelpers";
 import { NextRequest, NextResponse } from "next/server";
 
+const internalRedirect = "de.foxbyte.fhh.vrvis://oauth2redirect";
+// const internalRedirect = "https://oauth.pstmn.io/v1/callback";
+
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
 
@@ -16,7 +19,7 @@ export async function GET(request: NextRequest) {
   ] = [
     searchParams.get("response_type"),
     searchParams.get("client_id"),
-    searchParams.get("redirect_uri"),
+    decodeURI(searchParams.get("redirect_uri") ?? ""),
     searchParams.get("scope"),
     searchParams.get("code_challenge"),
     searchParams.get("code_challenge_method"),
@@ -27,7 +30,7 @@ export async function GET(request: NextRequest) {
   if (
     response_type !== "code" ||
     client_id !== "urn:fhhvr" ||
-    !redirect_uri?.startsWith("de.foxbyte.ffh.vrvis://oauth2redirect") ||
+    !redirect_uri?.startsWith(internalRedirect) ||
     !scope ||
     code_challenge_method !== "S256" ||
     !code_challenge ||
@@ -36,11 +39,18 @@ export async function GET(request: NextRequest) {
     return new NextResponse("Bad request", { status: 400 });
   }
 
-  const code = createCode({ client_id, code_challenge, redirect_uri, scope });
+  const code = await createCode({
+    client_id,
+    code_challenge,
+    redirect_uri,
+    scope,
+    sessionToken: "", // is unknown at this point
+    userId: "", // is unknown at this point
+  });
 
-  return signIn("microsoft-entra-id", {
-    callbackUrl: "api:test",
-    redirectTo: `de.foxbyte.ffh.vrvis://oauth2redirect?code=${code}&state=${searchParams.get(
+  return await signIn("microsoft-entra-id", {
+    redirect: true,
+    redirectTo: `http://localhost:3000/api/auth/unity/redirect?&code=${code}&state=${searchParams.get(
       "state"
     )}`,
   });

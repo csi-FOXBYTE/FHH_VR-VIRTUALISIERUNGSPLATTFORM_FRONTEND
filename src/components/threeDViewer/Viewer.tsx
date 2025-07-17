@@ -3,18 +3,17 @@
 import * as Cesium from "cesium";
 import { useMemo } from "react";
 import { CameraFlyTo, Cesium3DTileset, ImageryLayer, Viewer } from "resium";
+import { useConfigurationProviderContext } from "../configuration/ConfigurationProvider";
+import { useBaseLayerProviderContext } from "./BaseLayerProvider";
 import ClippingPolygons from "./ClippingPolygons";
 import Compass from "./Compass";
 import GetResiumCtx from "./GetResiumCtx";
 import ProjectObjects from "./ProjectObjects";
+import { ScaleBar } from "./ScaleBar";
 import StartingPoints from "./StartingPoints";
-import TimePicker from "./TimePicker";
 import ToolsProvider from "./Tools";
 import { useViewerStore } from "./ViewerProvider";
 import VisualAxes from "./VisualAxes";
-import { useBaseLayerProviderContext } from "./BaseLayerProvider";
-import { useConfigurationProviderContext } from "../configuration/ConfigurationProvider";
-import { ScaleBar } from "./ScaleBar";
 
 const openStreetMapImagerProvider = new Cesium.OpenStreetMapImageryProvider({
   url: "https://tile.openstreetmap.org/",

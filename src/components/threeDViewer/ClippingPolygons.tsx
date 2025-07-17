@@ -12,10 +12,7 @@ export default function ClippingPolygons() {
   );
 
   useEffect(() => {
-    // return;
     if (!viewer) return;
-
-    console.log(viewer.scene.globe);
 
     if (!viewer.scene.globe.clippingPolygons) viewer.scene.globe.clippingPolygons = new Cesium.ClippingPolygonCollection();
 

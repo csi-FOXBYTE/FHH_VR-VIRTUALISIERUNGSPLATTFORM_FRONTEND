@@ -3,10 +3,10 @@ import prisma from "@/server/prisma";
 import { PrismaAdapter } from "@auth/prisma-adapter";
 import { NextRequest, NextResponse } from "next/server";
 
-export default async function POST(request: NextRequest) {
+export async function POST(request: NextRequest) {
   const auth = request.headers.get("authorization");
   if (!auth?.startsWith("Bearer ")) {
-    return null;
+    return new NextResponse(null, { status: 401, statusText: "ACCESS_DENIED" });
   }
   const accessToken = auth.slice("Bearer ".length);
 

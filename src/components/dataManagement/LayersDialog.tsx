@@ -17,7 +17,7 @@ import EPSGInput from "../common/EPSGInput";
 import { useConfigurationProviderContext } from "../configuration/ConfigurationProvider";
 import { useTranslations } from "next-intl";
 import { trpc } from "@/server/trpc/client";
-import GatewayAPI from "@/server/gatewayApi/client";
+import { getApis } from "@/server/gatewayApi/client";
 
 export default function LayersDialog({
   open,
@@ -50,6 +50,8 @@ export default function LayersDialog({
       type: "3D-TILES" | "TERRAIN";
       name: string;
     }) => {
+      const { converter3DApi } = await getApis();
+
       const formData = new FormData();
 
       formData.append("name", values.name);
@@ -59,14 +61,14 @@ export default function LayersDialog({
 
       switch (values.type) {
         case "3D-TILES":
-          await GatewayAPI.converter3DApi.converter3DUpload3DTilePost({
+          await converter3DApi.converter3DUpload3DTilePost({
             srcSRS: values.srcSRS.value,
             file: values.files[0],
             name: values.name,
           });
           break;
         case "TERRAIN":
-          await GatewayAPI.converter3DApi.converter3DUploadTerrainPost({
+          await converter3DApi.converter3DUploadTerrainPost({
             srcSRS: values.srcSRS.value,
             file: values.files[0],
             name: values.name,

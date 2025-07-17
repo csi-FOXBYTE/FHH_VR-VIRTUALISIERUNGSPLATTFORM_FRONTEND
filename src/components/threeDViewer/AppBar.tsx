@@ -1,22 +1,9 @@
-import { ImportExport, Redo, Save, Undo, Upload } from "@mui/icons-material";
-import {
-  Button,
-  ButtonGroup,
-  Divider,
-  Grid,
-  IconButton,
-  ListItemText,
-  Menu,
-  MenuItem,
-  MenuList,
-  Tooltip,
-  Typography,
-} from "@mui/material";
-import { useState } from "react";
+import { Redo, Save, Undo, Upload } from "@mui/icons-material";
+import { Grid, IconButton, Tooltip } from "@mui/material";
 import BreadCrumbs from "../navbar/BreadCrumbs";
-import { useViewerStore } from "./ViewerProvider";
-import TimePicker from "./TimePicker";
 import ImportProjectObjectDialog from "./ImportProjectObjectDialog";
+import TimePicker from "./TimePicker";
+import { useViewerStore } from "./ViewerProvider";
 
 export default function AppBar() {
   const history = useViewerStore((state) => state.history);
@@ -62,7 +49,7 @@ export default function AppBar() {
           </Tooltip>
         </Grid>
       </Grid>
-      <Grid padding="8px 32px" container backgroundColor="#eee">
+      <Grid padding="8px 32px" container sx={{ backgroundColor: "#eee" }}>
         <TimePicker />
       </Grid>
     </Grid>

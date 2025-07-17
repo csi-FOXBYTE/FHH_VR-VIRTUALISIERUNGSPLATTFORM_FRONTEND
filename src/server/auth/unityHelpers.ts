@@ -1,4 +1,4 @@
-import { EncryptJWT, jwtDecrypt, jwtVerify, SignJWT } from "jose";
+import { EncryptJWT, jwtDecrypt } from "jose";
 
 const accessTokenMaxAge = "60 minutes";
 const refreshTokenMaxAge = "1 year";
@@ -70,14 +70,16 @@ export async function createRefreshToken(payload: {
 
 export async function getCode(code: string) {
   try {
-    const { payload } = await jwtVerify<{
+    const { payload } = await jwtDecrypt<{
       code_challenge: string;
       scope: string;
       redirect_uri: string;
       client_id: string;
+      sessionToken: string;
+      userId: string;
     }>(code, Buffer.from(process.env.NEXTAUTH_SECRET!, "base64"), {
-      audience: "urn:fhhvr",
-      algorithms: ["HS256"],
+      audience,
+      maxTokenAge: refreshTokenMaxAge,
     });
 
     return payload;
@@ -91,17 +93,28 @@ export function createCode({
   code_challenge,
   redirect_uri,
   scope,
+  sessionToken,
+  userId,
 }: {
   code_challenge: string;
   scope: string;
   redirect_uri: string;
   client_id: string;
+  sessionToken: string;
+  userId: string;
 }) {
-  return new SignJWT({ code_challenge, scope, redirect_uri, client_id })
-    .setProtectedHeader({ alg: "HS256" })
+  return new EncryptJWT({
+    code_challenge,
+    scope,
+    redirect_uri,
+    client_id,
+    sessionToken,
+    userId,
+  })
+    .setProtectedHeader({ alg: "dir", enc: "A256GCM" })
     .setAudience("urn:fhhvr")
     .setExpirationTime(codeTokenMaxAge)
     .setNotBefore(new Date())
     .setIssuedAt()
-    .sign(Buffer.from(process.env.NEXTAUTH_SECRET!, "base64"));
+    .encrypt(Buffer.from(process.env.NEXTAUTH_SECRET!, "base64"));
 }

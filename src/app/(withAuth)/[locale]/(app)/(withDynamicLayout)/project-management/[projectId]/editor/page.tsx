@@ -3,7 +3,6 @@ import { ThreeDViewer } from "@/components/threeDViewer";
 import BaseLayerProvider from "@/components/threeDViewer/BaseLayerProvider";
 import { trpc } from "@/server/trpc/client";
 import {
-  CircularProgress,
   Grid,
   LinearProgress,
   Typography,
