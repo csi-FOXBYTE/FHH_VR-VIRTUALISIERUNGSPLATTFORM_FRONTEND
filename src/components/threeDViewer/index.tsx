@@ -44,22 +44,21 @@ export function ThreeDViewer() {
     >
       <AppBar />
       <ImportProjectObjectDialog />
-      <div
-        style={{
-          flex: 1,
-          overflow: "hidden",
-          position: "relative",
-          background: "rgba(0, 0, 0, 0.75)",
-        }}
+      <Grid
+        container
+        flex={1}
+        overflow="hidden"
+        position="relative"
+        sx={{ backgroundColor: "white" }}
       >
         <Toolbar />
-        <Grid container height="100%">
+        <Grid flex={1} container height="100%">
           <Grid flex={1} position="relative" height="100%">
             <ResiumViewer />
           </Grid>
           <RightDrawer />
         </Grid>
-      </div>
+      </Grid>
     </div>
   );
 }

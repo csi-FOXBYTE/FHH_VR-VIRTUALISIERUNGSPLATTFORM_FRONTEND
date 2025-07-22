@@ -36,9 +36,7 @@ export default function Toolbar() {
     <div
       style={{
         height: "100%",
-        left: 0,
-        position: "absolute",
-        zIndex: 100,
+        zIndex: 5,
         background: theme.palette.background.paper,
         boxShadow: theme.shadows[2],
         padding: 4,

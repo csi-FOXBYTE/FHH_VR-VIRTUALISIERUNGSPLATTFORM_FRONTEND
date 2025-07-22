@@ -1,16 +1,16 @@
 import { Box, styled } from "@mui/material";
+import { Math as CesiumMath } from "cesium";
 import { useCallback, useEffect, useRef } from "react";
 import { useCesium } from "resium";
 
 const Wrapper = styled("div")`
-  width: 100px;
-  height: 100px;
+  width: 64px;
+  height: 64px;
 `;
 
-const Ring = styled("div")`
-  width: 50%;
-  height: 50%;
-  top: 25%;
+const Ring = styled(Box)`
+  width: 100%;
+  height: 100%;
   transform-style: preserve-3d;
   margin: auto;
   position: relative;
@@ -19,7 +19,6 @@ const Ring = styled("div")`
   border-radius: 50%;
   background: #aaa;
   overflow: hidden;
-  transition: all 0.1s ease;
   &:hover {
     background: rgba(0, 0, 0, 0.75);
   }
@@ -29,7 +28,7 @@ const Ring = styled("div")`
 `;
 
 const NorthArrow = styled("div")`
-  border-bottom: 16px solid red;
+  border-bottom: 20px solid red;
   border-left: 6px solid transparent;
   border-right: 6px solid transparent;
   width: 0;
@@ -39,11 +38,10 @@ const NorthArrow = styled("div")`
   left: 50%;
   transform: translate(-50%, -100%);
   z-index: -1;
-  transition: all 0.1s ease;
 `;
 
 const SouthArrow = styled(Box)`
-  border-top: 16px solid white;
+  border-top: 20px solid white;
   border-left: 6px solid transparent;
   border-right: 6px solid transparent;
   width: 0;
@@ -53,7 +51,6 @@ const SouthArrow = styled(Box)`
   left: 50%;
   transform: translate(-50%, 0%);
   z-index: -1;
-  transition: all 0.1s ease;
 `;
 
 export default function Compass() {
@@ -67,9 +64,7 @@ export default function Compass() {
     const handler = () => {
       if (!cubeRef.current) return;
 
-      if (!viewer.scene.camera) return;
-
-      cubeRef.current.style.transform = `rotateZ(${viewer.scene.camera.heading}rad)`;
+      cubeRef.current.style.transform = `rotateZ(${viewer.camera.heading}rad)`;
     };
 
     viewer.clock.onTick.addEventListener(handler);
@@ -95,9 +90,9 @@ export default function Compass() {
   }, [viewer]);
 
   return (
-    <div style={{ position: "absolute", bottom: 0, right: 0 }}>
+    <div style={{ position: "absolute", bottom: 16, right: 16 }}>
       <Wrapper>
-        <Ring onClick={handleSetHeadingNorth} ref={cubeRef}>
+        <Ring boxShadow={2} onClick={handleSetHeadingNorth} ref={cubeRef}>
           <NorthArrow />
           <SouthArrow />
         </Ring>

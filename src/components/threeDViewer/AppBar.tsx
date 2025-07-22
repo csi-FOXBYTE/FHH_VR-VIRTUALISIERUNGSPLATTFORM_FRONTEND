@@ -13,7 +13,7 @@ export default function AppBar() {
   );
 
   return (
-    <Grid width="100%" boxShadow={2} container flexDirection="column">
+    <Grid width="100%" zIndex={5} boxShadow={2} container flexDirection="column">
       <ImportProjectObjectDialog />
       <Grid
         container
@@ -49,7 +49,7 @@ export default function AppBar() {
           </Tooltip>
         </Grid>
       </Grid>
-      <Grid padding="8px 32px" container sx={{ backgroundColor: "#eee" }}>
+      <Grid padding="8px 32px" boxShadow={2} container sx={{ backgroundColor: "#eee" }}>
         <TimePicker />
       </Grid>
     </Grid>

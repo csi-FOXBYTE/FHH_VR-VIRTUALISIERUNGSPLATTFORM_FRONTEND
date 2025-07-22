@@ -6,6 +6,7 @@ export type ClippingPolygon = {
   type: "CLIPPING_POLYGON";
   positions: { x: number; y: number; z: number }[];
   visible: boolean;
+  affectsTerrain: boolean;
   name: string;
   id: string;
 };
@@ -17,7 +18,7 @@ export type ProjectObject = {
   translation: { x: number; y: number; z: number };
   rotation: { x: number; y: number; z: number; w: number };
   scale: { x: number; y: number; z: number };
-  metaData: Record<string, string>;
+  attributes: Record<string, string>;
   id: string;
   visible: boolean;
 };

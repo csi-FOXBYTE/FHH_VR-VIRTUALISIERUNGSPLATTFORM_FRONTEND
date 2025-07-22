@@ -15,6 +15,9 @@ importers:
       '@auth/prisma-adapter':
         specifier: ^2.7.4
         version: 2.7.4(@prisma/client@6.2.1(prisma@6.2.1))
+      '@csi-foxbyte/prisma-mssql-realtime-extension':
+        specifier: 0.0.5
+        version: 0.0.5(@prisma/client@6.2.1(prisma@6.2.1))(rxjs-for-await@1.0.0(rxjs@7.8.1))(rxjs@7.8.1)
       '@emotion/cache':
         specifier: ^11.13.5
         version: 11.13.5
@@ -180,9 +183,6 @@ importers:
       resium:
         specifier: 1.19.0-beta.1
         version: 1.19.0-beta.1(cesium@1.129.0)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
-      rimraf:
-        specifier: ^6.0.1
-        version: 6.0.1
       rxjs:
         specifier: ^7.8.1
         version: 7.8.1
@@ -247,6 +247,9 @@ importers:
       husky:
         specifier: ^9.1.7
         version: 9.1.7
+      rimraf:
+        specifier: ^6.0.1
+        version: 6.0.1
       typescript:
         specifier: ^5
         version: 5.6.3
@@ -422,6 +425,13 @@ packages:
   '@commitlint/types@19.5.0':
     resolution: {integrity: sha512-DSHae2obMSMkAtTBSOulg5X7/z+rGLxcXQIkg3OmWvY6wifojge5uVMydfhUvs7yQj+V7jNmRZ2Xzl8GJyqRgg==}
     engines: {node: '>=v18'}
+
+  '@csi-foxbyte/prisma-mssql-realtime-extension@0.0.5':
+    resolution: {integrity: sha512-i+5MxCcYA2EnDjtWlCfMrwqsFMSzHj3NggNw/IWHiwv+uxnNcuMcGVxtLGPNkb/IRslLp/tR6GCWaIqGKZnaUg==}
+    peerDependencies:
+      '@prisma/client': ^6.0.0
+      rxjs: ^7.0.0
+      rxjs-for-await: ^1.0.0
 
   '@emnapi/runtime@1.4.3':
     resolution: {integrity: sha512-pBPWdu6MLKROBX05wSNKcNb++m5Er+KQ9QkB+WVM+pW2Kx9hoSrVTnu3BdkI5eBLZoKu/J6mW/B6i6bJB2ytXQ==}
@@ -4942,6 +4952,12 @@ snapshots:
     dependencies:
       '@types/conventional-commits-parser': 5.0.0
       chalk: 5.3.0
+
+  '@csi-foxbyte/prisma-mssql-realtime-extension@0.0.5(@prisma/client@6.2.1(prisma@6.2.1))(rxjs-for-await@1.0.0(rxjs@7.8.1))(rxjs@7.8.1)':
+    dependencies:
+      '@prisma/client': 6.2.1(prisma@6.2.1)
+      rxjs: 7.8.1
+      rxjs-for-await: 1.0.0(rxjs@7.8.1)
 
   '@emnapi/runtime@1.4.3':
     dependencies:

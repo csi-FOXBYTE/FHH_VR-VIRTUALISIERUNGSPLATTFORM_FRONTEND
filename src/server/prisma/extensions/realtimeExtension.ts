@@ -1,23 +1,23 @@
-import { Prisma, PrismaClient } from '@prisma/client';
-import { Subject, filter } from 'rxjs';
+import { Prisma, PrismaClient } from "@prisma/client";
+import { Subject, filter } from "rxjs";
 
 /** Returns the current change tracking version. */
 async function getCurrentVersion(prismaClient: {
-  $queryRawUnsafe: PrismaClient['$queryRawUnsafe'];
+  $queryRawUnsafe: PrismaClient["$queryRawUnsafe"];
 }) {
   const result: { currentVersion: bigint }[] =
     await prismaClient.$queryRawUnsafe(
-      `SELECT CHANGE_TRACKING_CURRENT_VERSION() AS currentVersion`,
+      `SELECT CHANGE_TRACKING_CURRENT_VERSION() AS currentVersion`
     );
   return result[0].currentVersion;
 }
 
 async function setupDB(
   prismaClient: {
-    $executeRawUnsafe: PrismaClient['$executeRawUnsafe'];
+    $executeRawUnsafe: PrismaClient["$executeRawUnsafe"];
   },
   databaseName: string,
-  modelDbNameMap: Map<string, string>,
+  modelDbNameMap: Map<string, string>
 ) {
   try {
     await prismaClient.$executeRawUnsafe(`
@@ -41,14 +41,14 @@ async function setupDB(
 async function getChanges(
   tables: Iterable<string>,
   prismaClient: {
-    $queryRawUnsafe: PrismaClient['$queryRawUnsafe'];
-    $executeRawUnsafe: PrismaClient['$executeRawUnsafe'];
+    $queryRawUnsafe: PrismaClient["$queryRawUnsafe"];
+    $executeRawUnsafe: PrismaClient["$executeRawUnsafe"];
   },
   lastVersion: bigint,
   databaseName: string,
-  modelDbNameMap: Map<string, string>,
+  modelDbNameMap: Map<string, string>
 ) {
-  const queries = Array.from(tables).map(async table => {
+  const queries = Array.from(tables).map(async (table) => {
     try {
       const recordset: { SYS_CHANGE_OPERATION: string; id: string }[] =
         await prismaClient.$queryRawUnsafe(`
@@ -70,7 +70,7 @@ async function getChanges(
   return Promise.all(queries);
 }
 
-type OPERATIONS = 'UPDATE' | 'DELETE' | 'INSERT';
+type OPERATIONS = "UPDATE" | "DELETE" | "INSERT";
 
 /**
  * Realtime extension for Prisma with mssql.
@@ -80,7 +80,7 @@ export default function realtimeExtension({
 }: {
   intervalMs: number;
 }) {
-  return Prisma.defineExtension(prismaClient => {
+  return Prisma.defineExtension((prismaClient) => {
     const poolRef: { lastSyncVersion: bigint; setupDB: boolean } = {
       setupDB: false,
       lastSyncVersion: BigInt(0),
@@ -92,18 +92,20 @@ export default function realtimeExtension({
     >();
 
     // Filter models that have an ID field and create maps between model names and their DB names.
-    const models = Prisma.dmmf.datamodel.models.filter(m =>
-      m.fields.some(f => f.isId),
+    const models = Prisma.dmmf.datamodel.models.filter((m) =>
+      m.fields.some((f) => f.isId)
     );
     const modelDbNameMap = new Map(
-      models.map(m => [m.name, m.dbName ?? m.name]),
+      models.map((m) => [m.name, m.dbName ?? m.name])
     );
-    const modelNameMap = new Map(models.map(m => [m.dbName ?? m.name, m.name]));
+    const modelNameMap = new Map(
+      models.map((m) => [m.dbName ?? m.name, m.name])
+    );
 
     const databaseName = process.env
-      .DATABASE_URL!.split(';')
-      .find(p => p.startsWith('database='))!
-      .replace('database=', '');
+      .DATABASE_URL!.split(";")
+      .find((p) => p.startsWith("database="))!
+      .replace("database=", "");
 
     setupDB(prismaClient, databaseName, modelDbNameMap).then(() => {
       poolRef.setupDB = true;
@@ -120,15 +122,15 @@ export default function realtimeExtension({
             prismaClient,
             poolRef.lastSyncVersion,
             databaseName,
-            modelDbNameMap,
+            modelDbNameMap
           );
           for (const { operation, result } of changes) {
             for (const change of result) {
               const { SYS_CHANGE_OPERATION, id } = change;
               const opMap: Record<string, OPERATIONS> = {
-                U: 'UPDATE',
-                I: 'INSERT',
-                D: 'DELETE',
+                U: "UPDATE",
+                I: "INSERT",
+                D: "DELETE",
               };
               const operationStr = opMap[SYS_CHANGE_OPERATION];
               if (!operationStr) continue;
@@ -141,11 +143,26 @@ export default function realtimeExtension({
           poolRef.lastSyncVersion = await getCurrentVersion(prismaClient);
         }
       } catch (e) {
-        console.error('c', JSON.stringify(e));
+        console.error("c", JSON.stringify(e));
       }
     }
 
-    setInterval(pollChanges, intervalMs);
+    function pruneEmptySubjects() {
+      for (const [modelName, subject] of subjects) {
+        if (!subject.observed) {
+          subject.complete();
+          subjects.delete(modelName);
+        }
+      }
+    }
+
+    async function startPolling() {
+      await pollChanges();
+      pruneEmptySubjects();
+      setTimeout(startPolling, intervalMs);
+    }
+
+    startPolling();
 
     return prismaClient.$extends({
       model: {
@@ -155,30 +172,29 @@ export default function realtimeExtension({
            */
           subscribe<T>(
             this: T,
-            args: { id?: string; operations: (OPERATIONS | '*')[] },
+            args: { id?: string; operations: (OPERATIONS | "*")[] }
           ) {
             const context = Prisma.getExtensionContext(this) as {
               $name: Prisma.ModelName;
             };
             const modelName = context.$name;
-            if (!subjects.has(modelName))
+            if (!subjects.has(modelName)) {
               subjects.set(
                 modelName,
-                new Subject<{ id: string; operation: OPERATIONS }>(),
+                new Subject<{ id: string; operation: OPERATIONS }>()
               );
-            let observable = subjects.get(modelName)!.asObservable();
+            }
+            let obs = subjects.get(modelName)!.asObservable();
 
             if (args.id !== undefined)
-              observable = observable.pipe(
-                filter(event => args.id === event.id),
+              obs = obs.pipe(filter((event) => args.id === event.id));
+
+            if (!args.operations.includes("*"))
+              obs = obs.pipe(
+                filter((event) => args.operations.includes(event.operation))
               );
 
-            if (!args.operations.includes('*'))
-              observable = observable.pipe(
-                filter(event => args.operations.includes(event.operation)),
-              );
-
-            return observable;
+            return obs;
           },
         },
       },

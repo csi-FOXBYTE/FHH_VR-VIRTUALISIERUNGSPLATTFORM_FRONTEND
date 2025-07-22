@@ -13,7 +13,7 @@ const theme = createTheme({
     },
   },
   typography: {
-    fontSize:  12
+    // fontSize:  12
   },
   components: {
     MuiButton: {

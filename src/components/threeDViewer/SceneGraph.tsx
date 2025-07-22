@@ -7,7 +7,7 @@ import {
   ExpandLess,
   ExpandMore,
   Visibility,
-  VisibilityOff
+  VisibilityOff,
 } from "@mui/icons-material";
 import {
   Accordion,
@@ -34,6 +34,7 @@ import {
   useSelectedObject,
   useViewerStore,
 } from "./ViewerProvider";
+import SceneGraphListItem from "./SceneGraph/ListItem";
 
 const StyledCount = styled("div")`
   display: inline-block;
@@ -52,10 +53,16 @@ export default function SceneGraph() {
   const deleteClippingPolygon = useViewerStore(
     (state) => state.clippingPolygons.delete
   );
+  const updateClippingPolygon = useViewerStore(
+    (state) => state.clippingPolygons.update
+  );
 
   const projectObjects = useViewerStore((state) => state.projectObjects.value);
   const updateProjectObject = useViewerStore(
     (state) => state.projectObjects.update
+  );
+  const deleteProjectObject = useViewerStore(
+    (state) => state.projectObjects.delete
   );
   const toggleVisibilityProjectObject = useViewerStore(
     (state) => state.projectObjects.toggleVisibility
@@ -134,38 +141,22 @@ export default function SceneGraph() {
         <AccordionDetails sx={{ padding: 0 }}>
           <List disablePadding>
             {clippingPolygons.map((clippingPolygon) => (
-              <ListItem
-                sx={(theme) => ({
-                  background:
-                    selectedObject?.id === clippingPolygon.id
-                      ? theme.palette.secondary.main
-                      : undefined,
-                  color:
-                    selectedObject?.id === clippingPolygon.id
-                      ? theme.palette.secondary.contrastText
-                      : undefined,
-                })}
+              <SceneGraphListItem
                 key={clippingPolygon.id}
-                onClick={() => setSelectedObject(clippingPolygon)}
-              >
-                <ListItemText>{clippingPolygon.name}</ListItemText>
-                <Tooltip title="Toggle clipping polygon visibility">
-                  <ListItemIcon>
-                    {clippingPolygon.visible ? (
-                      <Visibility />
-                    ) : (
-                      <VisibilityOff />
-                    )}
-                  </ListItemIcon>
-                </Tooltip>
-                <Tooltip title="Delete clipping polygon">
-                  <ListItemIcon
-                    onClick={() => deleteClippingPolygon(clippingPolygon.id)}
-                  >
-                    <Delete />
-                  </ListItemIcon>
-                </Tooltip>
-              </ListItem>
+                name={clippingPolygon.name}
+                onSelected={() => setSelectedObject(clippingPolygon)}
+                visible={clippingPolygon.visible}
+                onToggleVisibility={() =>
+                  updateClippingPolygon({
+                    id: clippingPolygon.id,
+                    visible: !clippingPolygon.visible,
+                  })
+                }
+                onDelete={() => {
+                  deleteClippingPolygon(clippingPolygon.id);
+                }}
+                selected={selectedObject?.id === clippingPolygon.id}
+              />
             ))}
           </List>
         </AccordionDetails>
@@ -207,42 +198,33 @@ export default function SceneGraph() {
         </AccordionSummary>
         <AccordionDetails sx={{ padding: 0 }}>
           <List>
-            {projectObjects.map((projectObject) => (
-              <ListItem
-                sx={(theme) => ({
-                  background:
-                    selectedObject?.id === projectObject.id
-                      ? theme.palette.secondary.main
-                      : undefined,
-                  color:
-                    selectedObject?.id === projectObject.id
-                      ? theme.palette.secondary.contrastText
-                      : undefined,
-                })}
-                key={projectObject.id}
-                onClick={() => setSelectedObject(projectObject)}
-              >
-                <ListItemText
-                  style={{
-                    textOverflow: "ellipsis",
-                    whiteSpace: "nowrap",
-                    overflow: "hidden",
+            {projectObjects
+              .concat([
+                {
+                  attributes: {},
+                  fileContent: Buffer.from([]),
+                  id: "asdasd",
+                  name: "Test",
+                  rotation: { w: 0, x: 0, y: 0, z: 0 },
+                  scale: { x: 0, y: 0, z: 0 },
+                  translation: { x: 0, y: 0, z: 0 },
+                  type: "PROJECT_OBJECT",
+                  visible: true,
+                },
+              ])
+              .map((projectObject) => (
+                <SceneGraphListItem
+                  name={projectObject.name}
+                  onSelected={() => setSelectedObject(projectObject)}
+                  key={projectObject.id}
+                  visible={projectObject.visible}
+                  onToggleVisibility={() =>
+                    toggleVisibilityProjectObject(projectObject.id)
+                  }
+                  onDelete={() => {
+                    deleteProjectObject(projectObject.id);
                   }}
-                >
-                  {projectObject.name}
-                </ListItemText>
-                <ListItemButton>
-                  <ListItemIcon
-                    style={{ color: "inherit" }}
-                    onClick={() =>
-                      toggleVisibilityProjectObject(projectObject.id)
-                    }
-                  >
-                    {projectObject.visible ? <Visibility /> : <VisibilityOff />}
-                  </ListItemIcon>
-                </ListItemButton>
-                <ListItemButton
-                  onClick={async () => {
+                  onPlace={async () => {
                     const id = crypto.randomUUID();
 
                     enqueueSnackbar({
@@ -297,11 +279,9 @@ export default function SceneGraph() {
 
                     closeSnackbar(id);
                   }}
-                >
-                  Place
-                </ListItemButton>
-              </ListItem>
-            ))}
+                  selected={selectedObject?.id === projectObject.id}
+                ></SceneGraphListItem>
+              ))}
           </List>
         </AccordionDetails>
       </Accordion>
@@ -352,43 +332,21 @@ export default function SceneGraph() {
         <AccordionDetails sx={{ padding: 0 }}>
           <List>
             {startingPoints.value.map((startingPoint) => (
-              <ListItem
-                sx={(theme) => ({
-                  background:
-                    selectedObject?.id === startingPoint.id
-                      ? theme.palette.secondary.main
-                      : undefined,
-                  color:
-                    selectedObject?.id === startingPoint.id
-                      ? theme.palette.secondary.contrastText
-                      : undefined,
-                })}
+              <SceneGraphListItem
+                name={startingPoint.name}
+                onSelected={() => setSelectedObject(startingPoint)}
+                selected={selectedObject?.id === startingPoint.id}
                 key={startingPoint.id}
-                onClick={() => setSelectedObject(startingPoint)}
-              >
-                <ListItemText>{startingPoint.name}</ListItemText>
-                <div style={{ flex: 1 }} />
-                <ListItemIcon>
-                  <ButtonGroup>
-                    <Tooltip title="Delete starting point">
-                      <IconButton
-                        onClick={() => startingPoints.delete(startingPoint.id)}
-                      >
-                        <Delete />
-                      </IconButton>
-                    </Tooltip>
-                    <Tooltip title="Fly to starting point">
-                      <IconButton
-                        onClick={() =>
-                          startingPoints.helpers.flyTo(startingPoint)
-                        }
-                      >
-                        <Adjust />
-                      </IconButton>
-                    </Tooltip>
-                  </ButtonGroup>
-                </ListItemIcon>
-              </ListItem>
+                onDelete={() => startingPoints.delete(startingPoint.id)}
+                onFlyTo={() => startingPoints.helpers.flyTo(startingPoint)}
+                visible={startingPoint.visible}
+                onToggleVisibility={() =>
+                  startingPoints.update({
+                    id: startingPoint.id,
+                    visible: !startingPoint.visible,
+                  })
+                }
+              />
             ))}
           </List>
         </AccordionDetails>
@@ -417,41 +375,24 @@ export default function SceneGraph() {
               </StyledCount>
             </Typography>
             <Box flex="1" />
-            <ButtonGroup size="small">
-              <IconButton size="small" onClick={visualAxes.create}>
-                <Add />
-              </IconButton>
-            </ButtonGroup>
           </Grid>
         </AccordionSummary>
         <AccordionDetails sx={{ padding: 0 }}>
           <List>
             {visualAxes.value.map((visualAxis) => (
-              <ListItem
+              <SceneGraphListItem
+                name={visualAxis.name}
+                onSelected={() => setSelectedObject(visualAxis)}
+                selected={selectedObject?.id === visualAxis.id}
                 key={visualAxis.id}
-                onClick={() => setSelectedObject(visualAxis)}
-              >
-                <ListItemText>{visualAxis.name}</ListItemText>
-                <div style={{ flex: 1 }} />
-                <ListItemIcon>
-                  <ButtonGroup>
-                    <Tooltip title="Delete visual axis">
-                      <IconButton
-                        onClick={() => visualAxes.delete(visualAxis.id)}
-                      >
-                        <Delete />
-                      </IconButton>
-                    </Tooltip>
-                    <Tooltip title="Fly to visual axis">
-                      <IconButton
-                        onClick={() => visualAxes.helpers.flyTo(visualAxis)}
-                      >
-                        <Adjust />
-                      </IconButton>
-                    </Tooltip>
-                  </ButtonGroup>
-                </ListItemIcon>
-              </ListItem>
+                onFlyTo={() => visualAxes.helpers.flyTo(visualAxis)}
+                onToggleVisibility={() => {
+                  visualAxes.update({
+                    id: visualAxis.id,
+                    visible: visualAxis.visible,
+                  });
+                }}
+              />
             ))}
           </List>
         </AccordionDetails>

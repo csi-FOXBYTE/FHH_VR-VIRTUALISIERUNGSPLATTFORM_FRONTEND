@@ -72,13 +72,12 @@ export default function Navbar({ elevated = true }: NavbarProps) {
       elevation={elevated ? undefined : 0}
       color="primary"
     >
-      <PageContainer>
+      <PageContainer sx={{ padding: "0 32px"}}>
         <ProfileMenu anchorEl={profileAnchorEl} close={handleClose} />
         <Toolbar style={{ paddingLeft: 0 }}>
           <Link
             href="/my-area"
             component={NextLink}
-            style={{ padding: "16px 32px" }}
             underline="none"
             color="inherit"
           >

@@ -84,7 +84,7 @@ export function ScaleBar() {
         position: "absolute",
         background: "white",
         bottom: 16,
-        left: 64,
+        left: 16,
         width: 100,
         padding: 1,
         boxShadow: theme.shadows[4],
