@@ -1,6 +1,5 @@
 import { CRUD_PERMISSIONS_SET } from "@/constants/permissions";
 import { PrismaClient } from "@prisma/client";
-import testImg from "./testImg";
 
 const prisma = new PrismaClient();
 
@@ -102,7 +101,6 @@ const prisma = new PrismaClient();
         name: "Test",
         startPointX: 0,
         startPointY: 0,
-        img: testImg,
         startPointZ: 0,
       },
     ],

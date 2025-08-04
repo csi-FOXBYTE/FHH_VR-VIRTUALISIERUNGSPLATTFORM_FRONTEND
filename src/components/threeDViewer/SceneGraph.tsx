@@ -1,6 +1,14 @@
 "use client";
 
-import { Add, ExpandLess, ExpandMore } from "@mui/icons-material";
+import {
+  Add,
+  CameraAlt,
+  Delete,
+  ExpandLess,
+  ExpandMore,
+  Terrain,
+  TerrainOutlined,
+} from "@mui/icons-material";
 import {
   Accordion,
   AccordionDetails,
@@ -9,19 +17,28 @@ import {
   ButtonGroup,
   Card,
   CardContent,
-  CardHeader,
+  Checkbox,
+  Divider,
+  FormControl,
   Grid,
   IconButton,
   InputAdornment,
+  InputLabel,
   List,
+  ListItem,
+  ListItemButton,
+  ListItemText,
+  MenuItem,
   Select,
   styled,
+  TextField,
   Tooltip,
-  Typography
+  Typography,
 } from "@mui/material";
 import * as Cesium from "cesium";
+import { useTranslations } from "next-intl";
 import { useSnackbar } from "notistack";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import SceneGraphListItem from "./SceneGraph/ListItem";
 import {
   SelectedObject,
@@ -37,6 +54,8 @@ const StyledCount = styled("div")`
 `;
 
 export default function SceneGraph() {
+  const t = useTranslations();
+
   const clippingPolygons = useViewerStore(
     (state) => state.clippingPolygons.value
   );
@@ -61,14 +80,26 @@ export default function SceneGraph() {
     (state) => state.projectObjects.toggleVisibility
   );
 
+  const layers = useViewerStore((state) => state.layers);
+
+  const layerNameInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (!layerNameInputRef.current) return;
+
+    layerNameInputRef.current.value =
+      layers.value.find((layer) => layer.id === layers.selectedLayer)?.name ??
+      "-";
+  }, [layers.selectedLayer]);
+
   const createStartingPoint = useViewerStore(
     (state) => state.startingPoints.create
   );
   const startingPoints = useViewerStore((state) => state.startingPoints);
 
-  const pickPoint = useViewerStore((state) => state.tools.pickPoint);
+  const baseLayers = useViewerStore((state) => state.baseLayers);
 
-  // const visualAxes = useViewerStore((state) => state.visualAxes);
+  const pickPoint = useViewerStore((state) => state.tools.pickPoint);
 
   const selectedObject = useSelectedObject();
   const setSelectedObject = useViewerStore((state) => state.setSelectedObject);
@@ -79,9 +110,11 @@ export default function SceneGraph() {
     (state) => state.projectObjects.toggleImport
   );
 
-  const [selectedTab, setSelectedTab] = useState<"" | SelectedObject["type"]>(
-    ""
-  );
+  const [selectedTab, setSelectedTab] = useState<
+    "" | SelectedObject["type"] | "BASE_LAYER"
+  >("");
+
+  useEffect(() => {}, []);
 
   useEffect(() => {
     setSelectedTab(selectedObject?.type ?? "");
@@ -90,17 +123,67 @@ export default function SceneGraph() {
   return (
     <Grid container spacing={2} flexDirection="column" padding={2}>
       <Card variant="outlined">
-        <CardHeader subheader="Ebene" />
         <CardContent sx={{ gap: 2, display: "flex", flexDirection: "column" }}>
           <Grid container flexDirection="row">
-            <Select
-              sx={{ background: "white", flex: 1 }}
-              endAdornment={<InputAdornment position="end"></InputAdornment>}
-            ></Select>
-            <IconButton>
+            <FormControl sx={{ flex: 1 }}>
+              <InputLabel id="editor-layer-select">Varianten</InputLabel>
+              <Select
+                fullWidth
+                label="Varianten"
+                labelId="editor-layer-select"
+                value={layers.selectedLayer}
+                onChange={(event) => {
+                  layers.changeToLayer(event.target.value);
+                }}
+                sx={{ color: "black", background: "white", flex: 1 }}
+                endAdornment={<InputAdornment position="end"></InputAdornment>}
+              >
+                {layers.value.map((layer) => (
+                  <MenuItem key={layer.id} value={layer.id}>
+                    {layer.name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+
+            <IconButton
+              onClick={() => {
+                const layer = layers.add();
+                layers.changeToLayer(layer.id);
+              }}
+            >
               <Add />
             </IconButton>
+            <IconButton
+              onClick={() => {
+                layers.remove(layers.selectedLayer);
+              }}
+              disabled={layers.value.length === 1}
+            >
+              <Delete />
+            </IconButton>
           </Grid>
+          <TextField
+            fullWidth
+            inputRef={layerNameInputRef}
+            onKeyDown={(event) => {
+              if (event.key !== "Enter") return;
+
+              layers.update({
+                id: layers.selectedLayer,
+                name: (event.target as HTMLInputElement).value,
+              });
+            }}
+            onBlur={(event) => {
+              layers.update({
+                id: layers.selectedLayer,
+                name: (event.target as HTMLInputElement).value,
+              });
+            }}
+            label="Name der Variante"
+            sx={{ background: "white" }}
+          />
+          <Divider />
           <Accordion
             style={{ width: "100%" }}
             disableGutters
@@ -123,7 +206,7 @@ export default function SceneGraph() {
                   )}
                 </IconButton>
                 <Typography>
-                  Models&nbsp;
+                  {t("editor.models")}&nbsp;
                   <StyledCount style={{ backgroundColor: "#eff6ff" }}>
                     [{projectObjects.length}]
                   </StyledCount>
@@ -138,92 +221,76 @@ export default function SceneGraph() {
             </AccordionSummary>
             <AccordionDetails sx={{ padding: 0 }}>
               <List>
-                {projectObjects
-                  .concat([
-                    {
-                      attributes: {},
-                      fileContent: Buffer.from([]),
-                      id: "asdasd",
-                      name: "Test",
-                      rotation: { w: 0, x: 0, y: 0, z: 0 },
-                      scale: { x: 0, y: 0, z: 0 },
-                      translation: { x: 0, y: 0, z: 0 },
-                      type: "PROJECT_OBJECT",
-                      visible: true,
-                    },
-                  ])
-                  .map((projectObject) => (
-                    <SceneGraphListItem
-                      name={projectObject.name}
-                      onSelected={() => setSelectedObject(projectObject)}
-                      key={projectObject.id}
-                      visible={projectObject.visible}
-                      onToggleVisibility={() =>
-                        toggleVisibilityProjectObject(projectObject.id)
-                      }
-                      onDelete={() => {
-                        deleteProjectObject(projectObject.id);
-                      }}
-                      onPlace={async () => {
-                        const id = crypto.randomUUID();
+                {projectObjects.map((projectObject) => (
+                  <SceneGraphListItem
+                    name={projectObject.name}
+                    onSelected={() => setSelectedObject(projectObject)}
+                    key={projectObject.id}
+                    visible={projectObject.visible}
+                    onToggleVisibility={() =>
+                      toggleVisibilityProjectObject(projectObject.id)
+                    }
+                    onDelete={() => {
+                      deleteProjectObject(projectObject.id);
+                    }}
+                    onPlace={async () => {
+                      const id = crypto.randomUUID();
 
-                        enqueueSnackbar({
-                          variant: "info",
-                          message:
-                            "Picking a point. To abort press either right click or escape.",
-                          key: id,
-                          autoHideDuration: null,
+                      enqueueSnackbar({
+                        variant: "info",
+                        message:
+                          "Picking a point. To abort press either right click or escape.",
+                        key: id,
+                        autoHideDuration: null,
+                      });
+
+                      document.body.style.cursor = "crosshair";
+
+                      try {
+                        const pickedPoint = await pickPoint();
+
+                        const modelMatrix =
+                          Cesium.Transforms.eastNorthUpToFixedFrame(
+                            new Cesium.Cartesian3(
+                              pickedPoint.x,
+                              pickedPoint.y,
+                              pickedPoint.z
+                            )
+                          );
+
+                        const translation = Cesium.Matrix4.getTranslation(
+                          modelMatrix,
+                          new Cesium.Cartesian3()
+                        );
+                        const scale = Cesium.Matrix4.getScale(
+                          modelMatrix,
+                          new Cesium.Cartesian3()
+                        );
+                        const rotation = Cesium.Quaternion.fromRotationMatrix(
+                          Cesium.Matrix4.getRotation(
+                            modelMatrix,
+                            new Cesium.Matrix3()
+                          ),
+                          new Cesium.Quaternion()
+                        );
+
+                        updateProjectObject({
+                          translation,
+                          scale,
+                          rotation,
+                          id: projectObject.id,
                         });
+                      } catch (e) {
+                        console.error(e);
+                      }
 
-                        document.body.style.cursor = "crosshair";
+                      document.body.style.cursor = "auto";
 
-                        try {
-                          const pickedPoint = await pickPoint();
-
-                          console.log(pickedPoint);
-
-                          const modelMatrix =
-                            Cesium.Transforms.eastNorthUpToFixedFrame(
-                              new Cesium.Cartesian3(
-                                pickedPoint.x,
-                                pickedPoint.y,
-                                pickedPoint.z
-                              )
-                            );
-
-                          const translation = Cesium.Matrix4.getTranslation(
-                            modelMatrix,
-                            new Cesium.Cartesian3()
-                          );
-                          const scale = Cesium.Matrix4.getScale(
-                            modelMatrix,
-                            new Cesium.Cartesian3()
-                          );
-                          const rotation = Cesium.Quaternion.fromRotationMatrix(
-                            Cesium.Matrix4.getRotation(
-                              modelMatrix,
-                              new Cesium.Matrix3()
-                            ),
-                            new Cesium.Quaternion()
-                          );
-
-                          updateProjectObject({
-                            translation,
-                            scale,
-                            rotation,
-                            id: projectObject.id,
-                          });
-                        } catch (e) {
-                          console.error(e);
-                        }
-
-                        document.body.style.cursor = "auto";
-
-                        closeSnackbar(id);
-                      }}
-                      selected={selectedObject?.id === projectObject.id}
-                    ></SceneGraphListItem>
-                  ))}
+                      closeSnackbar(id);
+                    }}
+                    selected={selectedObject?.id === projectObject.id}
+                  ></SceneGraphListItem>
+                ))}
               </List>
             </AccordionDetails>
           </Accordion>
@@ -249,7 +316,7 @@ export default function SceneGraph() {
                   )}
                 </IconButton>
                 <Typography>
-                  Clipping Polygons&nbsp;
+                  {t("editor.clipping-polygons")}&nbsp;
                   <StyledCount style={{ backgroundColor: "#fef2f2" }}>
                     [{clippingPolygons.length}]
                   </StyledCount>
@@ -286,6 +353,23 @@ export default function SceneGraph() {
                     onDelete={() => {
                       deleteClippingPolygon(clippingPolygon.id);
                     }}
+                    extras={
+                      <IconButton
+                        sx={{ color: "inherit" }}
+                        onClick={() =>
+                          updateClippingPolygon({
+                            id: clippingPolygon.id,
+                            affectsTerrain: !clippingPolygon.affectsTerrain,
+                          })
+                        }
+                      >
+                        {clippingPolygon.affectsTerrain ? (
+                          <Terrain />
+                        ) : (
+                          <TerrainOutlined />
+                        )}
+                      </IconButton>
+                    }
                     selected={selectedObject?.id === clippingPolygon.id}
                   />
                 ))}
@@ -316,14 +400,14 @@ export default function SceneGraph() {
               )}
             </IconButton>
             <Typography>
-              Starting points&nbsp;
+              {t("editor.starting-points")}&nbsp;
               <StyledCount style={{ backgroundColor: "#f0fdf4" }}>
                 [{startingPoints.value.length}]
               </StyledCount>
             </Typography>
             <Box flex="1" />
             <ButtonGroup size="small">
-              <Tooltip title="Add starting point">
+              <Tooltip title={t("editor.add-starting-point")}>
                 <IconButton
                   size="small"
                   onClick={(event) => {
@@ -349,6 +433,16 @@ export default function SceneGraph() {
                 onDelete={() => startingPoints.delete(startingPoint.id)}
                 onFlyTo={() => startingPoints.helpers.flyTo(startingPoint)}
                 visible={startingPoint.visible}
+                extras={
+                  <IconButton
+                    onClick={() => {
+                      startingPoints.helpers.takeScreenshot(startingPoint);
+                    }}
+                    sx={{ color: "inherit" }}
+                  >
+                    <CameraAlt />
+                  </IconButton>
+                }
                 onToggleVisibility={() =>
                   startingPoints.update({
                     id: startingPoint.id,
@@ -356,6 +450,49 @@ export default function SceneGraph() {
                   })
                 }
               />
+            ))}
+          </List>
+        </AccordionDetails>
+      </Accordion>
+      <Accordion
+        expanded={selectedTab === "BASE_LAYER"}
+        onChange={() => setSelectedTab("BASE_LAYER")}
+        style={{ width: "100%" }}
+        square
+        disableGutters
+      >
+        <AccordionSummary>
+          <Grid
+            container
+            justifyContent="space-between"
+            width="100%"
+            alignItems="center"
+          >
+            <IconButton>
+              {selectedTab === "BASE_LAYER" ? <ExpandLess /> : <ExpandMore />}
+            </IconButton>
+            <Typography>
+              {t("editor.base-layers")}&nbsp;
+              <StyledCount style={{ backgroundColor: "#f0fdf4" }}>
+                [{baseLayers.value.length}]
+              </StyledCount>
+            </Typography>
+            <Box flex="1" />
+          </Grid>
+        </AccordionSummary>
+        <AccordionDetails>
+          <List>
+            {baseLayers.value.map((baseLayer) => (
+              <ListItem key={baseLayer.id}>
+                <Checkbox
+                  onChange={(_, checked) => {
+                    if (checked) return baseLayers.add(baseLayer.id);
+                    baseLayers.remove(baseLayer.id);
+                  }}
+                  checked={baseLayers.selectedBaseLayers.includes(baseLayer.id)}
+                />
+                <ListItemText primary={baseLayer.name} />
+              </ListItem>
             ))}
           </List>
         </AccordionDetails>

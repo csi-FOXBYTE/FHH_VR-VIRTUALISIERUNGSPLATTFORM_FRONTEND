@@ -23,9 +23,9 @@ export default function LocaleLayout({
       }}
     >
       <CssBaseline />
-      {pathname.endsWith("/editor") ? null : <Navbar />}
+      {pathname.startsWith("/project-management/") ? null : <Navbar />}
       {children}
-      {pathname.endsWith("/editor") ? null : <Footer />}
+      {pathname.startsWith("/project-management/") ? null : <Footer />}
     </div>
   );
 }

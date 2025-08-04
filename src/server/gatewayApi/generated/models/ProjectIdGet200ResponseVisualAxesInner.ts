@@ -40,12 +40,6 @@ export interface ProjectIdGet200ResponseVisualAxesInner {
      */
     name: string;
     /**
-     * Base64 encoded data url (https://developer.mozilla.org/en-US/docs/Web/URI/Reference/Schemes/data)
-     * @type {string}
-     * @memberof ProjectIdGet200ResponseVisualAxesInner
-     */
-    img: string;
-    /**
      * 
      * @type {string}
      * @memberof ProjectIdGet200ResponseVisualAxesInner
@@ -71,7 +65,6 @@ export interface ProjectIdGet200ResponseVisualAxesInner {
 export function instanceOfProjectIdGet200ResponseVisualAxesInner(value: object): value is ProjectIdGet200ResponseVisualAxesInner {
     if (!('id' in value) || value['id'] === undefined) return false;
     if (!('name' in value) || value['name'] === undefined) return false;
-    if (!('img' in value) || value['img'] === undefined) return false;
     if (!('description' in value) || value['description'] === undefined) return false;
     if (!('startPoint' in value) || value['startPoint'] === undefined) return false;
     if (!('endPoint' in value) || value['endPoint'] === undefined) return false;
@@ -90,7 +83,6 @@ export function ProjectIdGet200ResponseVisualAxesInnerFromJSONTyped(json: any, i
         
         'id': json['id'],
         'name': json['name'],
-        'img': json['img'],
         'description': json['description'],
         'startPoint': ProjectIdGet200ResponseVisualAxesInnerStartPointFromJSON(json['startPoint']),
         'endPoint': ProjectIdGet200ResponseVisualAxesInnerStartPointFromJSON(json['endPoint']),
@@ -110,7 +102,6 @@ export function ProjectIdGet200ResponseVisualAxesInnerToJSONTyped(value?: Projec
         
         'id': value['id'],
         'name': value['name'],
-        'img': value['img'],
         'description': value['description'],
         'startPoint': ProjectIdGet200ResponseVisualAxesInnerStartPointToJSON(value['startPoint']),
         'endPoint': ProjectIdGet200ResponseVisualAxesInnerStartPointToJSON(value['endPoint']),

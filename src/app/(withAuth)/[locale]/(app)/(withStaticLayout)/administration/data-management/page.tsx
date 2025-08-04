@@ -34,18 +34,6 @@ export default function DataManagementPage() {
       >
         <Layers />
       </TabPanel>
-      <TabPanel
-        flex="1"
-        visible
-        overflow="hidden"
-        container
-        flexDirection="column"
-        flexWrap="nowrap"
-        index={1}
-        value={selectedTab}
-      >
-        <VisualAxes />
-      </TabPanel>
     </PageContainer>
   );
 }

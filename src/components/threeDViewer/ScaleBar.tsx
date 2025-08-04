@@ -2,6 +2,7 @@ import { Box } from "@mui/material";
 import * as Cesium from "cesium";
 import { useLayoutEffect, useRef } from "react";
 import { useCesium } from "resium";
+import { useIsScreenshotDialogOpen } from "./ScreenshotDialog";
 
 function getNiceDistance(x: number) {
   const exp = Math.floor(Math.log10(x));
@@ -20,11 +21,13 @@ export function ScaleBar() {
   const labelRef = useRef<HTMLDivElement>(null);
   const scaleRef = useRef<HTMLDivElement>(null);
 
+  const isScreenshotDialogOpen = useIsScreenshotDialogOpen();
+
   useLayoutEffect(() => {
     if (!viewer || !labelRef.current || !scaleRef.current) return;
 
     const handler = () => {
-      if (!viewer || !labelRef.current || !scaleRef.current) return;
+      if (!viewer || !labelRef.current || !scaleRef.current || !viewer.scene) return;
       const basePx = 50;
 
       const canvas = viewer.scene.canvas;
@@ -77,6 +80,8 @@ export function ScaleBar() {
       viewer.scene.postRender.removeEventListener(handler);
     };
   }, [viewer]);
+
+  if (isScreenshotDialogOpen) return null;
 
   return (
     <Box

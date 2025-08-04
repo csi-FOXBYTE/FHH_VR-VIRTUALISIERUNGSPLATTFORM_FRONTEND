@@ -13,20 +13,20 @@
  */
 
 import { mapValues } from '../runtime';
-import type { ProjectIdGet200ResponseBaseLayersInner } from './ProjectIdGet200ResponseBaseLayersInner';
+import type { ProjectIdGet200ResponseAllAvailableBaseLayersInner } from './ProjectIdGet200ResponseAllAvailableBaseLayersInner';
 import {
-    ProjectIdGet200ResponseBaseLayersInnerFromJSON,
-    ProjectIdGet200ResponseBaseLayersInnerFromJSONTyped,
-    ProjectIdGet200ResponseBaseLayersInnerToJSON,
-    ProjectIdGet200ResponseBaseLayersInnerToJSONTyped,
-} from './ProjectIdGet200ResponseBaseLayersInner';
-import type { ProjectIdGet200ResponseClippingPolygonsInner } from './ProjectIdGet200ResponseClippingPolygonsInner';
+    ProjectIdGet200ResponseAllAvailableBaseLayersInnerFromJSON,
+    ProjectIdGet200ResponseAllAvailableBaseLayersInnerFromJSONTyped,
+    ProjectIdGet200ResponseAllAvailableBaseLayersInnerToJSON,
+    ProjectIdGet200ResponseAllAvailableBaseLayersInnerToJSONTyped,
+} from './ProjectIdGet200ResponseAllAvailableBaseLayersInner';
+import type { ProjectIdGet200ResponseLayersInner } from './ProjectIdGet200ResponseLayersInner';
 import {
-    ProjectIdGet200ResponseClippingPolygonsInnerFromJSON,
-    ProjectIdGet200ResponseClippingPolygonsInnerFromJSONTyped,
-    ProjectIdGet200ResponseClippingPolygonsInnerToJSON,
-    ProjectIdGet200ResponseClippingPolygonsInnerToJSONTyped,
-} from './ProjectIdGet200ResponseClippingPolygonsInner';
+    ProjectIdGet200ResponseLayersInnerFromJSON,
+    ProjectIdGet200ResponseLayersInnerFromJSONTyped,
+    ProjectIdGet200ResponseLayersInnerToJSON,
+    ProjectIdGet200ResponseLayersInnerToJSONTyped,
+} from './ProjectIdGet200ResponseLayersInner';
 import type { ProjectIdGet200ResponseVisualAxesInner } from './ProjectIdGet200ResponseVisualAxesInner';
 import {
     ProjectIdGet200ResponseVisualAxesInnerFromJSON,
@@ -65,13 +65,19 @@ export interface ProjectIdGet200Response {
      * @type {string}
      * @memberof ProjectIdGet200Response
      */
-    title: string;
+    sasQueryParameters: string;
     /**
      * 
-     * @type {Array<ProjectIdGet200ResponseClippingPolygonsInner>}
+     * @type {string}
      * @memberof ProjectIdGet200Response
      */
-    clippingPolygons: Array<ProjectIdGet200ResponseClippingPolygonsInner>;
+    img: string | null;
+    /**
+     * 
+     * @type {string}
+     * @memberof ProjectIdGet200Response
+     */
+    title: string;
     /**
      * 
      * @type {Array<ProjectIdGet200ResponseVisualAxesInner>}
@@ -86,10 +92,22 @@ export interface ProjectIdGet200Response {
     startingPoints: Array<ProjectIdGet200ResponseStartingPointsInner>;
     /**
      * 
-     * @type {Array<ProjectIdGet200ResponseBaseLayersInner>}
+     * @type {Array<ProjectIdGet200ResponseLayersInner>}
      * @memberof ProjectIdGet200Response
      */
-    baseLayers: Array<ProjectIdGet200ResponseBaseLayersInner>;
+    layers: Array<ProjectIdGet200ResponseLayersInner>;
+    /**
+     * 
+     * @type {Array<ProjectIdGet200ResponseAllAvailableBaseLayersInner>}
+     * @memberof ProjectIdGet200Response
+     */
+    allAvailableBaseLayers: Array<ProjectIdGet200ResponseAllAvailableBaseLayersInner>;
+    /**
+     * 
+     * @type {Array<string>}
+     * @memberof ProjectIdGet200Response
+     */
+    includedBaseLayers: Array<string>;
 }
 
 /**
@@ -98,11 +116,14 @@ export interface ProjectIdGet200Response {
 export function instanceOfProjectIdGet200Response(value: object): value is ProjectIdGet200Response {
     if (!('id' in value) || value['id'] === undefined) return false;
     if (!('description' in value) || value['description'] === undefined) return false;
+    if (!('sasQueryParameters' in value) || value['sasQueryParameters'] === undefined) return false;
+    if (!('img' in value) || value['img'] === undefined) return false;
     if (!('title' in value) || value['title'] === undefined) return false;
-    if (!('clippingPolygons' in value) || value['clippingPolygons'] === undefined) return false;
     if (!('visualAxes' in value) || value['visualAxes'] === undefined) return false;
     if (!('startingPoints' in value) || value['startingPoints'] === undefined) return false;
-    if (!('baseLayers' in value) || value['baseLayers'] === undefined) return false;
+    if (!('layers' in value) || value['layers'] === undefined) return false;
+    if (!('allAvailableBaseLayers' in value) || value['allAvailableBaseLayers'] === undefined) return false;
+    if (!('includedBaseLayers' in value) || value['includedBaseLayers'] === undefined) return false;
     return true;
 }
 
@@ -118,11 +139,14 @@ export function ProjectIdGet200ResponseFromJSONTyped(json: any, ignoreDiscrimina
         
         'id': json['id'],
         'description': json['description'],
+        'sasQueryParameters': json['sasQueryParameters'],
+        'img': json['img'],
         'title': json['title'],
-        'clippingPolygons': ((json['clippingPolygons'] as Array<any>).map(ProjectIdGet200ResponseClippingPolygonsInnerFromJSON)),
         'visualAxes': ((json['visualAxes'] as Array<any>).map(ProjectIdGet200ResponseVisualAxesInnerFromJSON)),
         'startingPoints': ((json['startingPoints'] as Array<any>).map(ProjectIdGet200ResponseStartingPointsInnerFromJSON)),
-        'baseLayers': ((json['baseLayers'] as Array<any>).map(ProjectIdGet200ResponseBaseLayersInnerFromJSON)),
+        'layers': ((json['layers'] as Array<any>).map(ProjectIdGet200ResponseLayersInnerFromJSON)),
+        'allAvailableBaseLayers': ((json['allAvailableBaseLayers'] as Array<any>).map(ProjectIdGet200ResponseAllAvailableBaseLayersInnerFromJSON)),
+        'includedBaseLayers': json['includedBaseLayers'],
     };
 }
 
@@ -139,11 +163,14 @@ export function ProjectIdGet200ResponseToJSONTyped(value?: ProjectIdGet200Respon
         
         'id': value['id'],
         'description': value['description'],
+        'sasQueryParameters': value['sasQueryParameters'],
+        'img': value['img'],
         'title': value['title'],
-        'clippingPolygons': ((value['clippingPolygons'] as Array<any>).map(ProjectIdGet200ResponseClippingPolygonsInnerToJSON)),
         'visualAxes': ((value['visualAxes'] as Array<any>).map(ProjectIdGet200ResponseVisualAxesInnerToJSON)),
         'startingPoints': ((value['startingPoints'] as Array<any>).map(ProjectIdGet200ResponseStartingPointsInnerToJSON)),
-        'baseLayers': ((value['baseLayers'] as Array<any>).map(ProjectIdGet200ResponseBaseLayersInnerToJSON)),
+        'layers': ((value['layers'] as Array<any>).map(ProjectIdGet200ResponseLayersInnerToJSON)),
+        'allAvailableBaseLayers': ((value['allAvailableBaseLayers'] as Array<any>).map(ProjectIdGet200ResponseAllAvailableBaseLayersInnerToJSON)),
+        'includedBaseLayers': value['includedBaseLayers'],
     };
 }
 

@@ -41,6 +41,11 @@ export interface ProjectIdGetRequest {
     id: string;
 }
 
+export interface ProjectIdPostRequest {
+    id: string;
+    projectIdGet200Response: ProjectIdGet200Response;
+}
+
 /**
  * 
  */
@@ -78,6 +83,55 @@ export class ProjectApi extends runtime.BaseAPI {
      */
     async projectIdGet(requestParameters: ProjectIdGetRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<ProjectIdGet200Response> {
         const response = await this.projectIdGetRaw(requestParameters, initOverrides);
+        return await response.value();
+    }
+
+    /**
+     */
+    async projectIdPostRaw(requestParameters: ProjectIdPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<any>> {
+        if (requestParameters['id'] == null) {
+            throw new runtime.RequiredError(
+                'id',
+                'Required parameter "id" was null or undefined when calling projectIdPost().'
+            );
+        }
+
+        if (requestParameters['projectIdGet200Response'] == null) {
+            throw new runtime.RequiredError(
+                'projectIdGet200Response',
+                'Required parameter "projectIdGet200Response" was null or undefined when calling projectIdPost().'
+            );
+        }
+
+        const queryParameters: any = {};
+
+        const headerParameters: runtime.HTTPHeaders = {};
+
+        headerParameters['Content-Type'] = 'application/json';
+
+
+        let urlPath = `/project/{id}`;
+        urlPath = urlPath.replace(`{${"id"}}`, encodeURIComponent(String(requestParameters['id'])));
+
+        const response = await this.request({
+            path: urlPath,
+            method: 'POST',
+            headers: headerParameters,
+            query: queryParameters,
+            body: ProjectIdGet200ResponseToJSON(requestParameters['projectIdGet200Response']),
+        }, initOverrides);
+
+        if (this.isJsonMime(response.headers.get('content-type'))) {
+            return new runtime.JSONApiResponse<any>(response);
+        } else {
+            return new runtime.TextApiResponse(response) as any;
+        }
+    }
+
+    /**
+     */
+    async projectIdPost(requestParameters: ProjectIdPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<any> {
+        const response = await this.projectIdPostRaw(requestParameters, initOverrides);
         return await response.value();
     }
 

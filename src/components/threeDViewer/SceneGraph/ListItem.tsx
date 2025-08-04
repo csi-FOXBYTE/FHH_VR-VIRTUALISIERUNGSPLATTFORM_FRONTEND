@@ -4,8 +4,10 @@ import {
   LocationOn,
   Visibility,
   VisibilityOff,
+  WavingHand,
 } from "@mui/icons-material";
 import { ListItem, ListItemButton, ListItemText } from "@mui/material";
+import { ReactNode } from "react";
 
 export default function SceneGraphListItem({
   selected,
@@ -16,6 +18,7 @@ export default function SceneGraphListItem({
   onToggleVisibility,
   visible,
   onFlyTo,
+  extras
 }: {
   name: string;
   selected: boolean;
@@ -25,6 +28,7 @@ export default function SceneGraphListItem({
   onDelete?: () => void;
   onPlace?: () => void;
   onFlyTo?: () => void;
+  extras?: ReactNode;
 }) {
   return (
     <ListItem
@@ -35,6 +39,7 @@ export default function SceneGraphListItem({
       })}
     >
       <ListItemText>{name}</ListItemText>
+      {extras ?? null}
       {onToggleVisibility ? (
         <ListItemButton
           sx={{
@@ -83,7 +88,7 @@ export default function SceneGraphListItem({
             onFlyTo();
           }}
         >
-          <CameraAlt />
+          <WavingHand />
         </ListItemButton>
       ) : null}
       {onDelete ? (

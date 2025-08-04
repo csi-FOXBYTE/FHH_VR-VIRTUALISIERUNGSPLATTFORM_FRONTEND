@@ -68,7 +68,7 @@ export default function ProjectPage() {
     mutate: createProjectMutation,
     isPending: isCreateProjectMutationPending,
   } = trpc.projectRouter.create.useMutation({
-    onSuccess: () => {
+    onSuccess: (data) => {
       utils.projectRouter.invalidate();
       enqueueSnackbar({
         variant: "success",
@@ -76,6 +76,7 @@ export default function ProjectPage() {
           entity: t("entities.project"),
         }),
       });
+      router.push(`/project-management/${data.id}`);
       close();
     },
     onError: () =>
@@ -205,12 +206,7 @@ export default function ProjectPage() {
       {isNew ? null : (
         <>
           <Divider />
-          <Tabs>
-            <Tab label="Basisdatensätze"></Tab>
-          </Tabs>
-          <TabPanel>
-            <BaseLayers />
-          </TabPanel>
+          <BaseLayers />
         </>
       )}
     </PageContainer>

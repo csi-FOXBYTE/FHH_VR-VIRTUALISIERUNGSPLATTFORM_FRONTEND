@@ -32,7 +32,7 @@ export default function ProjectManagementPage() {
   });
 
   const { data: { data, count } = { data: [], count: 0 } } =
-    trpc.projectManagementRouter.list.useQuery(
+    trpc.projectManagementRouter.listMyProjects.useQuery(
       {
         filterModel: props.filterModel,
         paginationModel: props.paginationModel,
@@ -76,8 +76,22 @@ export default function ProjectManagementPage() {
           rowCount={count}
           columns={[
             {
+              flex: 0,
+              field: "img",
+              headerName: t("project-management.preview"),
+              renderCell({ row }) {
+                return (
+                  <img
+                    src={row.img}
+                    style={{ height: "100%", width: "auto" }}
+                  />
+                );
+              },
+            },
+            {
               flex: 1,
               field: "title",
+              headerName: t("project-management.table-title"),
               renderCell({ row }) {
                 return (
                   <Link

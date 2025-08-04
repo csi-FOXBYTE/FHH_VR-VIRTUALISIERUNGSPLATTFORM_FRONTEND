@@ -16,51 +16,51 @@ import { mapValues } from '../runtime';
 /**
  * 
  * @export
- * @interface ProjectIdGet200ResponseBaseLayersInner
+ * @interface ProjectIdGet200ResponseAllAvailableBaseLayersInner
  */
-export interface ProjectIdGet200ResponseBaseLayersInner {
+export interface ProjectIdGet200ResponseAllAvailableBaseLayersInner {
     /**
      * 
      * @type {string}
-     * @memberof ProjectIdGet200ResponseBaseLayersInner
+     * @memberof ProjectIdGet200ResponseAllAvailableBaseLayersInner
      */
     id: string;
     /**
      * 
      * @type {string}
-     * @memberof ProjectIdGet200ResponseBaseLayersInner
+     * @memberof ProjectIdGet200ResponseAllAvailableBaseLayersInner
      */
     name: string;
     /**
      * 
      * @type {string}
-     * @memberof ProjectIdGet200ResponseBaseLayersInner
+     * @memberof ProjectIdGet200ResponseAllAvailableBaseLayersInner
      */
     description: string;
     /**
      * 
      * @type {number}
-     * @memberof ProjectIdGet200ResponseBaseLayersInner
+     * @memberof ProjectIdGet200ResponseAllAvailableBaseLayersInner
      */
     sizeGB: number;
     /**
      * 
      * @type {string}
-     * @memberof ProjectIdGet200ResponseBaseLayersInner
+     * @memberof ProjectIdGet200ResponseAllAvailableBaseLayersInner
      */
     href: string;
     /**
      * 
      * @type {string}
-     * @memberof ProjectIdGet200ResponseBaseLayersInner
+     * @memberof ProjectIdGet200ResponseAllAvailableBaseLayersInner
      */
     type: string;
 }
 
 /**
- * Check if a given object implements the ProjectIdGet200ResponseBaseLayersInner interface.
+ * Check if a given object implements the ProjectIdGet200ResponseAllAvailableBaseLayersInner interface.
  */
-export function instanceOfProjectIdGet200ResponseBaseLayersInner(value: object): value is ProjectIdGet200ResponseBaseLayersInner {
+export function instanceOfProjectIdGet200ResponseAllAvailableBaseLayersInner(value: object): value is ProjectIdGet200ResponseAllAvailableBaseLayersInner {
     if (!('id' in value) || value['id'] === undefined) return false;
     if (!('name' in value) || value['name'] === undefined) return false;
     if (!('description' in value) || value['description'] === undefined) return false;
@@ -70,11 +70,11 @@ export function instanceOfProjectIdGet200ResponseBaseLayersInner(value: object):
     return true;
 }
 
-export function ProjectIdGet200ResponseBaseLayersInnerFromJSON(json: any): ProjectIdGet200ResponseBaseLayersInner {
-    return ProjectIdGet200ResponseBaseLayersInnerFromJSONTyped(json, false);
+export function ProjectIdGet200ResponseAllAvailableBaseLayersInnerFromJSON(json: any): ProjectIdGet200ResponseAllAvailableBaseLayersInner {
+    return ProjectIdGet200ResponseAllAvailableBaseLayersInnerFromJSONTyped(json, false);
 }
 
-export function ProjectIdGet200ResponseBaseLayersInnerFromJSONTyped(json: any, ignoreDiscriminator: boolean): ProjectIdGet200ResponseBaseLayersInner {
+export function ProjectIdGet200ResponseAllAvailableBaseLayersInnerFromJSONTyped(json: any, ignoreDiscriminator: boolean): ProjectIdGet200ResponseAllAvailableBaseLayersInner {
     if (json == null) {
         return json;
     }
@@ -89,11 +89,11 @@ export function ProjectIdGet200ResponseBaseLayersInnerFromJSONTyped(json: any, i
     };
 }
 
-export function ProjectIdGet200ResponseBaseLayersInnerToJSON(json: any): ProjectIdGet200ResponseBaseLayersInner {
-    return ProjectIdGet200ResponseBaseLayersInnerToJSONTyped(json, false);
+export function ProjectIdGet200ResponseAllAvailableBaseLayersInnerToJSON(json: any): ProjectIdGet200ResponseAllAvailableBaseLayersInner {
+    return ProjectIdGet200ResponseAllAvailableBaseLayersInnerToJSONTyped(json, false);
 }
 
-export function ProjectIdGet200ResponseBaseLayersInnerToJSONTyped(value?: ProjectIdGet200ResponseBaseLayersInner | null, ignoreDiscriminator: boolean = false): any {
+export function ProjectIdGet200ResponseAllAvailableBaseLayersInnerToJSONTyped(value?: ProjectIdGet200ResponseAllAvailableBaseLayersInner | null, ignoreDiscriminator: boolean = false): any {
     if (value == null) {
         return value;
     }

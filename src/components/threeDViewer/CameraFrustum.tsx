@@ -98,7 +98,7 @@ const CameraFrustum: React.FC<CameraFrustumProps> = ({
   return (
     <Primitive
       onClick={onClick}
-      key={color.toCssColorString()}
+        key={`${color.toCssColorString()}_${JSON.stringify(position)}_${JSON.stringify(target)}`}
       geometryInstances={[instance]}
       appearance={
         new PerInstanceColorAppearance({ flat: true, translucent: false })

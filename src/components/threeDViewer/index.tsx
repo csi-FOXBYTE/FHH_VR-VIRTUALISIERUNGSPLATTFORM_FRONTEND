@@ -7,26 +7,20 @@ import AppBar from "./AppBar";
 import RightDrawer from "./RightDrawer";
 import Toolbar from "./Toolbar";
 import ImportProjectObjectDialog from "./ImportProjectObjectDialog";
+import { PreventClosing } from "./PreventClosing";
+import SavingBlocker from "./SavingBlocker";
 
 const ResiumViewer = dynamic(async () => (await import("./Viewer")).default, {
   ssr: false,
   loading: () => (
-    <Grid
-      width="100%"
-      height="100%"
-      flexDirection="column"
-      alignItems="center"
-      style={{ background: "white" }}
-      justifyContent="center"
-      alignContent="center"
-      position="absolute"
-      top="0"
-      left="0"
-      justifyItems="center"
-    >
-      <CircularProgress />
-      <div>Loading Viewer component... </div>
-    </Grid>
+    <CircularProgress
+      size={64}
+      sx={{
+        position: "absolute",
+        top: "calc(50% - 32px)",
+        left: "calc(50% - 32px)",
+      }}
+    />
   ),
 });
 
@@ -42,6 +36,8 @@ export function ThreeDViewer() {
         flexDirection: "column",
       }}
     >
+      <SavingBlocker />
+      <PreventClosing />
       <AppBar />
       <ImportProjectObjectDialog />
       <Grid

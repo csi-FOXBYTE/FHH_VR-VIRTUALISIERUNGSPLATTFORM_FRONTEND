@@ -53,7 +53,7 @@ async function proxy(
       userId: session.user.id,
     });
 
-    forwardedHeaders.append("authorization", `Bearer ${access_token}`);
+    forwardedHeaders.set("authorization", `Bearer ${access_token}`);
   } else {
     return new NextResponse(null, { status: 401, statusText: "ACCESS_DENIED" });
   }

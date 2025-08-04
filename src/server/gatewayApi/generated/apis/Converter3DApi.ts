@@ -19,6 +19,8 @@ import type {
   Converter3DConvertProjectModelPostRequest,
   Converter3DConvertTerrainPost200Response,
   Converter3DConvertTerrainPostRequest,
+  Converter3DDownloadProjectModelPost200Response,
+  Converter3DDownloadProjectModelPostRequest,
   Converter3DGetProjectModelStatusPost200Response,
   Def0,
   Def1,
@@ -35,6 +37,10 @@ import {
     Converter3DConvertTerrainPost200ResponseToJSON,
     Converter3DConvertTerrainPostRequestFromJSON,
     Converter3DConvertTerrainPostRequestToJSON,
+    Converter3DDownloadProjectModelPost200ResponseFromJSON,
+    Converter3DDownloadProjectModelPost200ResponseToJSON,
+    Converter3DDownloadProjectModelPostRequestFromJSON,
+    Converter3DDownloadProjectModelPostRequestToJSON,
     Converter3DGetProjectModelStatusPost200ResponseFromJSON,
     Converter3DGetProjectModelStatusPost200ResponseToJSON,
     Def0FromJSON,
@@ -61,8 +67,8 @@ export interface Converter3DConvertTerrainPostOperationRequest {
     converter3DConvertTerrainPostRequest: Converter3DConvertTerrainPostRequest;
 }
 
-export interface Converter3DDownloadProjectModelPostRequest {
-    converter3DConvertProjectModelPost200Response: Converter3DConvertProjectModelPost200Response;
+export interface Converter3DDownloadProjectModelPostOperationRequest {
+    converter3DDownloadProjectModelPostRequest: Converter3DDownloadProjectModelPostRequest;
 }
 
 export interface Converter3DGetProjectModelStatusPostRequest {
@@ -187,11 +193,11 @@ export class Converter3DApi extends runtime.BaseAPI {
 
     /**
      */
-    async converter3DDownloadProjectModelPostRaw(requestParameters: Converter3DDownloadProjectModelPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Blob>> {
-        if (requestParameters['converter3DConvertProjectModelPost200Response'] == null) {
+    async converter3DDownloadProjectModelPostRaw(requestParameters: Converter3DDownloadProjectModelPostOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<runtime.ApiResponse<Converter3DDownloadProjectModelPost200Response>> {
+        if (requestParameters['converter3DDownloadProjectModelPostRequest'] == null) {
             throw new runtime.RequiredError(
-                'converter3DConvertProjectModelPost200Response',
-                'Required parameter "converter3DConvertProjectModelPost200Response" was null or undefined when calling converter3DDownloadProjectModelPost().'
+                'converter3DDownloadProjectModelPostRequest',
+                'Required parameter "converter3DDownloadProjectModelPostRequest" was null or undefined when calling converter3DDownloadProjectModelPost().'
             );
         }
 
@@ -209,15 +215,15 @@ export class Converter3DApi extends runtime.BaseAPI {
             method: 'POST',
             headers: headerParameters,
             query: queryParameters,
-            body: Converter3DConvertProjectModelPost200ResponseToJSON(requestParameters['converter3DConvertProjectModelPost200Response']),
+            body: Converter3DDownloadProjectModelPostRequestToJSON(requestParameters['converter3DDownloadProjectModelPostRequest']),
         }, initOverrides);
 
-        return new runtime.BlobApiResponse(response);
+        return new runtime.JSONApiResponse(response, (jsonValue) => Converter3DDownloadProjectModelPost200ResponseFromJSON(jsonValue));
     }
 
     /**
      */
-    async converter3DDownloadProjectModelPost(requestParameters: Converter3DDownloadProjectModelPostRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Blob> {
+    async converter3DDownloadProjectModelPost(requestParameters: Converter3DDownloadProjectModelPostOperationRequest, initOverrides?: RequestInit | runtime.InitOverrideFunction): Promise<Converter3DDownloadProjectModelPost200Response> {
         const response = await this.converter3DDownloadProjectModelPostRaw(requestParameters, initOverrides);
         return await response.value();
     }

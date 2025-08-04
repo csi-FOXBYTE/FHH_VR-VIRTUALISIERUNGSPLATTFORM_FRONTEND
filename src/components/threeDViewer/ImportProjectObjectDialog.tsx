@@ -20,6 +20,7 @@ import DragAndDropzone from "../common/DragAndDropZone";
 import { useViewerStore } from "./ViewerProvider";
 import { getApis } from "@/server/gatewayApi/client";
 import { BlockBlobClient } from "@azure/storage-blob";
+import { useParams } from "next/navigation";
 
 const epsgValues = Object.values(proj4List)
   .map(([epsg, proj4]) => ({
@@ -34,6 +35,8 @@ export default function ImportProjectObjectDialog() {
   const importerOpen = useViewerStore(
     (state) => state.projectObjects._importerOpen
   );
+
+  const params = useParams<{ projectId: string }>();
 
   const [selectedEpsg, setSelectedEpsg] = useState<{
     value: string;
@@ -157,14 +160,14 @@ export default function ImportProjectObjectDialog() {
 
         if (!modelMatrixRaw) throw new Error("FAILED");
 
-        const blob = await converter3DApi.converter3DDownloadProjectModelPost({
-          converter3DConvertProjectModelPost200Response: {
-            jobId,
-            secret,
-          },
-        });
-
-        const arrayBuffer = await blob.arrayBuffer();
+        const { href } =
+          await converter3DApi.converter3DDownloadProjectModelPost({
+            converter3DDownloadProjectModelPostRequest: {
+              jobId,
+              secret,
+              projectId: params.projectId,
+            },
+          });
 
         const modelMatrix = Matrix4.fromColumnMajorArray(modelMatrixRaw);
 
@@ -181,7 +184,7 @@ export default function ImportProjectObjectDialog() {
         setProjectObjects([
           ...projectObjects,
           {
-            fileContent: Buffer.from(arrayBuffer),
+            href,
             id: crypto.randomUUID(),
             attributes: {},
             scale: { x: scale.x, y: scale.y, z: scale.z },

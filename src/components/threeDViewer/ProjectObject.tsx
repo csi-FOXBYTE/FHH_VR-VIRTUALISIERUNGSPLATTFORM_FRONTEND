@@ -21,6 +21,8 @@ export default function ProjectObject({
     (state) => state.unregisterObjectRef
   );
 
+  const project = useViewerStore(state => state.project);
+
   useEffect(() => {
     if (modelRef !== null)
       registerObjectRef({
@@ -32,20 +34,6 @@ export default function ProjectObject({
       unregisterObjectRef({ type: "PROJECT_OBJECT", id: projectObject.id });
     };
   }, [unregisterObjectRef, modelRef, projectObject.id, registerObjectRef]);
-
-  const [url, setUrl] = useState<string>("");
-
-  useEffect(() => {
-    const blob = new Blob([projectObject.fileContent], {
-      type: "model/gltf-binary",
-    });
-
-    const objectUrl = URL.createObjectURL(blob);
-
-    setUrl(() => objectUrl);
-
-    return () => URL.revokeObjectURL(objectUrl);
-  }, [projectObject.fileContent]);
 
   const modelMatrix = useMemo(() => {
     const t = new Cesium.TranslationRotationScale(
@@ -81,12 +69,10 @@ export default function ProjectObject({
     projectObject.translation.z,
   ]);
 
-  if (!url) return null;
-
   return (
     <Model
       onClick={() => setSelectedObject(projectObject)}
-      url={url}
+      url={`${projectObject.href}?${project.sasQueryParameters}`}
       show={projectObject.visible}
       modelMatrix={modelMatrix}
       color={Cesium.Color.YELLOW}

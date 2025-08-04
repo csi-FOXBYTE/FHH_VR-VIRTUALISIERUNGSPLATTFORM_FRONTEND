@@ -31,7 +31,7 @@ export async function createAccessToken(payload: {
     .setProtectedHeader({ alg: "dir", enc: "A256GCM" })
     .setAudience(audience)
     .setExpirationTime(accessTokenMaxAge)
-    .setIssuedAt()
+    .setIssuedAt(new Date())
     .setNotBefore(new Date())
     .encrypt(Buffer.from(process.env.NEXTAUTH_SECRET!, "base64"));
 }
@@ -63,7 +63,7 @@ export async function createRefreshToken(payload: {
     .setProtectedHeader({ alg: "dir", enc: "A256GCM" })
     .setAudience(audience)
     .setExpirationTime(refreshTokenMaxAge)
-    .setIssuedAt()
+    .setIssuedAt(new Date())
     .setNotBefore(new Date())
     .encrypt(Buffer.from(process.env.NEXTAUTH_SECRET!, "base64"));
 }
@@ -115,6 +115,6 @@ export function createCode({
     .setAudience("urn:fhhvr")
     .setExpirationTime(codeTokenMaxAge)
     .setNotBefore(new Date())
-    .setIssuedAt()
+    .setIssuedAt(new Date())
     .encrypt(Buffer.from(process.env.NEXTAUTH_SECRET!, "base64"));
 }

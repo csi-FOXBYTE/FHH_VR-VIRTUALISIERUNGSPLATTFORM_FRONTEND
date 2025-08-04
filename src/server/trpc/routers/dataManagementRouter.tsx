@@ -50,6 +50,7 @@ const dataManagementRouter = router({
         return await opts.ctx.db.visualAxis.create({
           data: {
             ...opts.input,
+
             owner: {
               connect: {
                 id: opts.ctx.session.user.id,

@@ -2,7 +2,7 @@
 
 import * as Cesium from "cesium";
 import { useMemo } from "react";
-import { CameraFlyTo, Cesium3DTileset, ImageryLayer, Viewer } from "resium";
+import { CameraFlyTo, ImageryLayer, Viewer } from "resium";
 import { useConfigurationProviderContext } from "../configuration/ConfigurationProvider";
 import { useBaseLayerProviderContext } from "./BaseLayerProvider";
 import ClippingPolygons from "./ClippingPolygons";
@@ -10,10 +10,11 @@ import Compass from "./Compass";
 import GetResiumCtx from "./GetResiumCtx";
 import ProjectObjects from "./ProjectObjects";
 import { ScaleBar } from "./ScaleBar";
+import ScreenshotDialog from "./ScreenshotDialog";
 import StartingPoints from "./StartingPoints";
+import Tileset from "./Tileset";
 import ToolsProvider from "./Tools";
 import { useViewerStore } from "./ViewerProvider";
-import VisualAxes from "./VisualAxes";
 
 const openStreetMapImagerProvider = new Cesium.OpenStreetMapImageryProvider({
   url: "https://tile.openstreetmap.org/",
@@ -21,36 +22,27 @@ const openStreetMapImagerProvider = new Cesium.OpenStreetMapImageryProvider({
 });
 
 export default function ResiumViewer() {
-  const viewerStore = useViewerStore();
-
   const layers = useBaseLayerProviderContext();
 
   const configuration = useConfigurationProviderContext();
 
-  const builtClippingPolygons = useMemo(() => {
-    return new Array(6).fill(0).map(() => {
-      if (viewerStore.clippingPolygons.value.length === 0) return undefined;
-
-      const collection = new Cesium.ClippingPolygonCollection({
-        enabled: viewerStore.clippingPolygons.value.length > 0,
-        inverse: false,
-        polygons: viewerStore.clippingPolygons.value.map(
-          (clippingPolygon) =>
-            new Cesium.ClippingPolygon({
-              positions: clippingPolygon.positions.map(
-                (p) => new Cesium.Cartesian3(p.x, p.y, p.z)
-              ),
-            })
-        ),
-      });
-
-      return collection;
-    });
-  }, [viewerStore.clippingPolygons.value]);
-
   const safeCameraZoneVisible = useViewerStore(
     (state) => state.tools.safeCameraZoneVisible
   );
+
+  const setSelectedObject = useViewerStore((state) => state.setSelectedObject);
+
+  const destination = useMemo(() => {
+    return new Cesium.Cartesian3(
+      configuration.globalStartPoint.x,
+      configuration.globalStartPoint.y,
+      configuration.globalStartPoint.z
+    );
+  }, [
+    configuration.globalStartPoint.x,
+    configuration.globalStartPoint.y,
+    configuration.globalStartPoint.z,
+  ]);
 
   return (
     <Viewer
@@ -59,6 +51,9 @@ export default function ResiumViewer() {
 
         ref.cesiumElement.scene.globe.depthTestAgainstTerrain = true;
       }}
+      contextOptions={{
+        webgl: { preserveDrawingBuffer: true },
+      }}
       style={{
         width: "100%",
         height: safeCameraZoneVisible ? undefined : "100%",
@@ -66,7 +61,7 @@ export default function ResiumViewer() {
         top: "50%",
         transform: "translateY(-50%)",
         left: 0,
-        aspectRatio: safeCameraZoneVisible ? 1.7777777777777778 : undefined,
+        aspectRatio: safeCameraZoneVisible ? "16/9" : undefined,
         maxWidth: "100%",
         maxHeight: "100%",
         imageRendering: "pixelated",
@@ -79,6 +74,9 @@ export default function ResiumViewer() {
       vrButton={false}
       animation={false}
       navigationHelpButton={false}
+      onClick={(_, target) => {
+        if (target === undefined) setSelectedObject(null);
+      }}
       fullscreenButton={false}
       terrainProvider={layers.terrain?.resource}
       timeline={false}
@@ -89,33 +87,19 @@ export default function ResiumViewer() {
       {/* <CesiumGizmo /> */}
       <ScaleBar />
       <Compass />
+      <ScreenshotDialog />
       <GetResiumCtx />
       <ProjectObjects />
       <StartingPoints />
       <ToolsProvider />
-      <CameraFlyTo
-        once
-        duration={0}
-        destination={
-          new Cesium.Cartesian3(
-            configuration.globalStartPoint.x,
-            configuration.globalStartPoint.y,
-            configuration.globalStartPoint.z
-          )
-        }
-      />
+      <CameraFlyTo once duration={0} key="flyto" destination={destination} />
       <ClippingPolygons />
-      <VisualAxes />
       <ImageryLayer imageryProvider={openStreetMapImagerProvider} />
       {layers.imageries.map((imagery) => (
         <ImageryLayer key={imagery.id} imageryProvider={imagery.resource} />
       ))}
       {layers.tileSets.map((tileSet) => (
-        <Cesium3DTileset
-          key={tileSet.id}
-          url={tileSet.resource}
-          clippingPolygons={builtClippingPolygons?.[0]}
-        />
+        <Tileset id={tileSet.id} resource={tileSet.resource} key={tileSet.id} />
       ))}
     </Viewer>
   );

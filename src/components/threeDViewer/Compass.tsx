@@ -1,6 +1,7 @@
 import { Box, styled } from "@mui/material";
 import { useCallback, useEffect, useRef } from "react";
 import { useCesium } from "resium";
+import { useIsScreenshotDialogOpen } from "./ScreenshotDialog";
 
 const Wrapper = styled("div")`
   width: 64px;
@@ -57,6 +58,8 @@ export default function Compass() {
 
   const { viewer } = useCesium();
 
+  const isScreenshotDialogOpen = useIsScreenshotDialogOpen();
+
   useEffect(() => {
     if (!viewer) return;
 
@@ -87,6 +90,8 @@ export default function Compass() {
       convert: false,
     });
   }, [viewer]);
+
+  if (isScreenshotDialogOpen) return null;
 
   return (
     <div style={{ position: "absolute", bottom: 16, right: 16 }}>

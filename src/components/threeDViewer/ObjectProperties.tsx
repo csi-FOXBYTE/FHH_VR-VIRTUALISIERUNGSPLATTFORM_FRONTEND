@@ -4,16 +4,13 @@ import { TabPanel } from "../common/TabPanel";
 import ObjectInfo from "./ObjectInfo";
 import TransformSwitch from "./TransformSwitch";
 import { useSelectedObject } from "./ViewerProvider";
-import Attributes from "./Attributes";
+import { useTranslations } from "next-intl";
 
 export default function ObjectProperties() {
   const [selectedTab, setSelectedTab] = useState(0);
   const selectedObject = useSelectedObject();
 
-  const [test, setTest] = useState<Record<string, string>>({
-    a: "Hallo",
-    b: "spdfkwef",
-  });
+  const t = useTranslations();
 
   return (
     <Grid flex={1} container flexDirection="column" width="100%" padding={2}>
@@ -28,26 +25,16 @@ export default function ObjectProperties() {
           <Tab
             disabled={selectedObject === null}
             style={{ padding: 0, minWidth: 0, width: 48 }}
-            label="Information"
+            label={t('editor.informations')}
             onClick={() => setSelectedTab(0)}
             value={0}
           />
           <Tab
-            disabled={selectedObject === null}
+            disabled={selectedObject === null || selectedObject.type === "CLIPPING_POLYGON" || selectedObject.type === "TILE_3D"}
             style={{ padding: 0, minWidth: 0, width: 48 }}
-            label="Transform"
+            label={t('editor.transform')}
             onClick={() => setSelectedTab(1)}
             value={1}
-          />
-          <Tab
-            disabled={
-              selectedObject === null ||
-              selectedObject.type !== "PROJECT_OBJECT"
-            }
-            style={{ padding: 0, minWidth: 0, width: 48 }}
-            label="Attributes"
-            onClick={() => setSelectedTab(2)}
-            value={2}
           />
         </Tabs>
         <TabPanel
@@ -71,14 +58,6 @@ export default function ObjectProperties() {
           value={selectedTab}
         >
           <TransformSwitch selectedObject={selectedObject!} />
-        </TabPanel>
-        <TabPanel
-          style={{ paddingTop: 16 }}
-          visible={selectedObject !== null}
-          index={2}
-          value={selectedTab}
-        >
-          <Attributes value={test} onChange={setTest} />
         </TabPanel>
       </Box>
     </Grid>

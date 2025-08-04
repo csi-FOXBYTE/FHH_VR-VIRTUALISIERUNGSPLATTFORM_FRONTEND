@@ -29,7 +29,6 @@ export default function TransformSwitch({
   const updateStartingPoint = useViewerStore(
     (state) => state.startingPoints.update
   );
-  const updateVisualAxis = useViewerStore((state) => state.visualAxes.update);
 
   const { viewer } = useCesium();
 
@@ -146,54 +145,55 @@ export default function TransformSwitch({
     ]
   );
 
-  const handleTranslationChangeVisualAxis = useCallback(
-    (value: { x: number; y: number; z: number }) => {
-      if (!objectRefs.visualAxes[selectedObject.id]) return;
-
-      objectRefs.visualAxes[selectedObject.id].position =
-        new ConstantPositionProperty(
-          new Cartesian3(value.x, value.y, value.z),
-          objectRefs.visualAxes[selectedObject.id].position?.referenceFrame
-        );
-
-      viewer?.scene.requestRender();
-
-      window.clearTimeout(timerRef.current.timer);
-
-      timerRef.current.timer = window.setTimeout(() => {
-        updateVisualAxis({
-          id: selectedObject.id,
-          position: objectRefs.visualAxes[selectedObject.id].position
-            ?.getValue()
-            ?.clone(),
-        });
-      }, 500);
-    },
-    [objectRefs.visualAxes, selectedObject.id, updateVisualAxis, viewer?.scene]
-  );
+  const lastPositionRef = useRef<{
+    position: { x: number; y: number; z: number } | null;
+    target: { x: number; y: number; z: number } | null;
+  }>({
+    position: null,
+    target: null,
+  });
 
   const handleTranslationChangeStartingPoint = useCallback(
-    (value: { x: number; y: number; z: number }) => {
+    (
+      position?: { x: number; y: number; z: number },
+      target?: { x: number; y: number; z: number }
+    ) => {
       if (!objectRefs.startingPoints[selectedObject.id]) return;
 
-      objectRefs.startingPoints[selectedObject.id].position =
-        new ConstantPositionProperty(
-          new Cartesian3(value.x, value.y, value.z),
-          objectRefs.startingPoints[selectedObject.id].position?.referenceFrame
-        );
+      if (position)
+        objectRefs.startingPoints[selectedObject.id].position =
+          new ConstantPositionProperty(
+            new Cartesian3(position.x, position.y, position.z),
+            objectRefs.startingPoints[
+              selectedObject.id
+            ].position?.referenceFrame
+          );
+
+      if (position) lastPositionRef.current.position = position;
+      if (target) lastPositionRef.current.target = target;
 
       viewer?.scene.requestRender();
 
       window.clearTimeout(timerRef.current.timer);
 
       timerRef.current.timer = window.setTimeout(() => {
-        updateStartingPoint({
+        const payload: {
+          id: string;
+          position?: { x: number; y: number; z: number };
+          target?: { x: number; y: number; z: number };
+        } = {
           id: selectedObject.id,
-          position: objectRefs.startingPoints[selectedObject.id].position
-            ?.getValue()
-            ?.clone(),
-        });
-      }, 500);
+        };
+
+        if (lastPositionRef.current.position)
+          payload.position = { ...lastPositionRef.current.position };
+        if (lastPositionRef.current.target)
+          payload.target = { ...lastPositionRef.current.target };
+
+        updateStartingPoint(payload);
+        lastPositionRef.current.position = null;
+        lastPositionRef.current.target = null;
+      }, 250);
     },
     [
       objectRefs.startingPoints,
@@ -227,30 +227,19 @@ export default function TransformSwitch({
     case "STARTING_POINT":
       return (
         <Grid container spacing={2} flexDirection="column">
-          <Typography>Origin</Typography>
+          <Typography>Ursprung</Typography>
           <TranslationInput
-            onImmediateChange={handleTranslationChangeStartingPoint}
+            onImmediateChange={(position) =>
+              handleTranslationChangeStartingPoint(position, undefined)
+            }
             value={selectedObject.position}
           />
-          <Typography>Target</Typography>
+          <Typography>Ziel</Typography>
           <TranslationInput
-            onImmediateChange={handleTranslationChangeStartingPoint}
-            value={selectedObject.position}
-          />
-        </Grid>
-      );
-    case "VISUAL_AXIS":
-      return (
-        <Grid container spacing={2} flexDirection="column">
-          <Typography>Origin</Typography>
-          <TranslationInput
-            onImmediateChange={handleTranslationChangeVisualAxis}
-            value={selectedObject.position}
-          />
-          <Typography>Target</Typography>
-          <TranslationInput
-            onImmediateChange={handleTranslationChangeVisualAxis}
-            value={selectedObject.position}
+            onImmediateChange={(target) =>
+              handleTranslationChangeStartingPoint(undefined, target)
+            }
+            value={selectedObject.target}
           />
         </Grid>
       );

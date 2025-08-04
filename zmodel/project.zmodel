@@ -15,7 +15,9 @@ model Project extends Base, Ownable {
     includedBaseLayers    BaseLayer[]
     includedProjectLayers ProjectLayer[]  @relation("includedInProjects")
     projectLayers         ProjectLayer[]
-    variants              Variant[]
+
+    img                   String?         @db.Text
+    camera                String?         @db.Text
 
     events                Event[]
 
@@ -51,6 +53,19 @@ model ProjectModel extends Base {
     projectLayer   ProjectLayer @relation(fields: [projectLayerId], references: [id], onDelete: Cascade, onUpdate: Cascade)
     projectLayerId String
 
+    rotationX      Float
+    rotationY      Float
+    rotationZ      Float
+    rotationW      Float
+
+    scaleX         Float
+    scaleY         Float
+    scaleZ         Float
+
+    translationX   Float
+    translationY   Float
+    translationZ   Float
+
     @@allow('all', projectLayer.project.owner.id == auth().id)
     @@allow('create', auth().assignedGroups?[assignedRoles?[assignedPermissions?[name == 'PROJECT_FILE:CREATE']]])
     @@allow('read', auth().assignedGroups?[assignedRoles?[assignedPermissions?[name == 'PROJECT_FILE:READ']]])
@@ -60,8 +75,6 @@ model ProjectModel extends Base {
 
 /// Is global per definition, can not be associatd to a project.
 model VisualAxis extends DirectedPoint {
-    img String @db.Text
-
     @@allow('create', auth().assignedGroups?[assignedRoles?[assignedPermissions?[name == 'VISUAL_AXIS:CREATE']]])
     @@allow('read', auth().assignedGroups?[assignedRoles?[assignedPermissions?[name == 'VISUAL_AXIS:READ']]])
     @@allow('update', auth().assignedGroups?[assignedRoles?[assignedPermissions?[name == 'VISUAL_AXIS:UPDATE']]])
@@ -79,20 +92,4 @@ model StartingPoint extends DirectedPoint {
     @@allow('read', auth().assignedGroups?[assignedRoles?[assignedPermissions?[name == 'STARTING_POINT:READ']]])
     @@allow('update', auth().assignedGroups?[assignedRoles?[assignedPermissions?[name == 'STARTING_POINT:UPDATE']]])
     @@allow('delete', auth().assignedGroups?[assignedRoles?[assignedPermissions?[name == 'STARTING_POINT:DELETE']]])
-}
-
-model Variant extends Base {
-    project       Project        @relation(fields: [projectId], references: [id])
-    projectId     String
-
-    name          String
-    description   String
-
-    projectLayers ProjectLayer[]
-
-    @@allow('all', auth().id == project.owner.id)
-    @@allow('create', auth().assignedGroups?[assignedRoles?[assignedPermissions?[name == 'VARIANT:CREATE']]])
-    @@allow('read', auth().assignedGroups?[assignedRoles?[assignedPermissions?[name == 'VARIANT:READ']]])
-    @@allow('update', auth().assignedGroups?[assignedRoles?[assignedPermissions?[name == 'VARIANT:UPDATE']]])
-    @@allow('delete', auth().assignedGroups?[assignedRoles?[assignedPermissions?[name == 'VARIANT:DELETE']]])
 }

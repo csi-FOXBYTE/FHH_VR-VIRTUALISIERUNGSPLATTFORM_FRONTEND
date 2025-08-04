@@ -101,6 +101,7 @@ model Project {
   includedProjectLayers ProjectLayer[]  @relation("includedInProjects")
   projectLayers         ProjectLayer[]
   variants              Variant[]
+  img                   String?         @db.Text()
   events                Event[]
 }
 
@@ -128,6 +129,16 @@ model ProjectModel {
   attributes     String       @db.Text()
   projectLayer   ProjectLayer @relation(fields: [projectLayerId], references: [id], onDelete: Cascade, onUpdate: Cascade)
   projectLayerId String
+  rotationX      Float
+  rotationY      Float
+  rotationZ      Float
+  rotationW      Float
+  scaleX         Float
+  scaleY         Float
+  scaleZ         Float
+  translationX   Float
+  translationY   Float
+  translationZ   Float
 }
 
 /// Is global per definition, can not be associatd to a project.
@@ -145,7 +156,6 @@ model VisualAxis {
   endPointX   Float
   endPointY   Float
   endPointZ   Float
-  img         String   @db.Text()
 }
 
 /// Can be global or local depending on if a project is defined.
@@ -219,18 +229,18 @@ model BaseLayer {
   createdAt          DateTime  @default(now())
   updatedAt          DateTime  @updatedAt()
   name               String
-  description        String    @default("")
-  sizeGB             Float
-  /// A layer can either be stored in azure or externally.
-  href               String?
-  /// Containername is only used when its stored in azure.
-  containerName      String?
   /// Can be one of 3D-TILES, TERRAIN, IMAGERY, WMS
   type               String
   visibleForGroups   Group[]
   /// Can be one of PENDING | FAILED | COMPLETED
   status             String    @default("COMPLETED")
   progress           Float     @default(0)
+  sizeGB             Float
+  description        String    @default("")
+  /// A layer can either be stored in azure or externally.
+  href               String?
+  /// Containername is only used when its stored in azure.
+  containerName      String?
   includedInProjects Project[]
 }
 
@@ -241,12 +251,6 @@ model ProjectLayer {
   createdAt          DateTime          @default(now())
   updatedAt          DateTime          @updatedAt()
   name               String
-  description        String            @default("")
-  sizeGB             Float
-  /// A layer can either be stored in azure or externally.
-  href               String?
-  /// Containername is only used when its stored in azure.
-  containerName      String?
   projectModels      ProjectModel[]
   clippingPolygons   ClippingPolygon[]
   includedInProjects Project[]         @relation("includedInProjects")

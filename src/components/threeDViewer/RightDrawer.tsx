@@ -27,7 +27,7 @@ export default function RightDrawer() {
           position: "absolute",
           top: 0,
           right: 0,
-          zIndex: 100,
+          zIndex: 10,
           background: "#eee",
           boxShadow: theme.shadows[2],
           width: 400,

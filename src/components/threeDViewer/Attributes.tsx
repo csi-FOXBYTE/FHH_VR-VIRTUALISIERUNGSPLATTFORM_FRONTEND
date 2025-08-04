@@ -5,6 +5,7 @@ import {
   IconButton,
   Table,
   TextField,
+  Typography,
 } from "@mui/material";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -12,9 +13,14 @@ import { useCallback, useEffect, useRef, useState } from "react";
 export type AttributesProps = {
   value: Record<string, string>;
   onChange: (value: Record<string, string>) => void;
+  disabled?: boolean;
 };
 
-export default function Attributes({ onChange, value }: AttributesProps) {
+export default function Attributes({
+  onChange,
+  value,
+  disabled,
+}: AttributesProps) {
   const t = useTranslations();
 
   const [attributes, setAttributes] = useState<
@@ -67,70 +73,73 @@ export default function Attributes({ onChange, value }: AttributesProps) {
   }, [attributesForm, onChange]);
 
   return (
-    <Table>
-      <thead>
-        <tr>
-          <th>{t("attributes.key")}</th>
-          <th>{t("attributes.value")}</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody>
-        {attributes.map(({ defaultValue, id, key }, index) => (
-          <AttributeField
-            index={index}
-            defaultKey={key}
-            key={id}
-            defaultValue={defaultValue}
-            onDelete={(index) => {
-              setAttributes((attributes) => {
-                return attributes.filter((_, i) => i !== index);
-              });
-            }}
-            register={register}
-            unregister={unregister}
-          />
-        ))}
-        {attributes.length === 0 ? (
-          <tr>
-            <td colSpan={3}>
-              <TextField
-                fullWidth
-                value={t("attributes.please-add-an-attribute")}
-                disabled
-              />
-            </td>
-          </tr>
-        ) : null}
-        <tr>
-          <td colSpan={3}>
-            <ButtonGroup sx={{ marginTop: 1 }} fullWidth variant="contained">
-              <Button
-                startIcon={<Add />}
-                onClick={() => {
-                  setAttributes((attributes) => {
-                    const newAttributes = [...attributes];
+    <>
+      <Typography variant="body1">{t("attributes.title")}</Typography>
+      <Table>
+        <tbody>
+          {attributes.map(({ defaultValue, id, key }, index) => (
+            <AttributeField
+              index={index}
+              defaultKey={key}
+              key={id}
+              disabled={disabled}
+              defaultValue={defaultValue}
+              onDelete={(index) => {
+                setAttributes((attributes) => {
+                  return attributes.filter((_, i) => i !== index);
+                });
+              }}
+              register={register}
+              unregister={unregister}
+            />
+          ))}
+          {attributes.length === 0 ? (
+            <tr>
+              <td colSpan={3}>
+                <TextField
+                  fullWidth
+                  value={t("attributes.no-attributes-present")}
+                  disabled
+                />
+              </td>
+            </tr>
+          ) : null}
+          {disabled ? null : (
+            <tr>
+              <td colSpan={3}>
+                <ButtonGroup
+                  sx={{ marginTop: 1 }}
+                  fullWidth
+                  variant="contained"
+                >
+                  <Button
+                    startIcon={<Add />}
+                    onClick={() => {
+                      setAttributes((attributes) => {
+                        const newAttributes = [...attributes];
 
-                    newAttributes.push({
-                      key: "",
-                      defaultValue: "",
-                      id: crypto.randomUUID(),
-                    });
+                        newAttributes.push({
+                          key: "",
+                          defaultValue: "",
+                          id: crypto.randomUUID(),
+                        });
 
-                    return newAttributes;
-                  });
-                }}
-              >
-                {t("actions.add")}
-              </Button>
-              <Button onClick={save} color="secondary" startIcon={<Save />}>
-                {t("actions.save")}
-              </Button>
-            </ButtonGroup>
-          </td>
-        </tr>
-      </tbody>
-    </Table>
+                        return newAttributes;
+                      });
+                    }}
+                  >
+                    {t("actions.add")}
+                  </Button>
+                  <Button onClick={save} color="secondary" startIcon={<Save />}>
+                    {t("actions.save")}
+                  </Button>
+                </ButtonGroup>
+              </td>
+            </tr>
+          )}
+        </tbody>
+      </Table>
+    </>
   );
 }
 
@@ -141,6 +150,7 @@ type AttributeFieldProps = {
   defaultValue: string;
   defaultKey: string;
   index: number;
+  disabled?: boolean;
 };
 
 function AttributeField({
@@ -150,6 +160,7 @@ function AttributeField({
   defaultValue,
   onDelete,
   index,
+  disabled,
 }: AttributeFieldProps) {
   const t = useTranslations();
 
@@ -172,6 +183,7 @@ function AttributeField({
           sx={{ marginTop: 2 }}
           defaultValue={defaultKey}
           label={t("attributes.key")}
+          disabled={disabled}
           inputRef={keyInputRef}
         />
       </td>
@@ -180,14 +192,17 @@ function AttributeField({
           sx={{ marginTop: 2 }}
           defaultValue={defaultValue}
           label={t("attributes.value")}
+          disabled={disabled}
           inputRef={valueInputRef}
         />
       </td>
-      <td>
-        <IconButton onClick={() => onDelete(index)}>
-          <Delete />
-        </IconButton>
-      </td>
+      {disabled ? null : (
+        <td>
+          <IconButton onClick={() => onDelete(index)}>
+            <Delete />
+          </IconButton>
+        </td>
+      )}
     </tr>
   );
 }

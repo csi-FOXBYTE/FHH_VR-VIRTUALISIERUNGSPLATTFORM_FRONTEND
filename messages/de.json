@@ -121,7 +121,9 @@
     "shared-projects": "Mit mir geteilte Projekte",
     "open-editor": "Editor öffnen",
     "description-placeholder": "Beschreibung...",
-    "title-placeholder": "Titel..."
+    "title-placeholder": "Titel...",
+    "table-title": "Titel",
+    "preview": "Vorschau"
   },
   "components": {
     "list-with-pagination": {
@@ -203,8 +205,33 @@
     "title": "Seite in Bearbeitung"
   },
   "attributes": {
-    "please-add-an-attribute": "Bitte fügen Sie ein Attribut hinzu...",
     "key": "Schlüssel",
-    "value": "Wert"
+    "value": "Wert",
+    "title": "Attribute",
+    "no-attributes-present": "Keine Attribute vorhanden"
+  },
+  "editor": {
+    "saving-project-please-do-not-close-this-window": "Projekt wird gespeichert, bitte Fenster nicht schließen!",
+    "description": "Beschreibung",
+    "name": "Name",
+    "informations": "Informationen",
+    "transform": "Transformation",
+    "visual-axes": "Sichtachsen",
+    "time": "Zeit",
+    "create-starting-point": "Startpunkt erstellen",
+    "create-clipping-polygon": "Ausschnitt Polygon erzeugen",
+    "toggle-shadows": "Schatten umschalten",
+    "toggle-camera-safe-zone": "Kamera Schutzbereich umschalten",
+    "save-project": "Projekt speichern",
+    "add-starting-point": "Startpunkt hinzufügen",
+    "starting-points": "Startpunkte",
+    "models": "Modelle",
+    "project-name": "Projektname",
+    "project-description": "Projektbeschreibung",
+    "import-model": "Modell importieren",
+    "undo": "Undo",
+    "redo": "Redo",
+    "clipping-polygons": "Ausschnittpolygone",
+    "base-layers": "Basisdaten"
   }
 }

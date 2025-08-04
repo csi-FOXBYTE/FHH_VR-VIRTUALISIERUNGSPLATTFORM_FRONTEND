@@ -20,7 +20,7 @@ export default function CameraSafeZone() {
         display: "flex",
         flexDirection: "column",
         pointerEvents: "none",
-        zIndex: 10,
+        zIndex: 12,
       }}
     >
       <div

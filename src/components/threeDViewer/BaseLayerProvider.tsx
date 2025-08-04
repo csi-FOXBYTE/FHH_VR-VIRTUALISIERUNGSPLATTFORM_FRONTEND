@@ -1,5 +1,12 @@
 import * as Cesium from "cesium";
-import { createContext, ReactNode, useContext, useRef } from "react";
+import {
+  createContext,
+  ReactNode,
+  useContext,
+  useEffect,
+  useMemo,
+  useRef,
+} from "react";
 
 type TileSetLayer = {
   name: string;
@@ -43,7 +50,7 @@ export default function BaseLayerProvider({
     type: "TERRAIN" | "3D-TILES" | "IMAGERY";
   }[];
 }) {
-  const providerRef = useRef((() => {
+  const providers = useMemo(() => {
     const result: BaseLayerProviderContextType = {
       imageries: [],
       terrain: undefined,
@@ -84,14 +91,17 @@ export default function BaseLayerProvider({
     }
 
     return result;
-  })());
+  }, [resources]);
+
+  console.log({ providers, resources })
 
   return (
-    <BaseLayerProviderContext.Provider value={providerRef.current}>
+    <BaseLayerProviderContext.Provider value={providers}>
       {children}
     </BaseLayerProviderContext.Provider>
   );
 }
+
 
 export function useBaseLayerProviderContext() {
   const ctx = useContext(BaseLayerProviderContext);

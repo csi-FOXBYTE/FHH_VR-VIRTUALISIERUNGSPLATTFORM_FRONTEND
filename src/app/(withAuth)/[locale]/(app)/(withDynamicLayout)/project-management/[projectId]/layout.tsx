@@ -1,6 +1,7 @@
 "use server";
 
-import { HydrateClient, trpc } from "@/server/trpc/server";
+import { ViewerProvider } from "@/components/threeDViewer/ViewerProvider";
+import { getApis } from "@/server/gatewayApi/client";
 import { getTranslations } from "next-intl/server";
 import { ReactNode } from "react";
 
@@ -17,7 +18,11 @@ export default async function ThreeDViewerLayout({
   children: ReactNode;
   params: Promise<{ projectId: string }>;
 }) {
-  await trpc.projectRouter.getFull({ id: (await params).projectId });
+  const apis = await getApis();
 
-  return <HydrateClient>{children}</HydrateClient>;
+  const project = await apis.projectApi.projectIdGet({
+    id: (await params).projectId,
+  });
+
+  return <ViewerProvider project={project}>{children}</ViewerProvider>;
 }

@@ -1,5 +1,4 @@
 import {
-  AddAPhoto,
   AddLocationAlt,
   ContentCut,
   Crop169,
@@ -7,9 +6,12 @@ import {
 } from "@mui/icons-material";
 import { Divider, Grid, IconButton, Tooltip, useTheme } from "@mui/material";
 import { useViewerStore } from "./ViewerProvider";
+import { useTranslations } from "next-intl";
 
 export default function Toolbar() {
   const theme = useTheme();
+
+  const t = useTranslations();
 
   const createClippingPolygon = useViewerStore(
     (state) => state.clippingPolygons.create
@@ -18,7 +20,6 @@ export default function Toolbar() {
   const createStartingPoint = useViewerStore(
     (state) => state.startingPoints.create
   );
-  const createVisualAxis = useViewerStore((state) => state.visualAxes.create);
 
   const safeCameraZoneVisible = useViewerStore(
     (state) => state.tools.safeCameraZoneVisible
@@ -43,7 +44,11 @@ export default function Toolbar() {
       }}
     >
       <Grid container flexDirection="column">
-        <Tooltip arrow placement="right" title="Toggle camera safe zone">
+        <Tooltip
+          arrow
+          placement="right"
+          title={t('editor.toggle-camera-safe-zone')}
+        >
           <IconButton
             color={safeCameraZoneVisible ? "primary" : undefined}
             onClick={toggleSafeCameraZoneVisibility}
@@ -51,7 +56,7 @@ export default function Toolbar() {
             <Crop169 />
           </IconButton>
         </Tooltip>
-        <Tooltip arrow placement="right" title="Toggle shadows">
+        <Tooltip arrow placement="right" title={t("editor.toggle-shadows")}>
           <IconButton
             color={shadowVisible ? "primary" : undefined}
             onClick={toggleShadowVisibility}
@@ -60,19 +65,22 @@ export default function Toolbar() {
           </IconButton>
         </Tooltip>
         <Divider />
-        <Tooltip arrow placement="right" title="Create clipping polygon">
+        <Tooltip
+          arrow
+          placement="right"
+          title={t("editor.create-clipping-polygon")}
+        >
           <IconButton onClick={createClippingPolygon}>
             <ContentCut />
           </IconButton>
         </Tooltip>
-        <Tooltip arrow placement="right" title="Create starting point">
+        <Tooltip
+          arrow
+          placement="right"
+          title={t("editor.create-starting-point")}
+        >
           <IconButton onClick={createStartingPoint}>
             <AddLocationAlt />
-          </IconButton>
-        </Tooltip>
-        <Tooltip arrow placement="right" title="Create visual axis">
-          <IconButton onClick={createVisualAxis}>
-            <AddAPhoto />
           </IconButton>
         </Tooltip>
       </Grid>

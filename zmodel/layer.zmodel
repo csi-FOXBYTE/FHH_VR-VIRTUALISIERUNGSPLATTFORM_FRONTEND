@@ -4,13 +4,7 @@ import "permissions"
 import "project"
 
 abstract model Layer {
-  name          String
-  description   String  @default("")
-  sizeGB        Float
-  /// A layer can either be stored in azure or externally.
-  href          String?
-  /// Containername is only used when its stored in azure.
-  containerName String?
+  name String
 }
 
 
@@ -22,6 +16,15 @@ model BaseLayer extends Layer, Base, Ownable {
   /// Can be one of PENDING | FAILED | COMPLETED
   status             String    @default("COMPLETED")
   progress           Float     @default(0)
+
+  sizeGB             Float
+
+  description        String    @default("")
+
+  /// A layer can either be stored in azure or externally.
+  href               String?
+  /// Containername is only used when its stored in azure.
+  containerName      String?
 
   includedInProjects Project[]
 
@@ -36,7 +39,6 @@ model ProjectLayer extends Layer, Base, Ownable {
   clippingPolygons   ClippingPolygon[]
 
   includedInProjects Project[]         @relation("includedInProjects")
-  associatedVariants Variant[]
 
   project            Project           @relation(fields: [projectId], references: [id], onDelete: NoAction, onUpdate: NoAction)
   projectId          String

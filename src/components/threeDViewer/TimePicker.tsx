@@ -1,11 +1,14 @@
 import { DateTimePicker } from "@mui/x-date-pickers";
 import { JulianDate } from "cesium";
 import dayjs, { Dayjs } from "dayjs";
+import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { useCesium } from "resium";
 
 export default function TimePicker() {
   const { viewer } = useCesium();
+
+  const t = useTranslations();
 
   const [dateTime, setDateTime] = useState<Dayjs | undefined>(undefined);
 
@@ -26,7 +29,7 @@ export default function TimePicker() {
   return (
     <DateTimePicker
       value={dateTime ?? dayjs()}
-      label="Time"
+      label={t('editor.time')}
       onChange={(date) => {
         if (!date) return;
 

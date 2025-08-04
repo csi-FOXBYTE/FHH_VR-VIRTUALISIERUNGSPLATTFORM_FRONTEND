@@ -1,23 +1,23 @@
-import { Prisma, PrismaClient } from "@prisma/client";
-import { EventEmitter } from "events";
+import { Prisma, PrismaClient } from '@prisma/client';
+import { EventEmitter } from 'events';
 
 /** Returns the current change tracking version. */
 async function getCurrentVersion(prismaClient: {
-  $queryRawUnsafe: PrismaClient["$queryRawUnsafe"];
+  $queryRawUnsafe: PrismaClient['$queryRawUnsafe'];
 }) {
   const result: { currentVersion: bigint }[] =
     await prismaClient.$queryRawUnsafe(
-      `SELECT CHANGE_TRACKING_CURRENT_VERSION() AS currentVersion`
+      `SELECT CHANGE_TRACKING_CURRENT_VERSION() AS currentVersion`,
     );
   return result[0].currentVersion;
 }
 
 async function setupDB(
   prismaClient: {
-    $executeRawUnsafe: PrismaClient["$executeRawUnsafe"];
+    $executeRawUnsafe: PrismaClient['$executeRawUnsafe'];
   },
   databaseName: string,
-  modelDbNameMap: Map<string, string>
+  modelDbNameMap: Map<string, string>,
 ) {
   try {
     await prismaClient.$executeRawUnsafe(`
@@ -41,14 +41,18 @@ async function setupDB(
 async function getChanges(
   tables: Iterable<string>,
   prismaClient: {
-    $queryRawUnsafe: PrismaClient["$queryRawUnsafe"];
-    $executeRawUnsafe: PrismaClient["$executeRawUnsafe"];
+    $queryRawUnsafe: PrismaClient['$queryRawUnsafe'];
+    $executeRawUnsafe: PrismaClient['$executeRawUnsafe'];
   },
   lastVersion: bigint,
   databaseName: string,
-  modelDbNameMap: Map<string, string>
+  modelDbNameMap: Map<string, string>,
 ) {
-  const queries = Array.from(tables).map(async (table) => {
+  const queries: {
+    operation: string;
+    result: { SYS_CHANGE_OPERATION: string; id: string }[];
+  }[] = [];
+  for (const table of Array.from(tables)) {
     try {
       const recordset: { SYS_CHANGE_OPERATION: string; id: string }[] =
         await prismaClient.$queryRawUnsafe(`
@@ -56,7 +60,7 @@ async function getChanges(
       SELECT CT.*
       FROM CHANGETABLE(CHANGES dbo.[${table}], @lastVersion) AS CT;
     `);
-      return { operation: table, result: recordset };
+      queries.push({ operation: table, result: recordset });
     } catch (e) {
       try {
         await setupDB(prismaClient, databaseName, modelDbNameMap);
@@ -66,15 +70,15 @@ async function getChanges(
       console.error(JSON.stringify(e));
       throw e;
     }
-  });
-  return Promise.all(queries);
+  }
+  return queries;
 }
 
 type ChangeEmitters = EventEmitter<{
   change: [{ id: string; operation: OPERATIONS }];
 }>;
 
-type OPERATIONS = "UPDATE" | "DELETE" | "INSERT";
+type OPERATIONS = 'UPDATE' | 'DELETE' | 'INSERT';
 
 /**
  * Realtime extension for Prisma with mssql.
@@ -84,27 +88,25 @@ export default function realtimeExtension({
 }: {
   intervalMs: number;
 }) {
-  return Prisma.defineExtension((prismaClient) => {
+  return Prisma.defineExtension(prismaClient => {
     const poolRef: { lastSyncVersion: bigint; setupDB: boolean } = {
       setupDB: false,
       lastSyncVersion: BigInt(0),
     };
 
     // Filter models that have an ID field and create maps between model names and their DB names.
-    const models = Prisma.dmmf.datamodel.models.filter((m) =>
-      m.fields.some((f) => f.isId)
+    const models = Prisma.dmmf.datamodel.models.filter(m =>
+      m.fields.some(f => f.isId),
     );
     const modelDbNameMap = new Map(
-      models.map((m) => [m.name, m.dbName ?? m.name])
+      models.map(m => [m.name, m.dbName ?? m.name]),
     );
-    const modelNameMap = new Map(
-      models.map((m) => [m.dbName ?? m.name, m.name])
-    );
+    const modelNameMap = new Map(models.map(m => [m.dbName ?? m.name, m.name]));
 
     const databaseName = process.env
-      .DATABASE_URL!.split(";")
-      .find((p) => p.startsWith("database="))!
-      .replace("database=", "");
+      .DATABASE_URL!.split(';')
+      .find(p => p.startsWith('database='))!
+      .replace('database=', '');
 
     setupDB(prismaClient, databaseName, modelDbNameMap).then(() => {
       poolRef.setupDB = true;
@@ -118,15 +120,13 @@ export default function realtimeExtension({
 
     /** Polls the database for changes and notifies subscribers. */
     async function pollChanges() {
-      // Only poll if theres a subscriber
       if (
         Array.from(changeEmitters.values()).every(
-          (ce) => ce.listenerCount("change") === 0
+          ce => ce.listenerCount('change') === 0,
         )
       )
         return;
 
-        // TODO: Only poll subscribed models
       try {
         if (poolRef.lastSyncVersion === BigInt(0)) {
           poolRef.lastSyncVersion = await getCurrentVersion(prismaClient);
@@ -136,28 +136,28 @@ export default function realtimeExtension({
             prismaClient,
             poolRef.lastSyncVersion,
             databaseName,
-            modelDbNameMap
+            modelDbNameMap,
           );
           for (const { operation, result } of changes) {
             for (const change of result) {
               const { SYS_CHANGE_OPERATION, id } = change;
               const opMap: Record<string, OPERATIONS> = {
-                U: "UPDATE",
-                I: "INSERT",
-                D: "DELETE",
+                U: 'UPDATE',
+                I: 'INSERT',
+                D: 'DELETE',
               };
               const operationStr = opMap[SYS_CHANGE_OPERATION];
               if (!operationStr) continue;
               const modelName = modelNameMap.get(operation)!;
               changeEmitters
                 .get(modelName)
-                ?.emit("change", { id, operation: operation as OPERATIONS });
+                ?.emit('change', { id, operation: operation as OPERATIONS });
             }
           }
           poolRef.lastSyncVersion = await getCurrentVersion(prismaClient);
         }
       } catch (e) {
-        console.error("c", JSON.stringify(e));
+        console.error('c', JSON.stringify(e));
       }
     }
 
@@ -176,7 +176,7 @@ export default function realtimeExtension({
            */
           subscribe<T>(
             this: T,
-            args: { id?: string; operations: (OPERATIONS | "*")[] }
+            args: { id?: string; operations: (OPERATIONS | '*')[] },
           ) {
             const context = Prisma.getExtensionContext(this) as {
               $name: Prisma.ModelName;

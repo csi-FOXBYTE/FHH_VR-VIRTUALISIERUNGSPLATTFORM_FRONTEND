@@ -30,7 +30,7 @@ export default function ClippingPolygon({
         objectRef: entityRef,
       });
     return () => {
-      unregisterObjectRef({ type: "STARTING_POINT", id: clippingPolygon.id });
+      unregisterObjectRef({ type: "CLIPPING_POLYGON", id: clippingPolygon.id });
     };
   }, [unregisterObjectRef, entityRef, clippingPolygon.id, registerObjectRef]);
 
