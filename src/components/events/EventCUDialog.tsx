@@ -1,10 +1,12 @@
 import { trpc } from "@/server/trpc/client";
-import { skipToken } from "@tanstack/react-query";
+import { skipToken, useMutation } from "@tanstack/react-query";
 import dayjs from "dayjs";
 import { useSnackbar } from "notistack";
 import { useState } from "react";
 import { EasyCUDialog, useEasyCUDialogState } from "../common/EasyCUDialog";
 import { useTranslations } from "next-intl";
+import { getApis } from "@/server/gatewayApi/client";
+import { EventsPutRequest } from "@/server/gatewayApi/generated";
 
 export const useEventCUDialogState = () =>
   useEasyCUDialogState("event-cu-dialog-state");
@@ -18,15 +20,21 @@ export default function EventCUDialog() {
 
   const [searchAttendees, setSearchAttendees] = useState("");
   const [searchProjects, setSearchProjects] = useState("");
+  const [searchModerators, setSearchModerators] = useState("");
 
   const { data: possibleAttendees = [] } =
     trpc.eventsRouter.getPossibleAttendees.useQuery(
       state.open ? { search: searchAttendees } : skipToken
     );
 
+  const { data: possibleModerators = [] } =
+    trpc.eventsRouter.getPossibleModerators.useQuery(
+      state.open ? { search: searchModerators } : skipToken
+    );
+
   const { data: possibleProjects = [] } =
     trpc.eventsRouter.getPossibleProjects.useQuery(
-      state.open ? { search: searchAttendees } : skipToken
+      state.open ? { search: searchProjects } : skipToken
     );
 
   const { data: initialEvent = null } =
@@ -39,7 +47,14 @@ export default function EventCUDialog() {
   const { enqueueSnackbar } = useSnackbar();
 
   const { mutate: createMutation, isPending: isCreateMutationPending } =
-    trpc.eventsRouter.create.useMutation({
+    useMutation({
+      mutationFn: async (values: EventsPutRequest) => {
+        const apis = await getApis();
+
+        await apis.eventsApi.eventsPut({
+          eventsPutRequest: values,
+        });
+      },
       onSuccess: () => {
         utils.eventsRouter.invalidate();
         enqueueSnackbar({
@@ -88,14 +103,15 @@ export default function EventCUDialog() {
         title: "",
         endTime: dayjs().add(30, "minute").toDate(),
         project: null as (typeof possibleProjects)[number] | null,
+        moderators: [] as typeof possibleModerators,
         startTime: new Date(),
       }}
       onCreate={(values) => {
-        console.log(values);
         createMutation({
           attendees: values.attendees.map((attendee) => attendee.value),
-          endTime: values.endTime,
-          startTime: values.startTime,
+          endTime: values.endTime.toISOString(),
+          startTime: values.startTime.toISOString(),
+          moderators: values.moderators.map((moderator) => moderator.value),
           project: values.project?.value,
           title: values.title,
         });
@@ -104,6 +120,7 @@ export default function EventCUDialog() {
         if (!state.id) throw new Error("No id supplied!");
         updateMutation({
           attendees: values.attendees.map((attendee) => attendee.value),
+          moderators: values.moderators.map((moderator) => moderator.value),
           endTime: values.endTime,
           startTime: values.startTime,
           title: values.title,
@@ -143,6 +160,17 @@ export default function EventCUDialog() {
             multiple: true,
             options: possibleAttendees,
             label: t("events.attendees"),
+          },
+        },
+        {
+          type: "search",
+          name: "moderators",
+          props: {
+            search: searchModerators,
+            onSearchChange: setSearchModerators,
+            multiple: true,
+            options: possibleModerators,
+            label: t("events.moderators"),
           },
         },
         {

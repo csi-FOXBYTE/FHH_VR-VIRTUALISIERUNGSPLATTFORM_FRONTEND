@@ -41,7 +41,7 @@ export default function LayersDialog({
     defaultValues: {
       files: [] as File[],
       srcSRS: defaultEPSGLabelValue,
-      type: "3D-TILES" as "3D-TILES" | "TERRAIN",
+      type: "TILES3D" as "TILES3D" | "TERRAIN",
       name: "",
     },
   });
@@ -52,7 +52,7 @@ export default function LayersDialog({
     mutationFn: async (values: {
       files: File[];
       srcSRS: { label: string; value: string };
-      type: "3D-TILES" | "TERRAIN";
+      type: "TILES3D" | "TERRAIN";
       name: string;
     }) => {
       setUploadProgress(null);
@@ -95,7 +95,7 @@ export default function LayersDialog({
       });
 
       switch (values.type) {
-        case "3D-TILES":
+        case "TILES3D":
           await converter3DApi.converter3DConvert3DTilePost({
             converter3DConvertTerrainPostRequest: {
               srcSRS: values.srcSRS.value,
@@ -157,7 +157,7 @@ export default function LayersDialog({
                   value={field.value}
                   onChange={field.onChange}
                 >
-                  <MenuItem value={"3D-TILES"}>CityGML</MenuItem>
+                  <MenuItem value={"TILES3D"}>CityGML</MenuItem>
                   <MenuItem value={"TERRAIN"}>DGM (e.g. dxf, geojson)</MenuItem>
                 </Select>
               )}

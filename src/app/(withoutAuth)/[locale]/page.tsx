@@ -1,5 +1,6 @@
 "use client";
 
+import CookieConsent from "@/components/common/CookieConsent";
 import Footer from "@/components/navbar/Footer";
 import Navbar from "@/components/navbar/Navbar";
 import { Button, Grid, Typography } from "@mui/material";
@@ -40,6 +41,7 @@ export default function LandingPage() {
       height="100vh"
       position="relative"
     >
+      <CookieConsent />
       <div
         style={{
           top: 0,

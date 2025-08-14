@@ -95,7 +95,7 @@ export default function Layers() {
             type: "singleSelect",
             headerName: "Type",
             valueOptions: [
-              { label: "🏢 - 3D Tile", value: "3D-TILES" },
+              { label: "🏢 - 3D Tile", value: "TILES3D" },
               { label: "⛰️ - Terrain", value: "TERRAIN" },
               { label: "🖼️ - Imagery", value: "IMAGERY" },
             ],

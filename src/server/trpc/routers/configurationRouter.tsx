@@ -6,7 +6,7 @@ const configurationRouter = router({
     .input(
       z.object({
         id: z.string(),
-        defaultEpsg: z.string().optional(),
+        defaultEPSG: z.string().optional(),
         globalStartPointX: z.number().optional(),
         globalStartPointY: z.number().optional(),
         globalStartPointZ: z.number().optional(),

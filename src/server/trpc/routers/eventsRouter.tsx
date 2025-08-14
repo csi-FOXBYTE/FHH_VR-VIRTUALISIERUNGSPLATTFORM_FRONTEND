@@ -9,6 +9,18 @@ const eventsRouter = router({
         startTime: {
           gte: dayjs().hour(0).minute(0).millisecond(0).second(0).toISOString(),
         },
+        OR: [
+          {
+            ownerId: opts.ctx.session.user.id,
+          },
+          {
+            attendees: {
+              some: {
+                userId: opts.ctx.session.user.id,
+              },
+            },
+          },
+        ],
       },
       select: {
         id: true,
@@ -59,6 +71,7 @@ const eventsRouter = router({
           },
           attendees: {
             select: {
+              role: true,
               user: {
                 select: {
                   name: true,
@@ -74,14 +87,53 @@ const eventsRouter = router({
       return {
         ...event,
         attendees: event.attendees.map((attendee) => ({
-          label: attendee.user.name ?? attendee.user.email,
+          label: `${attendee.user.name} (${attendee.user.email})`,
           value: attendee.user.id,
         })),
+        moderators: event.attendees
+          .filter((attendee) => attendee.role === "MODERATOR")
+          .map((attendee) => ({
+            label: `${attendee.user.name} (${attendee.user.email})`,
+            value: attendee.user.id,
+          })),
         project:
           event.project?.title !== undefined && event.project?.id !== undefined
             ? { label: event.project?.title, value: event.project?.id }
             : null,
       };
+    }),
+  getPossibleModerators: protectedProcedure
+    .input(z.object({ search: z.string() }))
+    .query(async (opts) => {
+      return (
+        await opts.ctx.db.user.findMany({
+          take: 50,
+          where: {
+            OR: [
+              {
+                email: {
+                  contains: opts.input.search,
+                },
+              },
+              {
+                name: {
+                  contains: opts.input.search,
+                },
+              },
+            ],
+          },
+          select: {
+            name: true,
+            email: true,
+            id: true,
+          },
+        })
+      )
+        .filter((user) => user.id !== opts.ctx.session.user.id)
+        .map((user) => ({
+          label: `${user.name} (${user.email})`,
+          value: user.id,
+        }));
     }),
   getPossibleAttendees: protectedProcedure
     .input(z.object({ search: z.string() }))
@@ -111,7 +163,10 @@ const eventsRouter = router({
         })
       )
         .filter((user) => user.id !== opts.ctx.session.user.id)
-        .map((user) => ({ label: user.name ?? user.email, value: user.id }));
+        .map((user) => ({
+          label: `${user.name} (${user.email})`,
+          value: user.id,
+        }));
     }),
   getPossibleProjects: protectedProcedure
     .input(z.object({ search: z.string() }))
@@ -120,7 +175,34 @@ const eventsRouter = router({
         await opts.ctx.db.project.findMany({
           take: 50,
           where: {
-            OR: [{ title: { contains: opts.input.search } }],
+            AND: [
+              { title: { contains: opts.input.search } },
+              {
+                OR: [
+                  {
+                    ownerId: opts.ctx.session.user.id,
+                  },
+                  {
+                    visibleForGroups: {
+                      some: {
+                        assignedUsers: {
+                          some: {
+                            id: opts.ctx.session.user.id,
+                          },
+                        },
+                      },
+                    },
+                  },
+                  {
+                    visibleForUsers: {
+                      some: {
+                        id: opts.ctx.session.user.id,
+                      },
+                    },
+                  },
+                ],
+              },
+            ],
           },
           select: {
             title: true,
@@ -136,6 +218,7 @@ const eventsRouter = router({
         startTime: z.date(),
         title: z.string(),
         attendees: z.array(z.string()),
+        moderators: z.array(z.string()),
         project: z.string().optional().nullable(),
       })
     )
@@ -151,7 +234,12 @@ const eventsRouter = router({
           project: project ? { connect: { id: project } } : undefined,
           attendees: {
             createMany: {
-              data: attendees.map((attendee) => ({ userId: attendee })),
+              data: attendees.map((attendee) => ({
+                userId: attendee,
+                role: opts.input.moderators.includes(attendee)
+                  ? "MODERATOR"
+                  : "GUEST",
+              })),
             },
           },
           owner: {
@@ -181,12 +269,14 @@ const eventsRouter = router({
         endTime: z.date().optional(),
         startTime: z.date().optional(),
         title: z.string().optional(),
+        moderators: z.array(z.string()).optional(),
         attendees: z.array(z.string()).optional(),
         project: z.string().optional().nullable(),
       })
     )
     .mutation(async (opts) => {
-      const { attendees, endTime, startTime, title, id, project } = opts.input;
+      const { attendees, endTime, startTime, title, id, project, moderators } =
+        opts.input;
 
       return await opts.ctx.db.event.update({
         where: {
@@ -208,15 +298,15 @@ const eventsRouter = router({
             ? {
                 deleteMany: {},
                 createMany: {
-                  data: attendees.map((attendee) => ({ userId: attendee })),
+                  data: attendees.map((attendee) => ({
+                    userId: attendee,
+                    role: (moderators ?? []).includes(attendee)
+                      ? "MODERATOR"
+                      : "GUEST",
+                  })),
                 },
               }
             : undefined,
-          owner: {
-            connect: {
-              id: opts.ctx.session.user.id,
-            },
-          },
         },
       });
     }),

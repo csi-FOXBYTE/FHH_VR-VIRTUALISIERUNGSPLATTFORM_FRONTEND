@@ -40,7 +40,7 @@ export default function BaseLayerProvider({
     id: string;
     name: string;
     url: string;
-    type: "TERRAIN" | "3D-TILES" | "IMAGERY";
+    type: "TERRAIN" | "TILES3D" | "IMAGERY";
   }[];
 }) {
   const providers = useMemo(() => {
@@ -52,7 +52,7 @@ export default function BaseLayerProvider({
 
     for (const resource of resources) {
       switch (resource.type) {
-        case "3D-TILES":
+        case "TILES3D":
           result.tileSets.push({
             id: resource.id,
             name: resource.name,

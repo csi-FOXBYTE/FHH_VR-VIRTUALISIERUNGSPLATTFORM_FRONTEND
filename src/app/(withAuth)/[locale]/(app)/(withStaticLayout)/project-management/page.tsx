@@ -6,12 +6,13 @@ import useDataGridServerSideHelper from "@/components/dataGridServerSide/useData
 import ProjectCUDialog, {
   useProjectCUDialogState,
 } from "@/components/projectManagement/ProjectCUDialog";
+import { getApis } from "@/server/gatewayApi/client";
 import { Link as NextLink } from "@/server/i18n/routing";
 import { trpc } from "@/server/trpc/client";
 import { Add, PlayCircle } from "@mui/icons-material";
 import { Button, ListItemText, Tab, Tabs } from "@mui/material";
 import { DataGrid } from "@mui/x-data-grid";
-import { keepPreviousData } from "@tanstack/react-query";
+import { keepPreviousData, useMutation } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import { parseAsInteger, useQueryState } from "nuqs";
 
@@ -38,6 +39,8 @@ export default function ProjectManagementPage() {
       },
     ],
   });
+
+  const utils = trpc.useUtils();
 
   const {
     data: { data: myProjectsData, count: myProjectsCount } = {
@@ -71,11 +74,33 @@ export default function ProjectManagementPage() {
     }
   );
 
+  const {
+    mutate: deleteProjectMutation,
+    isPending: isDeleteProjectMutationPending,
+  } = useMutation({
+    mutationFn: async (args: { id: string }) => {
+      const apis = await getApis();
+
+      console.log("LOL")
+
+      await apis.projectApi.projectIdDelete({
+        id: args.id,
+      });
+
+      utils.projectManagementRouter.invalidate();
+
+      return true;
+    },
+  });
+
   const createEditDeleteActions = useCreateEditDeleteActions({
-    handleDelete: () => {},
+    handleDelete: (id) => {
+      deleteProjectMutation({ id });
+    },
     handleEdit: (id) => {
       openUpdate(id);
     },
+    loading: isDeleteProjectMutationPending,
     isDisabled: () => ({
       delete: selectedTab !== 0,
       edit: selectedTab !== 0,
@@ -128,7 +153,7 @@ export default function ProjectManagementPage() {
             headerName: t("project-management.owner"),
             renderCell({ row }) {
               return row.owner.name;
-            }
+            },
           },
           {
             flex: 1,

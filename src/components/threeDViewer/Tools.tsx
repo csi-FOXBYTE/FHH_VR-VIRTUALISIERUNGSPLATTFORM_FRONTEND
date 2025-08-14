@@ -123,7 +123,6 @@ export default function ToolsProvider() {
 
       const clickAwayHandler = (event: MouseEvent) => {
         if (!event.composedPath().includes(viewer.canvas)) {
-          console.log(event.composedPath(), viewer.canvas);
           rejectRef.ref("Aborted by user!");
         }
       };
@@ -234,7 +233,6 @@ export default function ToolsProvider() {
 
         const clickAwayHandler = (event: MouseEvent) => {
           if (!event.composedPath().includes(viewer.canvas)) {
-            console.log(event.composedPath(), viewer.canvas);
             rejectRef.ref("Aborted by user!");
           }
         };

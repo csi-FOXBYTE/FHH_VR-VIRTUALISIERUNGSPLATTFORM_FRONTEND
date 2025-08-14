@@ -1,6 +1,7 @@
 import { Delete, Edit } from "@mui/icons-material";
-import { Tooltip } from "@mui/material";
+import { Alert, Tooltip } from "@mui/material";
 import { DataGridProps, GridActionsCellItem } from "@mui/x-data-grid";
+import { useConfirm } from "material-ui-confirm";
 import { useTranslations } from "next-intl";
 
 export default function useCreateEditDeleteActions({
@@ -15,6 +16,8 @@ export default function useCreateEditDeleteActions({
   loading?: boolean;
 }): DataGridProps["columns"][number] {
   const t = useTranslations();
+
+  const confirm = useConfirm();
 
   return {
     field: "actions",
@@ -49,7 +52,28 @@ export default function useCreateEditDeleteActions({
               label="Delete"
               color="inherit"
               loading={loading}
-              onClick={() => handleDelete(String(id))}
+              onClick={async () => {
+                const { confirmed } = await confirm({
+                  description: (
+                    <>
+                      <p>
+                        {t('actions.are-you-sure-that-you-want-to-delete')}
+                      </p>
+                      
+                      <Alert severity="error">
+                        {t('actions.this-action-is-irreversible')}
+                        </Alert>
+                    </>
+                  ),
+                  title: t("actions.delete"),
+                  cancellationText: t("actions.cancel"),
+                  confirmationText: t("actions.delete")
+                });
+
+                if (!confirmed) return;
+
+                handleDelete(String(id));
+              }}
             />
           </Tooltip>
         ) : (

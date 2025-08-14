@@ -26,8 +26,6 @@ export async function POST(request: NextRequest) {
 
     const payload = await getCode(code);
 
-    console.log(payload);
-
     if (!payload)
       return NextResponse.json(
         {

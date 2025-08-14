@@ -21,23 +21,23 @@ export default function paginationExtension() {
               findMany: (
                 args: Prisma.Args<T, "findMany">
               ) => Promise<Prisma.Result<T, A, "findMany">>;
-              count: (
-                args: Prisma.Args<T, "count">
-              ) => Promise<Prisma.Result<T, A, "count">>;
+              count: (args: Prisma.Args<T, "count">) => Promise<number>;
             };
 
             const modelName = context.$name;
 
-            const where = createFilters(
-              modelName,
-              quickFilterableValues,
-              dataGridZod.filterModel
-            );
+            const where = {
+              //@ts-expect-error wrong type here
+              ...args.where,
+              ...createFilters(
+                modelName,
+                quickFilterableValues,
+                dataGridZod.filterModel
+              ),
+            };
             const orderBy = createSort(modelName, dataGridZod.sortModel);
 
-            console.log({orderBy});
-
-            return {
+            const result = {
               data: await context.findMany({
                 take: dataGridZod.paginationModel.pageSize,
                 skip:
@@ -53,6 +53,8 @@ export default function paginationExtension() {
                 where,
               }),
             };
+
+            return result;
           },
         },
       },

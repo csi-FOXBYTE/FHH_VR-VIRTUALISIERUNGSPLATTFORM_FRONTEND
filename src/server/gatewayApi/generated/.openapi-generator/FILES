@@ -3,6 +3,7 @@ apis/Converter3DApi.ts
 apis/EventsApi.ts
 apis/ProjectApi.ts
 apis/StatsApi.ts
+apis/UserApi.ts
 apis/index.ts
 index.ts
 models/Converter3DCommitUploadPostRequest.ts
@@ -20,9 +21,9 @@ models/Def1.ts
 models/Def2.ts
 models/Def3.ts
 models/Def4.ts
-models/EventsCreatePostRequest.ts
 models/EventsIdHostPostRequest.ts
-models/EventsUpdatePostRequest.ts
+models/EventsIdPatchRequest.ts
+models/EventsPutRequest.ts
 models/ProjectIdGet200Response.ts
 models/ProjectIdGet200ResponseAllAvailableBaseLayersInner.ts
 models/ProjectIdGet200ResponseExtensionLayersInner.ts
@@ -33,7 +34,16 @@ models/ProjectIdGet200ResponseLayersInnerProjectModelsInnerRotation.ts
 models/ProjectIdGet200ResponseStartingPointsInner.ts
 models/ProjectIdGet200ResponseVisualAxesInner.ts
 models/ProjectIdGet200ResponseVisualAxesInnerStartPoint.ts
+models/ProjectIdUnityGet200Response.ts
+models/ProjectIdUnityGet200ResponseMyRole.ts
+models/ProjectIdUnityGet200ResponseStartingPointsInner.ts
+models/ProjectIdUnityGet200ResponseVariantsInner.ts
+models/ProjectIdUnityGet200ResponseVariantsInnerBaseLayersInner.ts
+models/ProjectIdUnityGet200ResponseVariantsInnerBaseLayersInnerType.ts
+models/ProjectIdUnityGet200ResponseVariantsInnerClippingPolygonsInner.ts
+models/ProjectIdUnityGet200ResponseVariantsInnerModelsInner.ts
 models/StatsGet200Response.ts
 models/StatsGet200ResponseMemoryUsage.ts
+models/UserInfoGet200Response.ts
 models/index.ts
 runtime.ts

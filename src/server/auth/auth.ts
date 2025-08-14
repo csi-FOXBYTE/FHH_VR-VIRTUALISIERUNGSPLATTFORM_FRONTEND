@@ -4,11 +4,13 @@ import NextAuth from "next-auth";
 import MicrosoftEntraIdProvider from "next-auth/providers/microsoft-entra-id";
 import prisma from "../prisma";
 import { isMatch } from "matcher";
+import { getLocale } from "next-intl/server";
 
 declare module "next-auth" {
   interface Session {
     user: {
       id: string;
+      language: "EN" | "DE" | null;
       name: string;
       permissions: Set<Permissions>;
       email: string;
@@ -69,11 +71,6 @@ export const { auth, handlers, signIn, signOut, unstable_update } = NextAuth({
 
       if (!userId) {
         const groupsWithDefault = await prisma.group.findMany({
-          where: {
-            defaultFor: {
-              not: null,
-            },
-          },
           select: {
             id: true,
             defaultFor: true,
@@ -84,7 +81,7 @@ export const { auth, handlers, signIn, signOut, unstable_update } = NextAuth({
           .filter(({ defaultFor }) => {
             if (!defaultFor) return false;
 
-            for (const splitDefaultFor of defaultFor.split(",")) {
+            for (const splitDefaultFor of defaultFor) {
               if (isMatch(user.email!, splitDefaultFor)) return true;
             }
 
@@ -92,10 +89,17 @@ export const { auth, handlers, signIn, signOut, unstable_update } = NextAuth({
           })
           .map(({ id }) => ({ id }));
 
+        let locale = await getLocale();
+        let language: "EN" | "DE" | null = null;
+
+        if (locale === "en") language = "EN";
+        if (locale === "de") language = "DE";
+
         await prisma.user.create({
           data: {
             name: profile.name,
             email: user.email,
+            language,
             assignedGroups: {
               connect: defaultGroups,
             },
@@ -165,9 +169,26 @@ export const { auth, handlers, signIn, signOut, unstable_update } = NextAuth({
       return true;
     },
     async session({ session }) {
+      let locale = await getLocale();
+      let language: "EN" | "DE" | null = null;
+
+      if (locale === "en") language = "EN";
+      if (locale === "de") language = "DE";
+
+      if (session.user.language !== language && language !== null)
+        await prisma.user.update({
+          where: {
+            id: session.userId,
+          },
+          data: {
+            language,
+          },
+        });
+
       const { assignedGroups } = await prisma.user.findFirstOrThrow({
         where: { id: session.user.id },
         select: {
+          id: true,
           assignedGroups: {
             select: {
               id: true,

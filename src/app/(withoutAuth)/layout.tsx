@@ -35,6 +35,11 @@ export default async function LandingPageLayout({
     <html lang={locale}>
       <head>
         <link rel="icon" href="/favicon_32x32.png" sizes="any" />
+        <link
+          rel="stylesheet"
+          id="silktide-consent-manager-css"
+          href="/silktide-consent-manager.css"
+        />
       </head>
       <body>
         <NextIntlClientProvider messages={messages}>

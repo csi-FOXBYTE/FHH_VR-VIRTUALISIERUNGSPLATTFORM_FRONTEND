@@ -28,8 +28,6 @@ export default function CesiumGizmo() {
       new Cartesian3()
     );
 
-    console.log(origin);
-
     const m = Transforms.eastNorthUpToFixedFrame(
       new Cartesian3(origin.x, origin.y, origin.z)
     );
@@ -126,10 +124,7 @@ export default function CesiumGizmo() {
 
     viewer.clock.onTick.addEventListener(handler);
 
-    console.log("MOUNTED");
-
     return () => {
-      console.log("UNMOUNTED");
       viewer.clock.onTick.removeEventListener(handler);
     };
   }, [earthToLocal, modelMatrix, viewer]);

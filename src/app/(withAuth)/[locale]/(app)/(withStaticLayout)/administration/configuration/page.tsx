@@ -11,9 +11,9 @@ import {
   AccordionSummary,
   Button,
   Divider,
-  TextField,
   Grid,
-  Typography,
+  TextField,
+  Typography
 } from "@mui/material";
 import { useTranslations } from "next-intl";
 import { useSnackbar } from "notistack";
@@ -64,13 +64,15 @@ export default function ConfigurationPage() {
         });
         close();
       },
-      onError: () =>
+      onError: (error) => {
+        console.error(error);
         enqueueSnackbar({
           variant: "error",
           message: t("generic.crud-notifications.update-failed", {
             entity: t("entities.configuration"),
           }),
-        }),
+        });
+      },
     });
 
   return (
@@ -79,7 +81,7 @@ export default function ConfigurationPage() {
         onSubmit={handleSubmit(async (values) => {
           updateConfigurationMutation({
             id: data.id,
-            defaultEpsg: values.defaultEPSG.value,
+            defaultEPSG: values.defaultEPSG.label,
             globalStartPointX: values.globalStartPoint.x,
             globalStartPointY: values.globalStartPoint.y,
             globalStartPointZ: values.globalStartPoint.z,
@@ -104,7 +106,6 @@ export default function ConfigurationPage() {
             {t("actions.revert")}
           </Button>
         </Grid>
-
         <Accordion>
           <AccordionSummary>
             <Typography>{t("configuration.common")}</Typography>
@@ -118,14 +119,14 @@ export default function ConfigurationPage() {
                   <EPSGInput value={field.value} onChange={field.onChange} />
                 )}
               />
-              <Typography>{t('configuration.global-start-point')}</Typography>
+              <Typography>{t("configuration.global-start-point")}</Typography>
               <Controller
                 control={control}
                 name="globalStartPoint"
                 render={({ field }) => (
                   <TranslationInput
                     value={field.value}
-                    onChange={field.onChange}
+                    onImmediateChange={field.onChange}
                   />
                 )}
               />
@@ -134,13 +135,13 @@ export default function ConfigurationPage() {
         </Accordion>
         <Accordion>
           <AccordionSummary>
-            <Typography>{t('configuration.conversions')}</Typography>
+            <Typography>{t("configuration.conversions")}</Typography>
           </AccordionSummary>
           <AccordionDetails>
             <Grid container flexDirection="column" spacing={2}>
               <TextField
                 {...register("localProcessorFolder")}
-                label={t('configuration.local-processor-folder')}
+                label={t("configuration.local-processor-folder")}
               />
               <Divider />
               <TextField
@@ -151,7 +152,7 @@ export default function ConfigurationPage() {
                     max: 9999,
                   },
                 }}
-                label={t('configuration.max-parallel-base-layer-conversions')}
+                label={t("configuration.max-parallel-base-layer-conversions")}
                 {...register("maxParallelBaseLayerConversions")}
               />
               <Divider />
@@ -163,7 +164,7 @@ export default function ConfigurationPage() {
                     max: 9999,
                   },
                 }}
-                label={t('configuration.max-parallel-file-conversions')}
+                label={t("configuration.max-parallel-file-conversions")}
                 {...register("maxParallelFileConversions")}
               />
             </Grid>

@@ -57,7 +57,7 @@ const prisma = new PrismaClient();
   const { id: adminGroupId } = await prisma.group.create({
     data: {
       name: "Administrator",
-      defaultFor: "*",
+      defaultFor: ["*"],
       isAdminGroup: true,
       assignedRoles: {
         connect: {
@@ -70,7 +70,7 @@ const prisma = new PrismaClient();
   const { id: guestGroupId } = await prisma.group.create({
     data: {
       name: "Guest",
-      defaultFor: "",
+      defaultFor: [""],
       isAdminGroup: false,
       assignedRoles: {
         connect: {
@@ -111,7 +111,7 @@ const prisma = new PrismaClient();
       ownerId: id,
       href: "https://fhhvrshare.blob.core.windows.net/hamburg/3dtiles/area1/tileset.json",
       sizeGB: 2.78,
-      type: "3D-TILES",
+      type: "TILES3D",
       name: "Area 1",
       visibleForGroups: {
         connect: [{ id: adminGroupId }, { id: guestGroupId }],
@@ -124,7 +124,7 @@ const prisma = new PrismaClient();
       ownerId: id,
       href: "https://fhhvrshare.blob.core.windows.net/hamburg/3dtiles/area2/tileset.json",
       sizeGB: 4.59,
-      type: "3D-TILES",
+      type: "TILES3D",
       name: "Area 2",
       visibleForGroups: {
         connect: [{ id: adminGroupId }, { id: guestGroupId }],
@@ -137,7 +137,7 @@ const prisma = new PrismaClient();
       ownerId: id,
       href: "https://fhhvrshare.blob.core.windows.net/hamburg/3dtiles/area3/tileset.json",
       sizeGB: 1.99,
-      type: "3D-TILES",
+      type: "TILES3D",
       name: "Area 3",
       visibleForGroups: {
         connect: [{ id: adminGroupId }, { id: guestGroupId }],
@@ -150,7 +150,7 @@ const prisma = new PrismaClient();
       ownerId: id,
       href: "https://fhhvrshare.blob.core.windows.net/hamburg/3dtiles/area4/tileset.json",
       sizeGB: 8.13,
-      type: "3D-TILES",
+      type: "TILES3D",
       name: "Area 4",
       visibleForGroups: {
         connect: [{ id: adminGroupId }, { id: guestGroupId }],
@@ -163,7 +163,7 @@ const prisma = new PrismaClient();
       ownerId: id,
       href: "https://fhhvrshare.blob.core.windows.net/hamburg/3dtiles/area5/tileset.json",
       sizeGB: 2.45,
-      type: "3D-TILES",
+      type: "TILES3D",
       name: "Area 5",
       visibleForGroups: {
         connect: [{ id: adminGroupId }, { id: guestGroupId }],

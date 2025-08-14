@@ -57,7 +57,7 @@ export const AppFormFactory = createFormFactory(
               <TranslationInput
                 label={label}
                 value={field.value}
-                onChange={field.onChange}
+                onImmediateChange={field.onChange}
               />
             )}
           />
@@ -94,9 +94,24 @@ export const AppFormFactory = createFormFactory(
                 includeInputInList
                 autoComplete
                 multiple={multiple}
+                id="value"
                 onInputChange={(_, value) => onSearchChange(value)}
                 inputValue={search}
-                onChange={(_, value) => field.onChange(value)}
+                onChange={(_, value) => {
+                  if (!Array.isArray(value)) return value;
+
+                  const set = new Set<string>();
+
+                  field.onChange(
+                    value.filter((v) => {
+                      if (set.has(v.value)) return false;
+
+                      set.add(v.value);
+
+                      return true;
+                    })
+                  );
+                }}
                 renderInput={(params) => (
                   <TextField
                     {...params}

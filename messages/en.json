@@ -7,13 +7,13 @@
     "welcoming-text": "Hello, {name}!",
     "show-profile": "View Profile",
     "manage-projects": "Manage Projects",
-    "show-collaboration": "Access Collaboration",
-    "show-administration": "Open Administration",
+    "show-collaboration": "Open Collaboration",
+    "show-administration": "Open Administration Area",
     "last-logged-in-message": "Last logged in on {date}.",
-    "events-text": "The following appointments are scheduled today on {date}:",
-    "no-events-pending": "No upcoming appointments",
-    "administration-description": "Through this area, you can access central administrative functions of the system. Here you can upload and organize base data, configure system settings such as APIs and applications, view system activities and security logs, and manage users and groups.",
-    "project-management-description": "In this area, you centrally and efficiently manage your projects. You can create new projects, delete or edit existing ones. Additionally, you can upload project-specific data and make it available as layers within the system."
+    "events-text": "The following events are scheduled today on {date}:",
+    "no-events-pending": "No upcoming events",
+    "administration-description": "This area provides access to the system’s central administration functions. You can upload and organize basic data, configure system settings such as APIs and applications, view system activities and security-relevant logs, and manage users and groups.",
+    "project-management-description": "In this area, you can centrally and efficiently manage your projects. You can create new projects, delete or edit existing ones. Additionally, you can upload project-specific data and make it available as layers within the system."
   },
   "navbar": {
     "profile": "Profile",
@@ -24,7 +24,7 @@
     "system-version": "System Version",
     "help": "Help",
     "settings": "Settings",
-    "login": "Sign In",
+    "login": "Login",
     "register": "Register"
   },
   "landingpage": {
@@ -62,7 +62,7 @@
   },
   "collaboration": {
     "collaboration": "Collaboration",
-    "to-project": "To Project",
+    "to-project": "Go to Project",
     "copied-to-clipboard-success": "Code successfully copied to clipboard!",
     "code": "Code"
   },
@@ -75,9 +75,9 @@
     "go-to-data-management": "Go to Data Management",
     "go-to-system-activities": "Go to System Activities",
     "go-to-user-management": "Go to User and Group Management",
-    "system-activities-and-logs-description": "All log entries for system, database, users, and security.",
+    "system-activities-and-logs-description": "All log entries related to the system, database, users, and security.",
     "configuration-description": "Manage system settings for data, APIs, and applications.",
-    "data-management-description": "Upload and manage base data and set viewpoints.",
+    "data-management-description": "Upload and manage basic data and define visual axes.",
     "user-management-description": "Add users, manage permissions, and organize groups.",
     "title": "Administration"
   },
@@ -85,10 +85,10 @@
     "title": "Configuration",
     "common": "General",
     "global-start-point": "Global Starting Point",
-    "conversions": "Conversions",
-    "local-processor-folder": "Local Processor Folder",
-    "max-parallel-base-layer-conversions": "Maximum Parallel Base Layer Conversions",
-    "max-parallel-file-conversions": "Maximum Parallel File Conversions"
+    "conversions": "Conversion",
+    "local-processor-folder": "Local Storage Folder",
+    "max-parallel-base-layer-conversions": "Max Parallel Base Data Conversions",
+    "max-parallel-file-conversions": "Max Parallel File Conversions"
   },
   "user-management": {
     "title": "User and Group Management",
@@ -111,29 +111,29 @@
     "name": "Name",
     "owner": "Owner",
     "size-in-gb": "Size in GB",
-    "create-at": "Created At",
-    "visible-for-groups": "Visible to the following groups",
-    "only-visible-for-groups": "Only visible to the following groups"
+    "create-at": "Created On",
+    "visible-for-groups": "Visible for the Following Groups",
+    "only-visible-for-groups": "Only Visible for the Following Groups"
   },
   "project-management": {
     "title": "Project Management",
     "my-projects": "My Projects",
-    "shared-projects": "Projects Shared With Me",
+    "shared-projects": "Projects Shared with Me",
     "open-editor": "Open Editor",
     "description-placeholder": "Description...",
     "title-placeholder": "Title...",
     "table-title": "Title",
     "preview": "Preview",
     "preview-image": "Preview Image",
-    "visible-for-users": "Visible to the following users",
-    "visible-for-groups": "Visible to the following groups",
+    "visible-for-users": "Visible for the Following Users",
+    "visible-for-groups": "Visible for the Following Groups",
     "description": "Description",
     "owner": "Owner"
   },
   "components": {
     "list-with-pagination": {
       "search": "Search",
-      "search-placeholder": "Enter term..."
+      "search-placeholder": "Enter search term..."
     }
   },
   "permissions": {
@@ -191,14 +191,17 @@
     "add": "Add",
     "upload": "Upload",
     "uploading": "Uploading",
-    "waiting-in-line": "Waiting in queue",
+    "waiting-in-line": "Waiting in Queue",
     "converting": "Converting",
     "delayed": "Delayed",
     "completed": "Completed",
     "failed": "Failed",
-    "fly-to": "Fly to",
+    "fly-to": "Fly To",
     "place": "Place",
-    "toggle-visibility": "Toggle visibility"
+    "toggle-visibility": "Toggle Visibility",
+    "are-you-sure-that-you-want-to-delete": "Are you sure you really want to delete this?",
+    "this-action-is-irreversible": "This action cannot be undone!",
+    "ok": "Ok"
   },
   "create-project-dialog": {
     "create-project": "Create Project",
@@ -208,7 +211,9 @@
   "import-model-dialog": {
     "upload-new-model": "Upload New Model",
     "reuse-existing-model": "Reuse Existing Model",
-    "name": "Name"
+    "name": "Name",
+    "import-successful": "Model import successful!",
+    "import-failed": "Model import failed!"
   },
   "data-mangement": {
     "title": "Title"
@@ -222,11 +227,11 @@
     "create-event": "Create Event",
     "cancel-event": "Cancel Meeting",
     "update-event": "Update Meeting",
-    "no-events": "No events"
+    "no-events": "No Events"
   },
   "under-construction": {
-    "we-are-working-hard": "We are working hard to show you new features soon.",
-    "go-back": "Go back",
+    "we-are-working-hard": "We are working hard to bring you new features soon.",
+    "go-back": "Go Back",
     "title": "Page Under Construction"
   },
   "attributes": {
@@ -257,20 +262,41 @@
     "undo": "Undo",
     "redo": "Redo",
     "clipping-polygons": "Clipping Polygons",
-    "base-layers": "Base Layers",
+    "base-layers": "Base Data",
     "name-of-the-variant": "Variant Name",
     "variants": "Variants",
-    "pick-a-point-message": "Select a point by clicking. To cancel, press ESC or click outside the 3D view.",
+    "pick-a-point-message": "Select a point by clicking. Press ESC to cancel or click outside the 3D view.",
     "take-screenshot": "Take Screenshot",
     "origin": "Origin",
     "target": "Target"
   },
   "error": {
-    "go-home": "Go to Home",
+    "go-home": "Go to Home Page",
     "500-oooops-something-went-wrong-on-our-side": "500: Oops, something went wrong on our side!"
   },
+  "cookie-consent": {
+    "banner": {
+      "description": "<p>We use technically necessary cookies for login and security (CSRF token, callback URL, session token). The CSRF token and callback URL are deleted at the end of the session, the session token after 3 days. No tracking cookies.</p>",
+      "acceptAllButtonText": "Accept All",
+      "acceptAllButtonAccessibleLabel": "Accept All Cookies",
+      "rejectNonEssentialButtonText": "Reject Non-Essential",
+      "rejectNonEssentialButtonAccessibleLabel": "Reject Non-Essential Cookies",
+      "preferencesButtonText": "Preferences",
+      "preferencesButtonAccessibleLabel": "Show / Hide Preferences"
+    },
+    "preferences": {
+      "title": "Customize Your Cookie Settings",
+      "description": "<p>We respect your right to privacy. You can choose not to allow certain types of cookies. Your cookie settings apply to our entire website.</p>",
+      "creditLinkText": "Get this banner for free",
+      "creditLinkAccessibleLabel": "Get this banner for free"
+    },
+    "technical-cookies": {
+      "description": "We use technically necessary cookies for login and security (CSRF token, callback URL, session token). The CSRF token and callback URL are deleted at the end of the session, the session token after 3 days.",
+      "name": "Technically Necessary Cookies"
+    }
+  },
   "not-found": {
-    "404-we-did-not-find-this-page": "404: Unfortunately, we did not find this page.",
-    "go-home": "Go to Home"
+    "404-we-did-not-find-this-page": "404: Unfortunately, we could not find this page.",
+    "go-home": "Go to Home Page"
   }
 }

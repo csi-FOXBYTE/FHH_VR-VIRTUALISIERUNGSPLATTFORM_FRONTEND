@@ -1,6 +1,7 @@
 import { dataGridZod } from "@/components/dataGridServerSide/zodTypes";
 import { protectedProcedure, router } from "..";
 import { z } from "zod";
+import { Prisma } from "@prisma/client";
 
 const projectManagementRouter = router({
   listMyProjects: protectedProcedure.input(dataGridZod).query(
@@ -205,9 +206,10 @@ const projectManagementRouter = router({
         value: p.id,
       }));
     }),
-  listSharedProjects: protectedProcedure.input(dataGridZod).query(
-    async (opts) =>
-      await opts.ctx.db.project.paginate(
+  listSharedProjects: protectedProcedure
+    .input(dataGridZod)
+    .query(async (opts) => {
+      return await opts.ctx.db.project.paginate(
         {
           where: {
             AND: [
@@ -262,8 +264,8 @@ const projectManagementRouter = router({
           },
         },
         opts.input
-      )
-  ),
+      );
+    }),
 });
 
 export default projectManagementRouter;

@@ -466,6 +466,7 @@ export const ViewerProvider = ({
                 : null,
               description: project.description,
               id: project.id,
+              isReadOnly: false,
               extensionLayers: get().extensionLayers.value,
               img,
               layers: get().layers.value.map((l) => ({
@@ -1098,8 +1099,6 @@ export const ViewerProvider = ({
             const foundProjectObjectIndex = newValue.findIndex(
               (p) => p.id === id
             );
-
-            console.log(foundProjectObjectIndex);
 
             if (foundProjectObjectIndex === -1) return {};
 

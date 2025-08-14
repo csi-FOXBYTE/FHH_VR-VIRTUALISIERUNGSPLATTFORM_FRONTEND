@@ -198,7 +198,10 @@
     "failed": "Fehlgeschlagen",
     "fly-to": "Hinfliegen",
     "place": "Platzieren",
-    "toggle-visibility": "Sichtbarkeit schalten"
+    "toggle-visibility": "Sichtbarkeit schalten",
+    "are-you-sure-that-you-want-to-delete": "Sind Sie sicher, dass Sie dies tatsächlich löschen möchten?",
+    "this-action-is-irreversible": "Diese Aktion kann nicht rückgängig gemacht werden!",
+    "ok": "Ok"
   },
   "create-project-dialog": {
     "create-project": "Projekt erstellen",
@@ -224,7 +227,8 @@
     "create-event": "Veranstaltung anlegen",
     "cancel-event": "Meeting absagen",
     "update-event": "Meeting ändern",
-    "no-events": "Keine Veranstaltungen"
+    "no-events": "Keine Veranstaltungen",
+    "moderators": "Moderatoren"
   },
   "under-construction": {
     "we-are-working-hard": "Wir arbeiten hart um euch bald neue Features zeigen zu können.",
@@ -270,6 +274,27 @@
   "error": {
     "go-home": "Zur Startseite",
     "500-oooops-something-went-wrong-on-our-side": "500: Uuuuups, da ist was schiefgelaufen!"
+  },
+  "cookie-consent": {
+    "banner": {
+      "description": "<p>Wir setzen technisch notwendige Cookies für Anmeldung und Sicherheit (CSRF-Token, Callback-URL, Session-Token). CSRF-Token und Callback-URL werden mit Ende der Sitzung gelöscht, das Session-Token nach 3 Tagen. Keine Tracking-Cookies.</p>",
+      "acceptAllButtonText": "Alle akzeptieren",
+      "acceptAllButtonAccessibleLabel": "Alle Cookies akzeptieren",
+      "rejectNonEssentialButtonText": "Nicht essentielle ablehnen",
+      "rejectNonEssentialButtonAccessibleLabel": "Nicht essentielle Cookies ablehnen",
+      "preferencesButtonText": "Einstellungen",
+      "preferencesButtonAccessibleLabel": "Einstellungen anzeigen / verstecken"
+    },
+    "preferences": {
+      "title": "Passen Sie Ihre Cookie-Einstellungen an",
+      "description": "<p>Wir respektieren Ihr Recht auf Datenschutz. Sie können festlegen, dass bestimmte Arten von Cookies nicht zugelassen werden. Ihre Cookie-Einstellungen gelten für unsere gesamte Website.</p>",
+      "creditLinkText": "Dieses Banner kostenlos erhalten",
+      "creditLinkAccessibleLabel": "Dieses Banner kostenlos erhalten"
+    },
+    "technical-cookies": {
+      "description": "Wir setzen technisch notwendige Cookies für Anmeldung und Sicherheit (CSRF-Token, Callback-URL, Session-Token). CSRF-Token und Callback-URL werden mit Ende der Sitzung gelöscht, das Session-Token nach 3 Tagen.",
+      "name": "Technisch notwendige Cookies"
+    }
   },
   "not-found": {
     "404-we-did-not-find-this-page": "404: Leider haben wir diese Seite nicht gefunden.",

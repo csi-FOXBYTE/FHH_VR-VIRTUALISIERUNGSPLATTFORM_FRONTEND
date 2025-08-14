@@ -1,3 +1,4 @@
+import { useConfigurationProviderContext } from "@/components/configuration/ConfigurationProvider";
 import {
   Autocomplete,
   Grid,
@@ -16,11 +17,8 @@ const epsgValues = Object.values(proj4List)
   }))
   .sort((a, b) => a.label.localeCompare(b.label));
 
-const initialEpsg = epsgValues.find((epsg) => epsg.label === "EPSG:25832");
-
 const srcSRS = "+proj=geocent +datum=WGS84 +units=m +no_defs +type=crs";
 
-// TODO does not work correctly yet!
 export default function TranslationInput({
   value,
   readOnly = false,
@@ -29,16 +27,17 @@ export default function TranslationInput({
   disabled,
 }: {
   value?: { x: number; y: number; z: number };
-  onChange?: (value: { x: number; y: number; z: number }) => void;
   onImmediateChange?: (value: { x: number; y: number; z: number }) => void;
   label?: string;
   readOnly?: boolean;
   disabled?: boolean;
 }) {
+  const { defaultEPSG } = useConfigurationProviderContext();
+
   const [selectedEpsg, setSelectedEpsg] = useState<{
     value: string;
     label: string;
-  }>(initialEpsg!);
+  }>(epsgValues.find((epsg) => epsg.label === defaultEPSG)!);
 
   const targetSRS = selectedEpsg.value;
 

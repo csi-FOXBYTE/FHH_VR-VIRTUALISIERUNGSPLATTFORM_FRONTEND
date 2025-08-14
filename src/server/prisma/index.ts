@@ -1,11 +1,11 @@
-// import "server-only";
+import "server-only";
 import { PrismaClient } from "@prisma/client";
 import realtimeExtension from "./extensions/realtimeExtension";
 import paginationExtension from "./extensions/paginationExtension";
 
 const prismaClientSingleton = () => {
   return new PrismaClient()
-    .$extends(realtimeExtension({ intervalMs: 1000 }))
+    .$extends(realtimeExtension())
     .$extends(paginationExtension());
 };
 

@@ -22,7 +22,7 @@ export default function UserCUDialog() {
       state.open ? { search: searchGroups } : skipToken
     );
 
-  const { data: initialUser = null } =
+  const { data: initialUser = null, isPending: isInitialDataPending } =
     trpc.userManagementRouter.users.getFullUser.useQuery(
       state.open && state.mode === "UPDATE" && state.id !== undefined
         ? { id: state.id }
@@ -97,7 +97,11 @@ export default function UserCUDialog() {
         });
       }}
       close={close}
-      isLoading={isUpdateMutationPending || isCreateMutationPending}
+      isLoading={
+        isUpdateMutationPending ||
+        isCreateMutationPending ||
+        isInitialDataPending
+      }
       state={state}
       fetchedData={initialUser}
       model={

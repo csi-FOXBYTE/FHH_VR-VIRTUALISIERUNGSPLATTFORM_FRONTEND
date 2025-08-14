@@ -34,6 +34,7 @@ export function createOTelPlugin(
               ["trpc.input"]: safeParseJson(await getRawInput()),
               ["trpc.code"]: result.error.code,
             });
+            console.error(result.error);
           } else {
             span.end();
           }
