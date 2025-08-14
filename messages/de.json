@@ -58,7 +58,10 @@
     "personal-data": "Persönliche Daten",
     "last-login": "Letzter Login",
     "delete-account": "Konto löschen",
-    "update-account": "Konto bearbeiten"
+    "update-account": "Konto bearbeiten",
+    "are-you-sure-that-you-want-to-delete-your-account": "Sind Sie sich sicher das Sie diesen Account löschen wollen?",
+    "this-action-is-irreversible": "Diese Aktion kann nicht rückgängig gemacht werden!",
+    "ok": "Ok"
   },
   "collaboration": {
     "collaboration": "Zusammenarbeit",
@@ -137,25 +140,19 @@
     }
   },
   "permissions": {
-    "CREATE": "Erstellen",
-    "UPDATE": "Ändern",
-    "DELETE": "Löschen",
-    "READ": "Lesen",
-    "ALL": "Alles",
-    "EVENT": "Veranstaltung",
-    "EVENT_ATTENDEE": "Veranstaltungs Teilnehmer",
-    "BASE_LAYER": "Basisebene",
-    "PROJECT_LAYER": "Projektebene",
-    "GROUP": "Gruppe",
-    "ROLE": "Rolle",
-    "PERMISSION": "Berechtigung",
-    "PROJECT": "Projekt",
-    "CLIPPING_POLYGON": "Ausschnittpolygon",
-    "PROJECT_FILE": "Projekt Datei",
-    "VISUAL_AXIS": "Sichtachse",
-    "STARTING_POINT": "Startpunkt",
-    "USER": "Benutzer",
-    "VIEWS": "Ansichten"
+    "selected": "Ausgewählt",
+    "PROJECT_OWNER": "Projektadministrator",
+    "PROJECT_OWNER-description": "Kann Projekte erstellen, bearbeiten und löschen.",
+    "EVENT_OWNER": "Eventadministrator",
+    "EVENT_OWNER-description": "Kann Events erstellen, bearbeiten und löschen.",
+    "BASE_LAYER_OWNER": "Basisdaten-Administrator",
+    "BASE_LAYER_OWNER-description": "Kann Basisdaten erstellen, bearbeiten und löschen.",
+    "CONFIGURATION_ADMINISTRATOR": "Konfigurations-Administrator",
+    "CONFIGURATION_ADMINISTRATOR-description": "Kann Konfigurationen erstellen, bearbeiten und löschen.",
+    "DATA_MANAGEMENT_ADMINISTRATOR": "Datenmanagement-Administrator",
+    "DATA_MANAGEMENT_ADMINISTRATOR-description": "Kann Basisdaten, sowie Sichtachsen erstellen, bearbeiten und löschen.",
+    "USER_ADMINISTRATOR": "Nutzer-Administrator",
+    "USER_ADMINISTRATOR-description": "Kann Nutzer einladen, bearbeiten und löschen."
   },
   "entities": {
     "user": "Benutzer",

@@ -1,21 +1,20 @@
 import { trpc } from "@/server/trpc/client";
 import { Add, Check, Close } from "@mui/icons-material";
-import { DataGrid } from "@mui/x-data-grid";
-import { keepPreviousData } from "@tanstack/react-query";
-import useDataGridServerSideHelper from "../dataGridServerSide/useDataGridServerSideOptions";
-import { useTranslations } from "next-intl";
 import {
   Box,
-  Button,
   Chip,
   CircularProgress,
   CircularProgressProps,
   Grid,
-  Typography,
+  Typography
 } from "@mui/material";
+import { DataGrid } from "@mui/x-data-grid";
+import { keepPreviousData } from "@tanstack/react-query";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
-import LayersDialog from "./LayersDialog";
 import useCreateEditDeleteActions from "../dataGridServerSide/useCreateEditDeleteActions";
+import useDataGridServerSideHelper from "../dataGridServerSide/useDataGridServerSideOptions";
+import LayersDialog from "./LayersDialog";
 
 function CircularProgressWithLabel(
   props: CircularProgressProps & { value: number }

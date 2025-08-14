@@ -5,6 +5,7 @@ import EventCUDialog, {
   useEventCUDialogState,
 } from "@/components/events/EventCUDialog";
 import { useEventSubscriber } from "@/hooks";
+import usePermissions from "@/permissions/usePermissions";
 import { Link } from "@/server/i18n/routing";
 import { trpc } from "@/server/trpc/client";
 import {
@@ -102,6 +103,8 @@ export default function CollaborationPage() {
     },
   });
 
+  const permissions = usePermissions();
+
   return (
     <PageContainer>
       <EventCUDialog />
@@ -112,6 +115,7 @@ export default function CollaborationPage() {
         <ButtonGroup
           variant="contained"
           sx={{ position: "absolute", right: 0 }}
+          disabled={!permissions.includes("EVENT_OWNER")}
         >
           <Button onClick={openCreate} startIcon={<Add />}>
             {t("events.create-event")}

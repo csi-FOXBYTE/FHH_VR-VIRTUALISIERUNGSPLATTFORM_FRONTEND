@@ -1,5 +1,4 @@
-import { CRUD_PERMISSIONS_SET } from "@/constants/permissions";
-import { PrismaClient } from "@prisma/client";
+import { PERMISSIONS, PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
@@ -17,46 +16,24 @@ const prisma = new PrismaClient();
     },
   });
 
-  const permissions = await prisma.$transaction(
-    Array.from(CRUD_PERMISSIONS_SET).map((permission) =>
-      prisma.permission.create({
-        data: { name: permission },
-      })
-    )
-  );
-
   const { id: superAdminRoleId } = await prisma.role.create({
     data: {
-      name: "Super Admin",
-      assignedPermissions: {
-        connect: permissions.map((permission) => ({ id: permission.id })),
-      },
-    },
-  });
-
-  const { id: adminRoleId } = await prisma.role.create({
-    data: {
-      name: "Admin",
-      assignedPermissions: {
-        connect: permissions.map((permission) => ({ id: permission.id })),
-      },
+      name: "Super Administrator",
+      isAdminRole: true,
+      assignedPermissions: Object.values(PERMISSIONS),
     },
   });
 
   const { id: guestRoleId } = await prisma.role.create({
     data: {
       name: "Guest",
-      assignedPermissions: {
-        connect: permissions
-          .filter((permission) => permission.name.endsWith("READ"))
-          .map((permission) => ({ id: permission.id })),
-      },
+      assignedPermissions: [],
     },
   });
 
   const { id: adminGroupId } = await prisma.group.create({
     data: {
-      name: "Administrator",
+      name: "Super Administrator",
       defaultFor: ["*"],
       isAdminGroup: true,
       assignedRoles: {

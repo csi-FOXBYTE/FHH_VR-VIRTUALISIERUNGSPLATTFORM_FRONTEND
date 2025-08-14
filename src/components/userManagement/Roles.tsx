@@ -16,8 +16,9 @@ import { useTranslations } from "next-intl";
 import { useSnackbar } from "notistack";
 import { useEffect, useMemo, useState } from "react";
 import PermissionsMatrix from "./PermissionsMatrix";
+import { Permissions } from "@/constants/permissions";
 
-const emptyArray: { name: string }[] = [];
+const emptyArray: Permissions[] = [];
 
 export default function Roles() {
   const t = useTranslations();
@@ -110,12 +111,10 @@ export default function Roles() {
     });
 
   const [name, setName] = useState<string>("");
-  const [value, setValue] = useState<string[]>([]);
+  const [value, setValue] = useState<Permissions[]>([]);
 
   useEffect(() => {
-    setValue(
-      permissionsPerRole.map((permissionPerRole) => permissionPerRole.name)
-    );
+    setValue(permissionsPerRole);
   }, [permissionsPerRole]);
 
   useEffect(() => {

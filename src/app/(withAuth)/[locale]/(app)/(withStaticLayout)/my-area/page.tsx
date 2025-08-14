@@ -2,8 +2,8 @@
 
 import Cards from "@/components/common/Cards";
 import PageContainer from "@/components/common/PageContainer";
+import usePermissions from "@/permissions/usePermissions";
 import { trpc } from "@/server/trpc/client";
-import { ManageSearch } from "@mui/icons-material";
 import {
   Timeline,
   TimelineConnector,
@@ -31,12 +31,15 @@ export default function MyAreaPage() {
   const { data: todaysEvents = [] } =
     trpc.myAreaRouter.getTodaysEvents.useQuery();
 
+  const permissions = usePermissions();
+
   return (
     <PageContainer>
       <Cards
         items={[
           {
             key: "profile",
+            visible: true,
             content: t("index.last-logged-in-message", {
               date: formatter.dateTime(updatedAt, {
                 dateStyle: "long",
@@ -47,10 +50,13 @@ export default function MyAreaPage() {
               href: "/profile",
               label: t("index.show-profile"),
             },
-            title: t("index.welcoming-text", { name: session.data?.user.name ?? "-" }),
+            title: t("index.welcoming-text", {
+              name: session.data?.user.name ?? "-",
+            }),
           },
           {
             key: "project-management",
+            visible: permissions.includes("PROJECT_OWNER"),
             content: (
               <Typography textAlign="justify" whiteSpace="break-spaces">
                 {t("index.project-management-description")}
@@ -64,6 +70,7 @@ export default function MyAreaPage() {
           },
           {
             key: "collaboration",
+            visible: true,
             content: (
               <>
                 <span>
@@ -73,7 +80,7 @@ export default function MyAreaPage() {
                     }),
                   })}
                 </span>
-                <Timeline sx={{ maxHeight: 200, overflowY: "auto"}}>
+                <Timeline sx={{ maxHeight: 200, overflowY: "auto" }}>
                   {todaysEvents.length !== 0 ? (
                     todaysEvents.map((event, index) => (
                       <TimelineItem key={event.id}>
@@ -119,6 +126,11 @@ export default function MyAreaPage() {
           },
           {
             key: "administration",
+            visible:
+              permissions.includes("USER_ADMINISTRATOR") ||
+              permissions.includes("DATA_MANAGEMENT_ADMINISTRATOR") ||
+              permissions.includes("CONFIGURATION_ADMINISTRATOR") ||
+              permissions.includes("BASE_LAYER_OWNER"),
             content: (
               <Typography textAlign="justify" whiteSpace="break-spaces">
                 {t("index.administration-description")}

@@ -6,6 +6,7 @@ import useDataGridServerSideHelper from "@/components/dataGridServerSide/useData
 import ProjectCUDialog, {
   useProjectCUDialogState,
 } from "@/components/projectManagement/ProjectCUDialog";
+import { withPermissions } from "@/permissions/withPermissions";
 import { getApis } from "@/server/gatewayApi/client";
 import { Link as NextLink } from "@/server/i18n/routing";
 import { trpc } from "@/server/trpc/client";
@@ -16,7 +17,7 @@ import { keepPreviousData, useMutation } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import { parseAsInteger, useQueryState } from "nuqs";
 
-export default function ProjectManagementPage() {
+function ProjectManagementPage() {
   const t = useTranslations();
 
   const [selectedTab, setSelectedTab] = useQueryState(
@@ -80,8 +81,6 @@ export default function ProjectManagementPage() {
   } = useMutation({
     mutationFn: async (args: { id: string }) => {
       const apis = await getApis();
-
-      console.log("LOL")
 
       await apis.projectApi.projectIdDelete({
         id: args.id,
@@ -224,3 +223,5 @@ export default function ProjectManagementPage() {
     </PageContainer>
   );
 }
+
+export default withPermissions(ProjectManagementPage, ["PROJECT_OWNER"]);

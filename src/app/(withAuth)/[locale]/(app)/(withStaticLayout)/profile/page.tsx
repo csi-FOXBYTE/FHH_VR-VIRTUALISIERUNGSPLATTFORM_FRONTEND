@@ -4,10 +4,13 @@ import PageContainer from "@/components/common/PageContainer";
 import UserAvatar from "@/components/common/UserAvatar";
 import { Link } from "@/server/i18n/routing";
 import { trpc } from "@/server/trpc/client";
-import { Button, Grid, TextField, Typography } from "@mui/material";
+import { Alert, Button, Grid, TextField, Typography } from "@mui/material";
 import { signOut, useSession } from "next-auth/react";
 import { useTranslations } from "next-intl";
 import { useConfirm } from "material-ui-confirm";
+import { useMutation } from "@tanstack/react-query";
+import { getApis } from "@/server/gatewayApi/client";
+import { useSnackbar } from "notistack";
 
 export default function ProfilePage() {
   const session = useSession();
@@ -15,8 +18,33 @@ export default function ProfilePage() {
 
   const { data: info } = trpc.profileRouter.getInfo.useQuery();
 
-  const { mutate: deleteUserMutation } =
-    trpc.profileRouter.deleteUser.useMutation();
+  const { enqueueSnackbar } = useSnackbar();
+
+  const { mutate: deleteUserMutation } = useMutation({
+    mutationFn: async () => {
+      const apis = await getApis();
+
+      await apis.userApi.userDelete();
+    },
+    onSuccess: () => {
+      enqueueSnackbar({
+        variant: "success",
+        message: t("generic.crud-notifications.delete-success", {
+          entity: t("entities.user"),
+        }),
+      });
+      signOut({ redirectTo: "/", redirect: true });
+    },
+    onError: (error) => {
+      console.error(error);
+      enqueueSnackbar({
+        variant: "error",
+        message: t("generic.crud-notifications.delete-failed", {
+          entity: t("entities.user"),
+        }),
+      });
+    },
+  });
 
   const confirm = useConfirm();
 
@@ -66,26 +94,28 @@ export default function ProfilePage() {
           {t("profile.update-account")}
         </Button>
         <Button
-          disabled // TODO: Implement user delete
           onClick={async () => {
             const { confirmed } = await confirm({
-              title: "Sind Sie sich sicher?",
-              cancellationText: "Abbrechen",
-              confirmationText: "Ok",
-              description:
-                "Sind Sie sich sicher das Sie ihren Nutzeraccount löschen möchten? Diese Aktion kann nicht rückgängig gemacht werden!",
+              title: t("profile.delete-account"),
+              cancellationText: t("actions.cancel"),
+              confirmationText: t("actions.ok"),
+              description: (
+                <>
+                  <Typography component="p">
+                    {t(
+                      "profile.are-you-sure-that-you-want-to-delete-your-account"
+                    )}
+                  </Typography>
+                  <Alert severity="error">
+                    {t("profile.this-action-is-irreversible")}
+                  </Alert>
+                </>
+              ),
             });
 
             if (!confirmed) return;
 
-            deleteUserMutation(undefined, {
-              onSuccess: () => {
-                signOut();
-              },
-              onError(error) {
-                console.error(error);
-              },
-            });
+            deleteUserMutation();
           }}
           size="large"
           variant="contained"

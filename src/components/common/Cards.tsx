@@ -31,6 +31,7 @@ export type CardProps = {
   items: {
     key: string;
     title: string;
+    visible?: boolean;
     content: ReactNode;
     link: { href: string; label: string };
   }[];
@@ -39,23 +40,25 @@ export type CardProps = {
 export default function Cards({ items }: CardProps) {
   return (
     <Grid container spacing={2}>
-      {items.map((item) => (
-        <Grid key={item.key} {...cardProps}>
-          <CardHeader title={item.title} />
-          <CardContent sx={{ flex: 1 }}>{item.content}</CardContent>
-          <Grid component={CardActions} container justifyContent="flex-end">
-            <Button
-              variant="outlined"
-              color="secondary"
-              endIcon={<ArrowRightOutlined />}
-              href={item.link.href}
-              LinkComponent={Link}
-            >
-              {item.link.label}
-            </Button>
+      {items
+        .filter((item) => item.visible ?? true)
+        .map((item) => (
+          <Grid key={item.key} {...cardProps}>
+            <CardHeader title={item.title} />
+            <CardContent sx={{ flex: 1 }}>{item.content}</CardContent>
+            <Grid component={CardActions} container justifyContent="flex-end">
+              <Button
+                variant="outlined"
+                color="secondary"
+                endIcon={<ArrowRightOutlined />}
+                href={item.link.href}
+                LinkComponent={Link}
+              >
+                {item.link.label}
+              </Button>
+            </Grid>
           </Grid>
-        </Grid>
-      ))}
+        ))}
     </Grid>
   );
 }

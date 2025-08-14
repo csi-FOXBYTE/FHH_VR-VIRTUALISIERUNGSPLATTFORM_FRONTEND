@@ -15,8 +15,8 @@ export default function CookieConsent() {
 
   return (
     <>
-      <Script strategy="afterInteractive" src="/silktide-consent-manager.js" />
-      <Script strategy="lazyOnload">{`
+      <Script id="silktide-consent-manager" strategy="afterInteractive" src="/silktide-consent-manager.js" />
+      <Script id="silktide-consent-manager-config" strategy="lazyOnload">{`
         silktideCookieBannerManager.updateCookieBannerConfig({
   background: {
     showBackground: true

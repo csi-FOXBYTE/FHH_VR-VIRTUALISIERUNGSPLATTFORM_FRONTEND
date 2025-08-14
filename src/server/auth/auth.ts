@@ -12,7 +12,7 @@ declare module "next-auth" {
       id: string;
       language: "EN" | "DE" | null;
       name: string;
-      permissions: Set<Permissions>;
+      permissions: Permissions[];
       email: string;
       image?: string;
       assignedGroups: {
@@ -21,7 +21,7 @@ declare module "next-auth" {
         assignedRoles: {
           name: string;
           id: string;
-          assignedPermissions: { name: string; id: string }[];
+          assignedPermissions: Permissions[];
         }[];
       }[];
     };
@@ -89,7 +89,7 @@ export const { auth, handlers, signIn, signOut, unstable_update } = NextAuth({
           })
           .map(({ id }) => ({ id }));
 
-        let locale = await getLocale();
+        const locale = await getLocale();
         let language: "EN" | "DE" | null = null;
 
         if (locale === "en") language = "EN";
@@ -169,7 +169,7 @@ export const { auth, handlers, signIn, signOut, unstable_update } = NextAuth({
       return true;
     },
     async session({ session }) {
-      let locale = await getLocale();
+      const locale = await getLocale();
       let language: "EN" | "DE" | null = null;
 
       if (locale === "en") language = "EN";
@@ -197,7 +197,7 @@ export const { auth, handlers, signIn, signOut, unstable_update } = NextAuth({
                 select: {
                   name: true,
                   id: true,
-                  assignedPermissions: { select: { id: true, name: true } },
+                  assignedPermissions: true,
                 },
               },
             },
@@ -205,15 +205,13 @@ export const { auth, handlers, signIn, signOut, unstable_update } = NextAuth({
         },
       });
 
-      session.user.permissions = new Set<Permissions>(
+      session.user.permissions = Array.from(new Set<Permissions>(
         assignedGroups.flatMap((assignedGroup) =>
-          assignedGroup.assignedRoles.flatMap((assignedRole) =>
-            assignedRole.assignedPermissions.flatMap(
-              (assignedPermission) => assignedPermission.name
-            )
+          assignedGroup.assignedRoles.flatMap(
+            (assignedRole) => assignedRole.assignedPermissions
           )
         ) as Permissions[]
-      );
+      ));
       session.user.assignedGroups = assignedGroups;
 
       return session;

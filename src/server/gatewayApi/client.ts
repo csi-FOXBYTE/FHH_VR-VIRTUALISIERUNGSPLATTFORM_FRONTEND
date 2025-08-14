@@ -4,6 +4,7 @@ import {
   EventsApi,
   ProjectApi,
   StatsApi,
+  UserApi,
 } from "./generated";
 
 async function injectCookies() {
@@ -29,6 +30,7 @@ export async function getApis() {
   const statsApi = new StatsApi(config);
   const converter3DApi = new Converter3DApi(config);
   const projectApi = new ProjectApi(config);
+  const userApi = new UserApi(config);
 
-  return { eventsApi, statsApi, converter3DApi, projectApi };
+  return { eventsApi, statsApi, converter3DApi, projectApi, userApi };
 }

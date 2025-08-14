@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { protectedProcedure, router } from "..";
 import { dataGridZod } from "@/components/dataGridServerSide/zodTypes";
+import { $Enums } from "@prisma/client";
 
 const userManagementRouter = router({
   users: {
@@ -129,7 +130,7 @@ const userManagementRouter = router({
         z.object({
           name: z.string(),
           assignedRoles: z.array(z.string()),
-          defaultFor: z.string(),
+          defaultFor: z.array(z.string()),
         })
       )
       .mutation(async (opts) => {
@@ -151,7 +152,7 @@ const userManagementRouter = router({
           name: z.string(),
           assignedRoles: z.array(z.string()),
           id: z.string(),
-          defaultFor: z.string(),
+          defaultFor: z.array(z.string()),
         })
       )
       .mutation(async (opts) => {
@@ -227,10 +228,13 @@ const userManagementRouter = router({
   },
   roles: {
     list: protectedProcedure.query(
-      async (opts) =>
-        await opts.ctx.db.role.findMany({
-          select: { name: true, id: true, isAdminRole: true },
-        })
+      async (opts) => {
+        const roles = await opts.ctx.db.role.findMany({
+          select: { name: true, id: true, isAdminRole: true, assignedPermissions: true },
+        });
+
+        return roles;
+      }
     ),
     delete: protectedProcedure
       .input(z.object({ id: z.string() }))
@@ -252,11 +256,7 @@ const userManagementRouter = router({
             id: opts.input.roleId,
           },
           select: {
-            assignedPermissions: {
-              select: {
-                name: true,
-              },
-            },
+            assignedPermissions: true,
           },
         });
 
@@ -276,7 +276,7 @@ const userManagementRouter = router({
         z.object({
           id: z.string(),
           name: z.string(),
-          permissions: z.array(z.string()),
+          permissions: z.array(z.enum(["BASE_LAYER_OWNER", ...Object.values($Enums.PERMISSIONS)])),
         })
       )
       .mutation(async (opts) => {
@@ -288,11 +288,7 @@ const userManagementRouter = router({
             },
           },
           data: {
-            assignedPermissions: {
-              set: opts.input.permissions.map((permission) => ({
-                name: permission,
-              })),
-            },
+            assignedPermissions: opts.input.permissions,
             name: opts.input.name,
           },
         });
