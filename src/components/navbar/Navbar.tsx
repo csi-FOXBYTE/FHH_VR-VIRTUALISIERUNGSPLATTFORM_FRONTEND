@@ -26,6 +26,7 @@ import { useState, MouseEvent } from "react";
 import ProfileMenu from "./ProfileMenu";
 import { useSession } from "next-auth/react";
 import PageContainer from "../common/PageContainer";
+import Help from "../help/Help";
 
 export type NavbarProps = {
   elevated?: boolean;
@@ -65,6 +66,8 @@ export default function Navbar({ elevated = true }: NavbarProps) {
     );
   };
 
+  const [helpOpen, setHelpOpen] = useState(false);
+
   return (
     <AppBar
       position="sticky"
@@ -72,7 +75,7 @@ export default function Navbar({ elevated = true }: NavbarProps) {
       elevation={elevated ? undefined : 0}
       color="primary"
     >
-      <PageContainer sx={{ padding: "0 32px"}}>
+      <PageContainer sx={{ padding: "0 32px" }}>
         <ProfileMenu anchorEl={profileAnchorEl} close={handleClose} />
         <Toolbar style={{ paddingLeft: 0 }}>
           <Link
@@ -112,10 +115,14 @@ export default function Navbar({ elevated = true }: NavbarProps) {
               ))}
             </Select>
             <Tooltip title={t("navbar.help")}>
-              <IconButton style={{ color: "black", borderRadius: 0 }}>
+              <IconButton
+                onClick={() => setHelpOpen(true)}
+                style={{ color: "black", borderRadius: 0 }}
+              >
                 <QuestionMark />
               </IconButton>
             </Tooltip>
+            <Help open={helpOpen} close={() => setHelpOpen(false)} />
             {session.status === "authenticated" ? (
               <Tooltip title={t("navbar.settings")}>
                 <IconButton

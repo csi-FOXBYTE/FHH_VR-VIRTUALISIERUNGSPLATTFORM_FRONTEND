@@ -1,0 +1,118 @@
+# User Manual
+
+## Table of Contents
+
+## Navigation Bar
+
+- Language Selection (DE/EN) – Users can switch the interface language.
+- Help Function (?) – Access documentation or support.
+- User Account (Initials icon, e.g., TG) – Manage personal account.
+
+---
+
+## 1. Overview
+
+The overview provides insight into the various functions of the visualization platform. It serves as a central hub, as shown in the illustration below.
+
+![alt text](/help/en/overview.png)
+
+## 2. Project Management
+
+In this section, users can centrally and efficiently manage their projects.  
+Functions:
+
+- Create new projects.
+- Delete or edit existing projects.
+- Upload project-specific data.
+- Make data available as layers within the system.
+
+Button: Manage Projects → Opens the project overview and detail functions.
+
+> Further description to follow...
+
+## 3. Collaboration
+
+The collaboration area provides an overview of current appointments and polls.
+
+Functions:
+
+- Display all relevant appointments for the current day.
+- If no appointments exist, this is explicitly shown (“No upcoming appointments”).
+
+Button: Open Collaboration → Redirects to the appointments and collaboration section.
+
+> Further description to follow...
+
+---
+
+## 4. Administration
+
+The administration area enables access to central system management functions.
+
+Functions:
+
+- Uploading and organizing base data.
+- Configuring system settings (e.g., APIs, applications).
+- Viewing security-relevant system logs.
+- Managing users and groups.
+
+Button: Open Administration → Access to the management console.
+
+### 4.1 Data Management
+
+- Upload and organization of base data.
+- Definition of viewpoints (e.g., for structured data representation).
+- Management of existing datasets.
+
+Button: Go to Data Management
+
+#### 4.1.1 Layers
+
+Layers describe the base data.
+
+It is possible to integrate already available 3D Tiles, terrain, or imagery and link them directly—without requiring conversion.
+
+> The convert button is located next to Add, accessible via the dropdown arrow.
+
+![alt-text](/help/en/administration_data-management_overview.png)
+
+Additionally, data can be converted, for example:
+
+- CityGML → 3D Tiles
+- DGM format (terrain) → Cesium Terrain Tiles
+
+It is important that data is always packaged in a ZIP file. The internal folder structure does not matter.
+
+> Another important point is the specification of the EPSG code. Since some CityGML formats do not contain it, it must be explicitly defined.
+
+After clicking “Convert,” the data is first uploaded. Immediately afterward, the conversion process starts. You can track progress at any time in the table. If an error occurs, this is indicated in the progress display with an X.
+
+### 4.2 Configuration
+
+- Manage system settings.
+- Configure data, APIs, and applications.
+- Enables technical integration and customization of the system.
+
+> By expanding and collapsing the individual tabs, various things can be configured (e.g., email templates, default EPSG code, ...).
+
+> IMPORTANT!  
+> To save, use the save button in the upper right corner. After pressing save, you cannot revert to the previous value. This is only possible if changes have not yet been saved!
+
+### 4.3 System Activities and Logs
+
+- View all log entries of the system.
+- Used for monitoring and error analysis.
+
+Button: Go to System Activities
+
+> Further description to follow...
+
+### 4.4 User Management
+
+- Add or remove users.
+- Manage rights and roles.
+- Organize group structures for better control of access and responsibilities.
+
+Button: Go to User and Group Management
+
+> Further description to follow...
