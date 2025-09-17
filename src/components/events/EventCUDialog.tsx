@@ -52,7 +52,6 @@ export default function EventCUDialog() {
   const { mutate: createMutation, isPending: isCreateMutationPending } =
     useMutation({
       mutationFn: async (values: EventsPutRequest) => {
-        console.log(values);
         const apis = await getApis();
 
         await apis.eventsApi.eventsPut({
@@ -132,7 +131,6 @@ export default function EventCUDialog() {
       }}
       onUpdate={(values) => {
         if (!state.id) throw new Error("No id supplied!");
-        console.log(values);
         updateMutation({
           attendees: values.attendees.map((attendee) => attendee.value),
           moderators: values.moderators.map((moderator) => moderator.value),

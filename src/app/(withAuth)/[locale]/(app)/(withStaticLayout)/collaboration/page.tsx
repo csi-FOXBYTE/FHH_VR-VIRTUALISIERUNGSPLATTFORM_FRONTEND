@@ -214,8 +214,8 @@ export default function CollaborationPage() {
                 <ListItemText
                   primary={event.title}
                   secondary={formatter.dateTimeRange(
-                    event.startTime,
-                    event.endTime,
+                    new Date(event.startTime),
+                    new Date(event.endTime),
                     {
                       year: "numeric",
                       month: "2-digit",
@@ -226,7 +226,7 @@ export default function CollaborationPage() {
                   )}
                 />
                 <ListItemText>
-                  {formatter.relativeTime(event.startTime, {
+                  {formatter.relativeTime(new Date(event.startTime), {
                     style: "long",
                     now,
                   })}

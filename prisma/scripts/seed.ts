@@ -188,6 +188,19 @@ const prisma = new PrismaClient();
   await prisma.baseLayer.create({
     data: {
       ownerId: id,
+      href: "https://fhhvrshare.blob.core.windows.net/hamburg/3dtiles/trees/tileset.json",
+      sizeGB: 2.45,
+      type: "TILES3D",
+      name: "Trees",
+      visibleForGroups: {
+        connect: [{ id: adminGroupId }, { id: guestGroupId }],
+      },
+    },
+  });
+
+  await prisma.baseLayer.create({
+    data: {
+      ownerId: id,
       href: "https://fhhvrshare.blob.core.windows.net/hamburg/terrain",
       sizeGB: 3,
       type: "TERRAIN",

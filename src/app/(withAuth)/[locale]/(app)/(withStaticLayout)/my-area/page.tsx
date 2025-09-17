@@ -41,7 +41,7 @@ export default function MyAreaPage() {
             key: "profile",
             visible: true,
             content: t("index.last-logged-in-message", {
-              date: formatter.dateTime(updatedAt, {
+              date: formatter.dateTime(new Date(updatedAt), {
                 dateStyle: "long",
                 timeStyle: "medium",
               }),
@@ -87,8 +87,8 @@ export default function MyAreaPage() {
                         <TimelineOppositeContent>
                           <span style={{ whiteSpace: "nowrap" }}>
                             {formatter.dateTimeRange(
-                              event.startTime,
-                              event.endTime,
+                              new Date(event.startTime),
+                              new Date(event.endTime),
                               {
                                 timeStyle: "short",
                               }

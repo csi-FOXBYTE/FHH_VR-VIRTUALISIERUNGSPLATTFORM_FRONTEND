@@ -199,7 +199,7 @@ export default function SceneGraph() {
             disableGutters
             expanded={selectedTab === "PROJECT_OBJECT"}
             onChange={() => {
-              if (selectedTab === "PROJECT_OBJECT") return setSelectedTab(null);
+              if (selectedTab === "PROJECT_OBJECT") return setSelectedTab("");
 
               setSelectedTab("PROJECT_OBJECT");
             }}
@@ -316,8 +316,7 @@ export default function SceneGraph() {
           <Accordion
             expanded={selectedTab === "CLIPPING_POLYGON"}
             onChange={() => {
-              if (selectedTab === "CLIPPING_POLYGON")
-                return setSelectedTab(null);
+              if (selectedTab === "CLIPPING_POLYGON") return setSelectedTab("");
 
               setSelectedTab("CLIPPING_POLYGON");
             }}
@@ -408,7 +407,7 @@ export default function SceneGraph() {
           <Accordion
             expanded={selectedTab === "BASE_LAYER"}
             onChange={() => {
-              if (selectedTab === "BASE_LAYER") return setSelectedTab(null);
+              if (selectedTab === "BASE_LAYER") return setSelectedTab("");
 
               setSelectedTab("BASE_LAYER");
             }}
@@ -486,7 +485,7 @@ export default function SceneGraph() {
         style={{ width: "100%" }}
         expanded={selectedTab === "STARTING_POINT"}
         onChange={() => {
-          if (selectedTab === "STARTING_POINT") return setSelectedTab(null);
+          if (selectedTab === "STARTING_POINT") return setSelectedTab("");
 
           setSelectedTab("STARTING_POINT");
         }}

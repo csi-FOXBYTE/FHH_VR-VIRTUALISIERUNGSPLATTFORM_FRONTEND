@@ -118,12 +118,6 @@ async function proxy(
       body: ["GET", "HEAD"].includes(method) ? undefined : outBody,
     });
 
-    console.log({
-      method,
-      headers,
-      body: outBody,
-    });
-
     return new NextResponse(res.body, {
       status: res.status,
       headers: filterOutHTTP2PseudoHeaders(res.headers),
