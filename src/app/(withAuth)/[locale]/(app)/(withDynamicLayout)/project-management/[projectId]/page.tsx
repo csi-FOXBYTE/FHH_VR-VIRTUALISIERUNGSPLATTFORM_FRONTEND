@@ -1,27 +1,32 @@
-"use client";
-import { ThreeDViewer } from "@/components/threeDViewer";
-import BaseLayerProvider from "@/components/threeDViewer/BaseLayerProvider";
-import "./page.css";
-import { useViewerStore } from "@/components/threeDViewer/ViewerProvider";
-import { unstable_noStore } from "next/cache";
+"use server";
+import {
+  ViewerProvider
+} from "@/components/threeDViewer/ViewerProvider";
+import Wrapper from "@/components/threeDViewer/Wrapper";
+import { getApis } from "@/server/gatewayApi/client";
+// import "./page.css";
 
-export default function ThreeDViewerPage() {
-  const baseLayers = useViewerStore((state) => state.baseLayers);
+export default async function ThreeDViewerPage(props: { params: Promise<{ projectId: string }>}) {
+  console.log(props)
 
-  unstable_noStore();
+  const apis = await getApis();
+
+  const params =  await props.params;
+
+  const project = await apis.projectApi.projectIdGet(
+    {
+      id: params.projectId,
+    },
+    {
+      cache: "no-store",
+    }
+  );
+
+  console.log("GOT NEW PROJECT");
 
   return (
-    <BaseLayerProvider
-      resources={baseLayers.value
-        .filter((baseLayer) => baseLayers.selected.includes(baseLayer.id))
-        .map((baseLayer) => ({
-          id: baseLayer.id,
-          name: baseLayer.name,
-          type: baseLayer.type as "TERRAIN",
-          url: baseLayer.href!,
-        }))}
-    >
-      <ThreeDViewer />
-    </BaseLayerProvider>
+    <ViewerProvider project={project}>
+      <Wrapper />
+    </ViewerProvider>
   );
 }
