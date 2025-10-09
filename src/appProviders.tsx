@@ -46,7 +46,7 @@ export default function AppProviders({
     <AppRouterCacheProvider>
       <ConfirmProvider>
         <ConfigurationProvider configuration={configuration}>
-          <SnackbarProvider autoHideDuration={5000}>
+          <SnackbarProvider autoHideDuration={60_000}>
             <LocalizationProvider
               dateAdapter={AdapterDayjs}
               adapterLocale={locale}

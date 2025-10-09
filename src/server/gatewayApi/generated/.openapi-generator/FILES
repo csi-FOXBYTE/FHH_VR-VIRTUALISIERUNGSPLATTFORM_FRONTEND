@@ -1,4 +1,5 @@
 .openapi-generator-ignore
+apis/AppDownloadApi.ts
 apis/BaseLayerApi.ts
 apis/Converter3DApi.ts
 apis/EventsApi.ts
@@ -7,6 +8,9 @@ apis/StatsApi.ts
 apis/UserApi.ts
 apis/index.ts
 index.ts
+models/BaseLayerListChangesPost200ResponseInner.ts
+models/BaseLayerListChangesPostRequest.ts
+models/BaseLayerPatchRequest.ts
 models/BaseLayerPutRequest.ts
 models/BaseLayerPutRequestType.ts
 models/Converter3DCommitUploadPostRequest.ts
@@ -46,6 +50,7 @@ models/ProjectIdUnityGet200ResponseVariantsInnerBaseLayersInner.ts
 models/ProjectIdUnityGet200ResponseVariantsInnerBaseLayersInnerType.ts
 models/ProjectIdUnityGet200ResponseVariantsInnerClippingPolygonsInner.ts
 models/ProjectIdUnityGet200ResponseVariantsInnerModelsInner.ts
+models/ProjectListGet200ResponseInner.ts
 models/StatsGet200Response.ts
 models/StatsGet200ResponseMemoryUsage.ts
 models/UserInfoGet200Response.ts

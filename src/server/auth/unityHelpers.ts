@@ -59,7 +59,12 @@ export async function createRefreshToken(payload: {
   client_id: string;
   sessionToken: string;
 }) {
-  return await new EncryptJWT({ userId: payload.userId })
+  return await new EncryptJWT({
+    userId: payload.userId,
+    scope: payload.scope,
+    client_id: payload.client_id,
+    sessionToken: payload.sessionToken,
+  })
     .setProtectedHeader({ alg: "dir", enc: "A256GCM" })
     .setAudience(audience)
     .setExpirationTime(refreshTokenMaxAge)

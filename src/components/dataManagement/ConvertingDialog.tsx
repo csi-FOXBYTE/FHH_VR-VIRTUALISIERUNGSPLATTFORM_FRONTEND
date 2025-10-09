@@ -4,10 +4,12 @@ import {
   DialogActions,
   DialogContent,
   DialogTitle,
+  FormControlLabel,
   Grid,
   LinearProgress,
   MenuItem,
   Select,
+  Switch,
   TextField,
 } from "@mui/material";
 import { useMutation } from "@tanstack/react-query";
@@ -191,10 +193,10 @@ export default function ConvertingDialog({
               {...register("appearance")}
               label={t("data-management.appearance")}
             />
-            <TextField
+            <FormControlLabel
               required
-              fullWidth
               {...register("hasAlphaEnabled")}
+              control={<Switch />}
               label={t("data-management.has-alpha-enabled")}
             />
             <Controller

@@ -1,7 +1,7 @@
 import {
-    createAccessToken,
-    createRefreshToken,
-    getRefreshToken,
+  createAccessToken,
+  createRefreshToken,
+  getRefreshToken,
 } from "@/server/auth/unityHelpers";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -26,11 +26,13 @@ export async function POST(request: NextRequest) {
   // 2. Decrypt & verify the refresh token
   const payload = await getRefreshToken(refresh_token);
 
+  console.log({ payload, grant_type, refresh_token, client_id });
+
   if (!payload)
     return NextResponse.json(
       {
         error: "invalid_grant",
-        error_description: "Invalid or expired refresh token",
+        error_description: "Invalid or expired refresh_token",
       },
       { status: 400 }
     );
@@ -39,7 +41,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json(
       {
         error: "invalid_grant",
-        error_description: "Invalid or expired refresh token",
+        error_description: "Invalid client_id",
       },
       {
         status: 400,

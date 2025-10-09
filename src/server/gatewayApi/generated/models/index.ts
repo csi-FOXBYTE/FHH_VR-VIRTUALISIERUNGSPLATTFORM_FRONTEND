@@ -1,5 +1,8 @@
 /* tslint:disable */
 /* eslint-disable */
+export * from './BaseLayerListChangesPost200ResponseInner';
+export * from './BaseLayerListChangesPostRequest';
+export * from './BaseLayerPatchRequest';
 export * from './BaseLayerPutRequest';
 export * from './BaseLayerPutRequestType';
 export * from './Converter3DCommitUploadPostRequest';
@@ -39,6 +42,7 @@ export * from './ProjectIdUnityGet200ResponseVariantsInnerBaseLayersInner';
 export * from './ProjectIdUnityGet200ResponseVariantsInnerBaseLayersInnerType';
 export * from './ProjectIdUnityGet200ResponseVariantsInnerClippingPolygonsInner';
 export * from './ProjectIdUnityGet200ResponseVariantsInnerModelsInner';
+export * from './ProjectListGet200ResponseInner';
 export * from './StatsGet200Response';
 export * from './StatsGet200ResponseMemoryUsage';
 export * from './UserInfoGet200Response';

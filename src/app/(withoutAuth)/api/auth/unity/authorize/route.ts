@@ -2,8 +2,11 @@ import { signIn } from "@/server/auth/auth";
 import { createCode } from "@/server/auth/unityHelpers";
 import { NextRequest, NextResponse } from "next/server";
 
-const internalRedirect = "de.foxbyte.fhh.vrvis://oauth2redirect";
-// const internalRedirect = "https://oauth.pstmn.io/v1/callback";
+const validRedirectUris = [
+  "http://localhost:48152/callback",
+  "http://localhost:48153/callback",
+  "https://oauth.pstmn.io/v1/callback",
+];
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
@@ -30,7 +33,7 @@ export async function GET(request: NextRequest) {
   if (
     response_type !== "code" ||
     client_id !== "urn:fhhvr" ||
-    !redirect_uri?.startsWith(internalRedirect) ||
+    !validRedirectUris.includes(redirect_uri) ||
     !scope ||
     code_challenge_method !== "S256" ||
     !code_challenge ||
@@ -50,8 +53,8 @@ export async function GET(request: NextRequest) {
 
   return await signIn("microsoft-entra-id", {
     redirect: true,
-    redirectTo: `http://localhost:3000/api/auth/unity/redirect?&code=${code}&state=${searchParams.get(
-      "state"
-    )}`,
+    redirectTo: `${
+      process.env.BASE_URL
+    }/api/auth/unity/redirect?code=${code}&state=${searchParams.get("state")}`,
   });
 }

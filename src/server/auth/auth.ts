@@ -50,6 +50,7 @@ export const { auth, handlers, signIn, signOut, unstable_update } = NextAuth({
           },
           select: {
             id: true,
+            name: true,
           },
         });
 
@@ -70,26 +71,26 @@ export const { auth, handlers, signIn, signOut, unstable_update } = NextAuth({
           return false;
         }
 
+        const groupsWithDefault = await prisma.group.findMany({
+          select: {
+            id: true,
+            defaultFor: true,
+          },
+        });
+
+        const defaultGroups = groupsWithDefault
+          .filter(({ defaultFor }) => {
+            if (!defaultFor) return false;
+
+            for (const splitDefaultFor of defaultFor) {
+              if (isMatch(user.email!, splitDefaultFor)) return true;
+            }
+
+            return false;
+          })
+          .map(({ id }) => ({ id }));
+
         if (!userId) {
-          const groupsWithDefault = await prisma.group.findMany({
-            select: {
-              id: true,
-              defaultFor: true,
-            },
-          });
-
-          const defaultGroups = groupsWithDefault
-            .filter(({ defaultFor }) => {
-              if (!defaultFor) return false;
-
-              for (const splitDefaultFor of defaultFor) {
-                if (isMatch(user.email!, splitDefaultFor)) return true;
-              }
-
-              return false;
-            })
-            .map(({ id }) => ({ id }));
-
           const locale = await getLocale();
           let language: "EN" | "DE" | null = null;
 
@@ -123,34 +124,32 @@ export const { auth, handlers, signIn, signOut, unstable_update } = NextAuth({
           return true;
         }
 
-        const foundUserWithAccount = await prisma.user.findFirst({
-          where: {
-            email: user.email!,
-            accounts: {
-              every: {
-                providerAccountId: account.providerAccountId,
-              },
-            },
-          },
-        });
-
-        if (!foundUserWithAccount) {
-          console.error("NO USER FOUND");
-          return false;
-        }
-
         await prisma.user.update({
           data: {
             name: profile?.name,
+            ...(typeof foundUser?.name === "string"
+              ? {}
+              : { assignedGroups: { connect: defaultGroups } }),
             accounts: {
-              update: {
+              upsert: {
                 where: {
                   provider_providerAccountId: {
                     provider: account.provider,
                     providerAccountId: account.providerAccountId,
                   },
                 },
-                data: {
+                create: {
+                  access_token: account.access_token,
+                  expires_at: account.expires_at,
+                  id_token: account.id_token,
+                  refresh_token: account.refresh_token,
+                  providerAccountId: account.providerAccountId,
+                  provider: account.provider,
+                  scope: account.scope,
+                  token_type: account.token_type,
+                  type: account.type,
+                },
+                update: {
                   access_token: account.access_token,
                   expires_at: account.expires_at,
                   id_token: account.id_token,

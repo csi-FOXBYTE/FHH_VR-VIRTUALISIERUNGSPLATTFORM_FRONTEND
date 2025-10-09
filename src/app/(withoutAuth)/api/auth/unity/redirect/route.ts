@@ -3,9 +3,6 @@ import { createCode, getCode } from "@/server/auth/unityHelpers";
 import { redirect } from "next/navigation";
 import { NextRequest, NextResponse } from "next/server";
 
-const internalRedirect = "de.foxbyte.fhh.vrvis://oauth2redirect";
-// const internalRedirect = "https://oauth.pstmn.io/v1/callback";
-
 export async function GET(request: NextRequest) {
   const session = await auth();
 
@@ -39,7 +36,7 @@ export async function GET(request: NextRequest) {
   return redirect(
     new URL(
       `?code=${code}&state=${request.nextUrl.searchParams.get("state")}`,
-      internalRedirect
+      preCode.redirect_uri
     ).toString()
   );
 }

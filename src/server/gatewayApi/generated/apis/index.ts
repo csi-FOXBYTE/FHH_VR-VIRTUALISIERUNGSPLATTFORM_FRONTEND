@@ -1,5 +1,6 @@
 /* tslint:disable */
 /* eslint-disable */
+export * from './AppDownloadApi';
 export * from './BaseLayerApi';
 export * from './Converter3DApi';
 export * from './EventsApi';

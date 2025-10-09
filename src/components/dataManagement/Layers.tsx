@@ -18,6 +18,7 @@ import ConvertingDialog from "./ConvertingDialog";
 import AddingDialog from "./AddingDialog";
 import { useSnackbar } from "notistack";
 import { getApis } from "@/server/gatewayApi/client";
+import UpdatingDialog from "./UpdatingDialog";
 
 function CircularProgressWithLabel(
   props: CircularProgressProps & { value: number }
@@ -52,6 +53,12 @@ export default function Layers() {
 
   const [convertingDialogOpen, setConvertingDialogOpen] = useState(false);
   const [addingDialogOpen, setAddingDialogOpen] = useState(false);
+  const [updatingDialogOpen, setUpdatingDialogOpen] = useState(false);
+  const [updatingDialogRow, setUpdatingDialogRow] = useState<null | {
+    id: string;
+    href: string | null;
+    visibleForGroups: { id: string; name: string }[];
+  }>(null);
 
   const { props } = useDataGridServerSideHelper("data-management-layers", {
     extraActions: [
@@ -104,7 +111,18 @@ export default function Layers() {
     handleDelete: (id) => {
       deleteMutation({ id });
     },
-    isDisabled: () => ({ delete: false, edit: true }),
+    handleEdit(id) {
+      const foundEntry = data.find((e) => e.id === id);
+
+      if (!foundEntry) throw new Error("No entry found!");
+      setUpdatingDialogOpen(true);
+      setUpdatingDialogRow({
+        href: foundEntry.href,
+        id: foundEntry.id,
+        visibleForGroups: foundEntry.visibleForGroups,
+      });
+    },
+    isDisabled: () => ({ delete: false, edit: false }),
   });
 
   const { data: { data, count } = { count: 0, data: [] }, isLoading } =
@@ -128,6 +146,11 @@ export default function Layers() {
       <AddingDialog
         open={addingDialogOpen}
         close={() => setAddingDialogOpen(false)}
+      />
+      <UpdatingDialog
+        open={updatingDialogOpen}
+        row={updatingDialogRow}
+        close={() => setUpdatingDialogOpen(false)}
       />
       <DataGrid
         {...props}

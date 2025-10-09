@@ -1,10 +1,19 @@
 "use client";
 
 import * as Cesium from "cesium";
-import { useLayoutEffect, useState } from "react";
+import { ReactNode, useEffect, useLayoutEffect, useState } from "react";
 import { Cesium3DTileset, CesiumComponentRef } from "resium";
 import { useBaseLayerProviderContext } from "./BaseLayerProvider";
 import { useViewerStore } from "./ViewerProvider";
+
+const useDelayedRender = (delay: number) => {
+  const [delayed, setDelayed] = useState(true);
+  useEffect(() => {
+    const timeout = setTimeout(() => setDelayed(false), delay);
+    return () => clearTimeout(timeout);
+  }, []);
+  return (fn: () => ReactNode) => !delayed && fn();
+};
 
 export default function Tileset({
   resource,
@@ -23,6 +32,8 @@ export default function Tileset({
     useState<CesiumComponentRef<Cesium.Cesium3DTileset> | null>(null);
 
   useLayoutEffect(() => {
+    console.log({ isDestroyed: tilesetRef?.cesiumElement?.isDestroyed() });
+
     if (!tilesetRef?.cesiumElement || tilesetRef.cesiumElement.isDestroyed()) {
       return;
     }
@@ -45,9 +56,11 @@ export default function Tileset({
     );
   }, [clippingPolygons, tilesetRef?.cesiumElement]);
 
+  const delayedRender = useDelayedRender(1000);
+
   const layers = useBaseLayerProviderContext();
 
-  return (
+  return delayedRender(() => (
     <Cesium3DTileset
       url={resource}
       ref={setTilesetRef}
@@ -68,5 +81,5 @@ export default function Tileset({
         });
       }}
     />
-  );
+  ));
 }

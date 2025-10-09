@@ -3,6 +3,22 @@ import { z } from "zod";
 import { protectedProcedure, router } from "..";
 
 const dataManagementRouter = router({
+  getVisibleForGroups: protectedProcedure
+    .input(z.object({ search: z.string() }))
+    .query(async (opts) => {
+      const possibleVisibleForGroups = await opts.ctx.db.group.findMany({
+        take: 50,
+        select: {
+          name: true,
+          id: true,
+        },
+      });
+
+      return possibleVisibleForGroups.map((v) => ({
+        label: v.name,
+        value: v.id,
+      }));
+    }),
   listBaseLayers: protectedProcedure.input(dataGridZod).query(
     async (opts) =>
       await opts.ctx.db.baseLayer.paginate(
@@ -14,6 +30,7 @@ const dataManagementRouter = router({
             name: true,
             progress: true,
             status: true,
+            href: true,
             visibleForGroups: {
               select: {
                 name: true,
