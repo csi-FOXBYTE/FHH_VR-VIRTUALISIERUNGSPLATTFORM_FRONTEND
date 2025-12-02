@@ -1,6 +1,17 @@
 import { z } from "zod";
 import { protectedProcedure, router } from "..";
 
+const safeTransformNumber = (v: string | undefined): number | undefined => {
+  if (v === undefined) return v;
+
+  const parsedNumber = parseInt(v);
+
+  if (Number.isNaN(parsedNumber) || !Number.isFinite(parsedNumber))
+    return undefined;
+
+  return parsedNumber;
+};
+
 const configurationRouter = router({
   update: protectedProcedure
     .input(
@@ -36,6 +47,14 @@ const configurationRouter = router({
         userProfileLink: z.string().optional(),
         systemActivityLink: z.string().optional(),
         unityDownloadLink: z.string().optional(),
+        used3DTileConversionThreads: z
+          .string()
+          .optional()
+          .transform(safeTransformNumber),
+        usedTerrainConversionThreads: z
+          .string()
+          .optional()
+          .transform(safeTransformNumber),
       })
     )
     .mutation(async (opts) => {

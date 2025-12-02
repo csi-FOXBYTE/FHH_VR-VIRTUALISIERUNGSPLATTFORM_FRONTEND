@@ -109,7 +109,9 @@
     "links": "Links",
     "system-logs-link": "System logs and activities link",
     "user-profile-link": "User profile link",
-    "unity-download-link": "Unity download link"
+    "unity-download-link": "Unity download link",
+    "used-3d-tile-conversion-threads": "Used 3D Tile conversion threads",
+    "used-terrain-conversion-threads": "Used Terrain conversion threads"
   },
   "user-management": {
     "title": "User and group management",

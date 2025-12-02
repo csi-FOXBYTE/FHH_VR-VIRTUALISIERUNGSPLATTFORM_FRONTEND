@@ -151,6 +151,10 @@ export default function ConfigurationPage() {
         onSubmit={handleSubmit(async (values) => {
           updateConfigurationMutation({
             ...values,
+            used3DTileConversionThreads:
+              values.used3DTileConversionThreads.toString(),
+            usedTerrainConversionThreads:
+              values.usedTerrainConversionThreads.toString(),
             defaultEPSG: values.defaultEPSG.label,
             globalStartPointX: values.globalStartPoint.value.x,
             globalStartPointY: values.globalStartPoint.value.y,
@@ -193,18 +197,18 @@ export default function ConfigurationPage() {
                 control={control}
                 name="globalStartPoint"
                 render={({ field }) => {
-                  console.log(field.value)
+                  console.log(field.value);
                   return (
-                  <TranslationInput
-                    uiValue={field.value.uiValue}
-                    uiEpsg={field.value.uiEpsg}
-                    onChange={(value) => {
-                      if (value.value === undefined) return;
+                    <TranslationInput
+                      uiValue={field.value.uiValue}
+                      uiEpsg={field.value.uiEpsg}
+                      onChange={(value) => {
+                        if (value.value === undefined) return;
 
-                      field.onChange(value);
-                    }}
-                  />
-                )
+                        field.onChange(value);
+                      }}
+                    />
+                  );
                 }}
               />
             </Grid>
@@ -238,6 +242,29 @@ export default function ConfigurationPage() {
                 slotProps={{
                   htmlInput: {
                     min: 1,
+                    max: 16,
+                  },
+                }}
+                label={t("configuration.used-3d-tile-conversion-threads")}
+                {...register("used3DTileConversionThreads")}
+              />
+              <TextField
+                type="number"
+                slotProps={{
+                  htmlInput: {
+                    min: 1,
+                    max: 16,
+                  },
+                }}
+                label={t("configuration.used-terrain-conversion-threads")}
+                {...register("usedTerrainConversionThreads")}
+              />
+              <Divider />
+              <TextField
+                type="number"
+                slotProps={{
+                  htmlInput: {
+                    min: 1,
                     max: 9999,
                   },
                 }}
@@ -256,6 +283,11 @@ export default function ConfigurationPage() {
               <TextField
                 type="number"
                 label={t("configuration.maximum-flying-height")}
+                slotProps={{
+                  htmlInput: {
+                    min: 0,
+                  },
+                }}
                 {...register("maximumFlyingHeight")}
               />
             </Grid>
@@ -270,14 +302,29 @@ export default function ConfigurationPage() {
               <TextField
                 label={t("configuration.system-logs-link")}
                 {...register("systemActivityLink")}
+                slotProps={{
+                  htmlInput: {
+                    pattern: "https?://[a-zA-Z0-9.-]+(:[0-9]+)?(/.*)?",
+                  },
+                }}
               />
               <TextField
                 label={t("configuration.user-profile-link")}
                 {...register("userProfileLink")}
+                slotProps={{
+                  htmlInput: {
+                    pattern: "https?://[a-zA-Z0-9.-]+(:[0-9]+)?(/.*)?",
+                  },
+                }}
               />
               <TextField
                 label={t("configuration.unity-download-link")}
                 {...register("unityDownloadLink")}
+                slotProps={{
+                  htmlInput: {
+                    pattern: "https?://[a-zA-Z0-9.-]+(:[0-9]+)?(/.*)?",
+                  },
+                }}
               />
             </Grid>
           </AccordionDetails>
@@ -296,22 +343,34 @@ export default function ConfigurationPage() {
                 type="number"
                 label={t("configuration.email-port")}
                 {...register("emailPort")}
+                slotProps={{
+                  htmlInput: {
+                    min: 0,
+                  },
+                }}
               />
               <FormControlLabel
                 control={<Switch {...register("emailSecure")} />}
                 label={t("configuration.email-secure")}
               ></FormControlLabel>
               <TextField
+                type="text"
                 label={t("configuration.email-user")}
                 {...register("emailUser")}
               />
               <TextField
+                type="password"
                 label={t("configuration.email-password")}
                 {...register("emailPassword")}
               />
               <TextField
                 label={t("configuration.email-platform-address")}
                 {...register("emailPlatformAddress")}
+                slotProps={{
+                  htmlInput: {
+                    pattern: "https?://[a-zA-Z0-9.-]+(:[0-9]+)?(/.*)?",
+                  },
+                }}
               />
             </Grid>
           </AccordionDetails>

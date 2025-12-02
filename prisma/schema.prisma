@@ -350,6 +350,8 @@ model Configuration {
   uiGlobalStartPointEpsg          String
   maxParallelFileConversions      Float
   maxParallelBaseLayerConversions Float
+  used3DTileConversionThreads     Float
+  usedTerrainConversionThreads    Float
   invitationEmailText             String   @db.Text()
   localProcessorFolder            String
   emailUser                       String

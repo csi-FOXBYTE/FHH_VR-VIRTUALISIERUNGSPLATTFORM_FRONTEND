@@ -7,7 +7,7 @@ const prisma = new PrismaClient();
   await prisma.configuration.create({
     data: {
       defaultEPSG: "EPSG:25832",
-      localProcessorFolder: "./processor",
+      localProcessorFolder: "./temp",
       globalStartPointX: 3764595.8724393756,
       globalStartPointY: 664200.4499076013,
       globalStartPointZ: 5144292.106228131,
@@ -18,6 +18,8 @@ const prisma = new PrismaClient();
       invitationEmailText: "",
       maxParallelBaseLayerConversions: 1,
       maxParallelFileConversions: 1,
+      used3DTileConversionThreads: 1,
+      usedTerrainConversionThreads: 1,
       invitationCancelledEmailDE: readFileSync(
         "./prisma/scripts/templates/mail-invitation-cancelled-de.html"
       ).toString("utf-8"),
