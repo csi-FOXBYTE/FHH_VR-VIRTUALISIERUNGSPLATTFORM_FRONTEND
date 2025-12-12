@@ -43,7 +43,7 @@ export const protectedProcedure = procedure
       ctx: {
         ...ctx,
         session: session,
-      ***REMOVED***enhance(prisma, session).$extends(realtimeExtension()),
+        db: enhance(prisma, session).$extends(realtimeExtension()),
         subscriberDb: prisma,
       },
     });
