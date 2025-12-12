@@ -484,6 +484,62 @@ export default function GDPRPage() {
               aktivieren. Bei der Deaktivierung von Cookies kann die
               Funktionalität der Website eingeschränkt sein.
             </Typography>
+            <Typography variant="h6">Hinweis zur Nutzung von</Typography>
+            <Typography>
+              Gebäudemodell LoD3.0 der Stadt Hamburg mit einer Texturauflösung
+              von 5cm
+            </Typography>
+            <Typography>
+              Geländemodell DGM5h der Stadt Hamburg mit einer
+              (Luftbild-)Texturauflösung von 5cm
+            </Typography>
+            <hr />
+            <Typography>Die Daten unterliegen der Vertraulichkeit.</Typography>
+            <Typography>Eine Weitergabe an Dritte ist untersagt.</Typography>
+            <Typography variant="h6">
+              Verpflichtung zum datenschutzkonformen Umgang durch den Nutzer
+            </Typography>
+            <Typography>
+              Der Nutzer verwendet die zur Verarbeitung überlassenen
+              personenbezogenen Daten für keine anderen, insbesondere nicht für
+              eigene Zwecke. Kopien oder Duplikate der personenbezogenen Daten
+              werden nicht erstellt.{" "}
+            </Typography>
+            <Typography>
+              Der Nutzer sichert im Bereich der Verarbeitung von
+              personenbezogenen Daten die notwendige Sorgfalt bei der Abwicklung
+              aller Maßnahmen zu. Er sichert zu, dass die für den Auftraggeber
+              verarbeiteten Daten von sonstigen Datenbeständen strikt getrennt
+              werden.{" "}
+            </Typography>
+            <Typography>
+              Der Nutzer hat über die gesamte Nutzungsdauer insbesondere
+              folgende Überprüfungen in seinem Bereich durchzuführen: Siehe
+              Anlage 1
+            </Typography>
+            <Typography variant="h6">
+              Anlage 1: Technisch-organisatorische Maßnahmen
+            </Typography>
+            <Typography>
+              1 Technische und organisatorische Sicherheitsmaßnahmen{" "}
+            </Typography>
+            <Typography>
+              Die berechtigten Nutzer sind verpflichtet, geeignete technische
+              und organisatorische Maßnahmen so durchzuführen, dass die
+              Verarbeitung der Daten im Einklang mit den gesetzlichen
+              Anforderungen erfolgt und der Schutz der Rechte der betroffenen
+              Person in angemessener Form gewährleistet ist.{" "}
+            </Typography>
+            <Typography>
+              2 Innerbehördliche oder innerbetriebliche Organisation des Nutzers
+            </Typography>
+            <Typography>
+              Der Auftragsverarbeiter wird seine innerbehördliche oder
+              innerbetriebliche Organisation so gestalten, dass sie den
+              besonderen Anforderungen des Datenschutzes gerecht wird. Dabei
+              sind insbesondere Maßnahmen zu treffen, die je nach der Art der zu
+              schützenden Daten oder Datenkategorien geeignet sind.{" "}
+            </Typography>
           </Grid>
         </PageContainer>
       </Grid>
