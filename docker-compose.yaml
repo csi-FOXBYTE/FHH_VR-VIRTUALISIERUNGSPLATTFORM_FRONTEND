@@ -1,0 +1,33 @@
+services:
+  db:
+    image: postgres
+    restart: on-failure
+    env_file: ".env"
+    command: |
+      postgres
+      -c wal_level=logical 
+      -c max_wal_senders=10 
+      -c max_replication_slots=10 
+    environment:
+      POSTGRES_PASSWORD: SUPER_SECRET
+      POSTGRES_USER: fhhvr
+      POSTGRES_DB: fhhvr-db
+    ports:
+      - 5432:5432
+    networks:
+      - fhh-vrvis-net
+
+  redis:
+    image: redis
+    restart: on-failure
+    ports: 
+      - 6379:6379
+    networks:
+      - fhh-vrvis-net
+
+volumes:
+  mssql_data:
+
+networks:
+  fhh-vrvis-net:
+    external: true
